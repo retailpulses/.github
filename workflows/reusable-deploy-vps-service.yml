@@ -1,5 +1,11 @@
 # reusable-deploy-vps-service.yml — DRAFT v0.1.0
 #
+# ╔══════════════════════════════════════════════════════════╗
+# ║  DRAFT — DO NOT CALL FROM PRODUCTION REPOS YET          ║
+# ║  Use as reference only. Copy into your repo if needed.   ║
+# ║  See workflows/README.md for promotion criteria.         ║
+# ╚══════════════════════════════════════════════════════════╝
+#
 # Status: PLACEHOLDER — not yet extracted from any repo.
 # Reference: workers/.github/workflows/deploy-relay.yml (deprecated relay pattern)
 #
@@ -105,7 +111,7 @@ jobs:
             SUBPATH="${{ inputs.deploy_subpath }}"
             UNIT="${{ inputs.systemd_unit }}"
             PORT="${{ inputs.health_port }}"
-            PATH="${{ inputs.health_path }}"
+            HEALTH_PATH="${{ inputs.health_path }}"
 
             cd "$REPO"
             git fetch origin "$REF" 2>/dev/null || git fetch origin
@@ -128,7 +134,7 @@ jobs:
             fi
 
             for i in 1 2 3 4 5; do
-              HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://127.0.0.1:${PORT}${PATH}" || echo "000")
+              HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://127.0.0.1:${PORT}${HEALTH_PATH}" || echo "000")
               if [ "$HTTP" = "200" ]; then
                 echo "✅ Service healthy"
                 exit 0

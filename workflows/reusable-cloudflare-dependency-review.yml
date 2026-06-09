@@ -1,5 +1,11 @@
 # reusable-cloudflare-dependency-review.yml — DRAFT v0.1.0
 #
+# ╔══════════════════════════════════════════════════════════╗
+# ║  DRAFT — DO NOT CALL FROM PRODUCTION REPOS YET          ║
+# ║  Use as reference only. Copy into your repo if needed.   ║
+# ║  See workflows/README.md for promotion criteria.         ║
+# ╚══════════════════════════════════════════════════════════╝
+#
 # Status: PLACEHOLDER — advisory review only, not yet blocking.
 # Will be activated once the Cloudflare Dependency Policy has been
 # in advisory mode for 3-6 months and the org is ready for automated checks.

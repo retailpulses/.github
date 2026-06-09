@@ -115,6 +115,18 @@ body:
     validations:
       required: true
 
+  - type: textarea
+    id: operator-access
+    attributes:
+      label: Operator Access Impact
+      description: Does this change the URL, dashboard, login, or manual operating flow for operators?
+      placeholder: |
+        - New health check URL: https://service.workers.dev/health
+        - Dashboard moved from /admin to /dashboard
+        - No change — operator flow unchanged
+    validations:
+      required: false
+
   - type: dropdown
     id: cloudflare-impact
     attributes:

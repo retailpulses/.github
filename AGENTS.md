@@ -41,10 +41,16 @@ If the repo has its own agent guidance, follow it. These central rules fill gaps
 
 ## 3. Credential Safety
 
-### 3.1 Do Not Introduce New Secrets
+### 3.1 Credential Creation
 
-- Agents must not create new secrets, API keys, or tokens.
-- If a task requires a new credential, report it as a blocker with:
+- Agents must not create real credentials, API keys, or tokens.
+- Agents must not rotate credentials without explicit user request.
+- Agents may:
+  - Add placeholder names to `.env.example`
+  - Document required secret names in PR descriptions or deployment docs
+  - Add GitHub Actions secret references to existing or expected secrets
+- If a task requires actual credential creation, rotation, or secret value access,
+  report it as a blocker with:
   - Credential name
   - Purpose
   - Expected storage location

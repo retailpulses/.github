@@ -20,9 +20,20 @@ PR opened → lint → test → type check → DONE
 ### 1.2 Deploy Happens on Push to Main or workflow_dispatch
 
 ```
-Push to main → validate → deploy → smoke test → DONE
 workflow_dispatch → validate → deploy → smoke test → DONE
+Push to main     → validate → deploy → smoke test → DONE (auto-deploy repos only)
 ```
+
+**Recommended default per service type:**
+
+| Service Type | Trigger | Rationale |
+|-------------|---------|-----------|
+| **Customer-facing / order / ticket systems** | `workflow_dispatch` (manual) | Production risk is high. Human in the loop. |
+| **Internal tools, dashboards** | Push to `main` (auto) | Acceptable blast radius for auto-deploy. |
+| **Scheduled / cron jobs** | Push to `main` or manual | Depends on sensitivity. |
+| **Static frontends** | Push to `main` (auto) | Low risk, easy rollback. |
+
+For production-sensitive services, prefer manual `workflow_dispatch` with environment selector. For small internal tools with low blast radius, push-to-main auto-deploy is acceptable.
 
 ### 1.3 Production Deploy Requires Smoke Test
 

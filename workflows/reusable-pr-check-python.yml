@@ -1,5 +1,11 @@
 # reusable-pr-check-python.yml — DRAFT v0.1.0
 #
+# ╔══════════════════════════════════════════════════════════╗
+# ║  DRAFT — DO NOT CALL FROM PRODUCTION REPOS YET          ║
+# ║  Use as reference only. Copy into your repo if needed.   ║
+# ║  See workflows/README.md for promotion criteria.         ║
+# ╚══════════════════════════════════════════════════════════╝
+#
 # Status: PLACEHOLDER — not yet extracted from any repo.
 # Reference: mercariops/.github/workflows/rakuten-main-image-gen.yml (similar pattern)
 #

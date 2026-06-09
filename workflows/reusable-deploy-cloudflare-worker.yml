@@ -1,5 +1,11 @@
 # reusable-deploy-cloudflare-worker.yml — DRAFT v0.1.0
 #
+# ╔══════════════════════════════════════════════════════════╗
+# ║  DRAFT — DO NOT CALL FROM PRODUCTION REPOS YET          ║
+# ║  Use as reference only. Copy into your repo if needed.   ║
+# ║  See workflows/README.md for promotion criteria.         ║
+# ╚══════════════════════════════════════════════════════════╝
+#
 # Status: PLACEHOLDER — not yet extracted from any repo.
 # Reference: workers/.github/workflows/deploy-workers.yml (reference implementation)
 #

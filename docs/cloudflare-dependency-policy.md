@@ -86,7 +86,35 @@ class KVStore implements CacheStore { /* uses env.MY_KV */ }
 class MemoryStore implements CacheStore { /* uses Map */ }
 ```
 
-### 3.3 Dependency Documentation
+### 3.3 Preferred Architecture Pattern
+
+When building new services or refactoring existing ones, prefer this layered pattern:
+
+```
+┌─────────────────────────────────────────────┐
+│  Business Logic                              │
+│  Pure functions. No runtime API deps.         │
+│  Testable without Workers / VPS / cron.      │
+│  Written in portable Node or Python.         │
+├─────────────────────────────────────────────┤
+│  Runtime Adapter                             │
+│  Thin wrapper: Worker fetch / VPS HTTP /     │
+│  cron entrypoint / GitHub Action.            │
+│  Only this layer knows the runtime.          │
+├─────────────────────────────────────────────┤
+│  State Adapter                               │
+│  Interface → Baserow / SQLite / D1 / KV.     │
+│  Swap implementation, not business logic.    │
+├─────────────────────────────────────────────┤
+│  Deployment Adapter                          │
+│  GitHub Actions per target.                  │
+│  Worker deploy / VPS deploy / script sync.   │
+└─────────────────────────────────────────────┘
+```
+
+**Key principle:** Only the adapter layers know about Cloudflare, VPS, or any specific infrastructure. Business logic stays portable.
+
+### 3.4 Dependency Documentation
 
 New dependencies on KV, D1, R2, Worker Cron, Pages, or Tunnel must be documented:
 
@@ -94,7 +122,7 @@ New dependencies on KV, D1, R2, Worker Cron, Pages, or Tunnel must be documented
 - In the repo's deployment docs
 - With a migration path noted
 
-### 3.4 No Vendor Lock-In by Default
+### 3.5 No Vendor Lock-In by Default
 
 Before adding a Cloudflare-specific dependency, ask:
 

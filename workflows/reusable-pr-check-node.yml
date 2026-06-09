@@ -1,7 +1,12 @@
 # reusable-pr-check-node.yml — DRAFT v0.1.0
 #
+# ╔══════════════════════════════════════════════════════════╗
+# ║  DRAFT — DO NOT CALL FROM PRODUCTION REPOS YET          ║
+# ║  Use as reference only. Copy into your repo if needed.   ║
+# ║  See workflows/README.md for promotion criteria.         ║
+# ╚══════════════════════════════════════════════════════════╝
+#
 # Status: PLACEHOLDER — not yet extracted from any repo.
-# Do not use until validated against a real repo.
 #
 # Purpose: PR validation for Node.js/TypeScript repos.
 # Trigger: called by repo workflows on pull_request to main.

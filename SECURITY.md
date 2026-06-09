@@ -65,6 +65,21 @@ Retailpulses uses a local `master_credentials.md` file as a credential lookup in
 
 If you discover that `master_credentials.md` or any `.env` file has been committed, treat it as a security incident and report it immediately.
 
+## Sensitive Business Data
+
+In addition to standard PII and credentials, Retailpulses repos handle ecommerce-specific sensitive data:
+
+- **Customer data:** names, addresses, phone numbers, email addresses
+- **Order data:** order IDs, marketplace transaction IDs, purchase history
+- **Inquiry/ticket contents:** customer messages, complaint details, resolution notes
+- **Supplier cost data:** wholesale prices, supplier margins, cost formulas
+- **Pricing data:** price calculation logic, margin formulas, discount strategies
+- **Marketplace credentials:** API keys, tokens, seller IDs for Mercari, Rakuten, Amazon Japan
+- **Inventory data:** stock levels, restock triggers, warehouse locations
+- **Operational data:** Baserow table IDs, n8n webhook URLs, VPS IP addresses (internal use only)
+
+Agents and contributors must treat all of the above as confidential. Never expose these in public repos, logs, summaries, or issue comments.
+
 ## Recognized Runtimes & Attack Surfaces
 
 | Runtime | Key Security Concerns |

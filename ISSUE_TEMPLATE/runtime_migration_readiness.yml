@@ -1,0 +1,131 @@
+name: Runtime Migration Readiness
+description: Reduce runtime/vendor coupling without immediate migration
+title: "readiness: "
+labels: ["migration-readiness", "architecture"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Runtime Migration Readiness
+        Use this for work that reduces coupling to a specific runtime or vendor
+        **without doing an immediate migration.** The goal is to make future
+        migration easier, not to migrate now.
+
+  - type: dropdown
+    id: current-runtime
+    attributes:
+      label: Current Runtime
+      description: What runtime is this service coupled to?
+      options:
+        - Cloudflare Worker (full app)
+        - Cloudflare Worker (relay/proxy)
+        - VPS Node service
+        - Python cron/script
+        - GitHub Actions only
+        - n8n workflow
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: specific-deps
+    attributes:
+      label: Runtime-Specific Dependencies
+      description: What exactly is tied to the current runtime?
+      placeholder: |
+        - Worker Cron (scheduled task runs inside Worker runtime)
+        - D1 database (SQL queries use Worker binding API)
+        - KV cache (business logic reads directly from env.MY_KV)
+        - wrangler.toml secrets (config only accessible via wrangler)
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-logic-coupling
+    attributes:
+      label: Business Logic Coupling
+      description: How tightly is business logic coupled to runtime APIs?
+      placeholder: |
+        - [ ] Business logic in pure functions — no change needed
+        - [ ] Some logic mixed with Worker fetch handler — needs extraction
+        - [ ] Heavy coupling — business logic uses env bindings directly
+    validations:
+      required: true
+
+  - type: textarea
+    id: state-coupling
+    attributes:
+      label: State / Storage Coupling
+      description: How is persistent state tied to the runtime?
+      placeholder: |
+        - D1: SQL queries use `env.DB` binding directly
+        - KV: cache reads use `env.CACHE` binding directly
+        - R2: object uploads use `env.BUCKET` binding
+        - Baserow: HTTP client — already portable ✅
+    validations:
+      required: true
+
+  - type: textarea
+    id: scheduler-coupling
+    attributes:
+      label: Cron / Scheduler Coupling
+      description: How are scheduled tasks implemented?
+      placeholder: |
+        - Worker Cron triggers
+        - systemd timer on VPS
+        - GitHub Actions schedule
+        - n8n cron trigger
+        - External cron + HTTP call
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-isolation
+    attributes:
+      label: Proposed Isolation Work
+      description: What specific changes would reduce coupling?
+      placeholder: |
+        1. Extract business logic into pure functions (no Worker API dependencies)
+        2. Add CacheStore interface, implement KV adapter + Memory adapter
+        3. Expose scheduled task as HTTP endpoint (can be called from any cron)
+        4. Switch D1 queries to use a DatabaseAdapter interface
+    validations:
+      required: true
+
+  - type: textarea
+    id: must-not-change
+    attributes:
+      label: What Must Not Change
+      description: Behavior that must be preserved exactly.
+      placeholder: |
+        - API response format
+        - Cron schedule timing
+        - Data consistency guarantees
+        - Current deployment workflow
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation-plan
+    attributes:
+      label: Validation Plan
+      description: How to confirm nothing broke.
+      placeholder: |
+        - Run existing test suite
+        - Deploy to dev and compare responses byte-for-byte
+        - Run scheduled task manually and verify output
+    validations:
+      required: true
+
+  - type: textarea
+    id: readiness-benefit
+    attributes:
+      label: Migration Readiness Benefit
+      description: What does this unlock?
+      placeholder: |
+        After this work:
+        - Migrating from Worker to VPS Node: change one adapter, not core logic
+        - Switching from D1 to SQLite: implement new adapter, no business logic change
+        - Running cron outside Cloudflare: call HTTP endpoint from systemd timer
+    validations:
+      required: true
