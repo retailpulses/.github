@@ -1,0 +1,71 @@
+# reusable-cloudflare-dependency-review.yml — DRAFT v0.1.0
+#
+# Status: PLACEHOLDER — advisory review only, not yet blocking.
+# Will be activated once the Cloudflare Dependency Policy has been
+# in advisory mode for 3-6 months and the org is ready for automated checks.
+#
+# Purpose: Detect new Cloudflare dependencies in PRs and verify
+#          they are documented with justification.
+# Trigger: called by repo workflows on pull_request to main.
+
+name: Cloudflare Dependency Review
+
+on:
+  workflow_call:
+    inputs:
+      strict_mode:
+        description: "Fail PR if Cloudflare dependency is undocumented? (default: advisory only)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    name: CF Dependency Review
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Cloudflare dependency changes
+        id: detect
+        run: |
+          echo "### Cloudflare Dependency Review" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          # Files that indicate Cloudflare dependency changes
+          CHANGED=$(git diff --name-only origin/main...HEAD | grep -E 'wrangler\.(toml|json|jsonc)|\.cf-|cloudflare' || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "✅ No Cloudflare-related files changed." >> "$GITHUB_STEP_SUMMARY"
+            echo "clean=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "⚠️  Cloudflare-related files changed:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "$CHANGED" | while read f; do echo "- \`$f\`" >> "$GITHUB_STEP_SUMMARY"; done
+          echo "dirty=true" >> "$GITHUB_OUTPUT"
+
+      - name: Check PR description for Cloudflare justification
+        if: steps.detect.outputs.dirty == 'true'
+        run: |
+          # Check if PR body has the Cloudflare Dependency Impact section
+          PR_BODY=$(gh pr view "${{ github.event.pull_request.number }}" --json body -q '.body' 2>/dev/null || echo "")
+
+          if echo "$PR_BODY" | grep -qi "Cloudflare Dependency Impact"; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "✅ PR description includes Cloudflare Dependency Impact section." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "⚠️  PR description is MISSING the Cloudflare Dependency Impact section." >> "$GITHUB_STEP_SUMMARY"
+            echo "Please add: **Does this PR add or deepen Cloudflare-specific dependency?**" >> "$GITHUB_STEP_SUMMARY"
+
+            if [ "${{ inputs.strict_mode }}" = "true" ]; then
+              echo "::error::Cloudflare dependency change without justification. See Cloudflare Dependency Policy."
+              exit 1
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

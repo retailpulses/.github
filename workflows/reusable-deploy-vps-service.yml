@@ -1,0 +1,156 @@
+# reusable-deploy-vps-service.yml — DRAFT v0.1.0
+#
+# Status: PLACEHOLDER — not yet extracted from any repo.
+# Reference: workers/.github/workflows/deploy-relay.yml (deprecated relay pattern)
+#
+# Purpose: Deploy a Node.js service to VPS via SSH.
+# Trigger: called by repo workflows on workflow_dispatch.
+# Does NOT trigger on PR.
+
+name: Deploy VPS Service
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: string
+      repo_path:
+        description: "Absolute path to repo on VPS"
+        required: true
+        type: string
+      deploy_subpath:
+        description: "Relative path within repo"
+        required: false
+        type: string
+        default: "."
+      systemd_unit:
+        description: "systemd service unit name"
+        required: true
+        type: string
+      health_port:
+        description: "Local health check port"
+        required: true
+        type: string
+      health_path:
+        description: "Health check path"
+        required: false
+        type: string
+        default: "/health"
+      node_version:
+        description: "Node.js version on VPS (for reference)"
+        required: false
+        type: string
+        default: "22"
+      ref:
+        description: "Git ref to deploy (default: HEAD)"
+        required: false
+        type: string
+        default: ""
+    secrets:
+      VPS_HOST:
+        description: "VPS hostname or IP"
+        required: true
+      VPS_USER:
+        description: "SSH username"
+        required: true
+      VPS_SSH_KEY:
+        description: "SSH private key"
+        required: true
+      VPS_PORT:
+        description: "SSH port"
+        required: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    name: Gate
+    outputs:
+      deploy_ref: ${{ steps.ref.outputs.deploy_ref }}
+    steps:
+      - name: Production branch guard
+        if: inputs.environment == 'production'
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Production deploy only allowed from main branch."
+            exit 1
+          fi
+
+      - name: Resolve deploy ref
+        id: ref
+        run: |
+          DEPLOY_REF="${{ inputs.ref }}"
+          if [ -z "$DEPLOY_REF" ]; then
+            DEPLOY_REF="$GITHUB_SHA"
+          fi
+          echo "deploy_ref=${DEPLOY_REF}" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: gate
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            REF="${{ needs.gate.outputs.deploy_ref }}"
+            REPO="${{ inputs.repo_path }}"
+            SUBPATH="${{ inputs.deploy_subpath }}"
+            UNIT="${{ inputs.systemd_unit }}"
+            PORT="${{ inputs.health_port }}"
+            PATH="${{ inputs.health_path }}"
+
+            cd "$REPO"
+            git fetch origin "$REF" 2>/dev/null || git fetch origin
+            echo "Before: $(git rev-parse --short HEAD)"
+            git checkout "$REF"
+            echo "After:  $(git rev-parse --short HEAD)"
+
+            cd "$REPO/$SUBPATH"
+            if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --production; fi
+            node --check server.mjs 2>/dev/null || node --check index.js 2>/dev/null || true
+
+            systemctl restart "$UNIT"
+            sleep 2
+
+            STATUS=$(systemctl is-active "$UNIT")
+            if [ "$STATUS" != "active" ]; then
+              echo "::error::$UNIT failed (status: $STATUS)"
+              journalctl -u "$UNIT" -n 20 --no-pager
+              exit 1
+            fi
+
+            for i in 1 2 3 4 5; do
+              HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://127.0.0.1:${PORT}${PATH}" || echo "000")
+              if [ "$HTTP" = "200" ]; then
+                echo "✅ Service healthy"
+                exit 0
+              fi
+              echo "⏳ Attempt $i/5: HTTP $HTTP — retrying..."
+              sleep 3
+            done
+            echo "::error::Smoke test FAILED"
+            exit 1
+
+  summary:
+    needs: [gate, deploy]
+    runs-on: ubuntu-latest
+    name: Summary
+    if: always()
+    steps:
+      - name: Report
+        run: |
+          echo "### VPS Deploy Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Environment | \`${{ inputs.environment }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Service | \`${{ inputs.systemd_unit }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Deploy ref | \`${{ needs.gate.outputs.deploy_ref }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Deploy status | ${{ needs.deploy.result }} |" >> "$GITHUB_STEP_SUMMARY"

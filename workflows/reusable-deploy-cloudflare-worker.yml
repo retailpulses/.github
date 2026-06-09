@@ -1,0 +1,119 @@
+# reusable-deploy-cloudflare-worker.yml — DRAFT v0.1.0
+#
+# Status: PLACEHOLDER — not yet extracted from any repo.
+# Reference: workers/.github/workflows/deploy-workers.yml (reference implementation)
+#
+# Purpose: Deploy a Cloudflare Worker with gate → deploy → smoke → summary.
+# Trigger: called by repo workflows on workflow_dispatch.
+# Does NOT trigger on PR.
+
+name: Deploy Cloudflare Worker
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: string
+      working_directory:
+        description: "Path to worker package (relative to repo root)"
+        required: true
+        type: string
+      node_version:
+        description: "Node.js version"
+        required: false
+        type: string
+        default: "22"
+      health_url:
+        description: "URL for smoke test"
+        required: true
+        type: string
+      health_endpoint:
+        description: "Health endpoint path (for logging)"
+        required: false
+        type: string
+        default: "/"
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        description: "Cloudflare API token with Workers deploy permission"
+        required: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    name: Gate
+    steps:
+      - name: Production branch guard
+        if: inputs.environment == 'production'
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Production deploy only allowed from main branch."
+            exit 1
+          fi
+          echo "✅ Production deploy from main — proceeding."
+
+  deploy:
+    needs: gate
+    runs-on: ubuntu-latest
+    name: Deploy
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy --env ${{ inputs.environment }}
+
+  smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    name: Smoke test
+    if: always() && needs.deploy.result != 'skipped'
+    steps:
+      - name: Health check
+        run: |
+          URL="${{ inputs.health_url }}"
+          echo "Smoke testing: $URL"
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$URL" || echo "000")
+            case "$STATUS" in
+              200) echo "✅ Healthy (HTTP 200)"; exit 0 ;;
+              401|403|302|307) echo "✅ Alive behind gate (HTTP $STATUS)"; exit 0 ;;
+              404) echo "⚠️  HTTP 404 (attempt $i/5)" ;;
+              *)   echo "⏳ HTTP $STATUS — retrying (attempt $i/5)" ;;
+            esac
+            sleep 5
+          done
+          echo "❌ Smoke test FAILED after 5 attempts"
+          exit 1
+
+  summary:
+    needs: [gate, deploy, smoke]
+    runs-on: ubuntu-latest
+    name: Summary
+    if: always()
+    steps:
+      - name: Report
+        run: |
+          echo "### Deploy Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Environment | \`${{ inputs.environment }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Deploy status | ${{ needs.deploy.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Smoke status | ${{ needs.smoke.result }} |" >> "$GITHUB_STEP_SUMMARY"

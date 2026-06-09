@@ -1,0 +1,95 @@
+name: Architecture Change
+description: Propose a change that affects multiple repos, runtimes, or core patterns
+title: "architecture: "
+labels: ["architecture", "decision"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Architecture Change Proposal
+        Use this for cross-cutting changes that affect multiple repos, runtimes, or core patterns.
+        For single-repo refactors, use the Refactor Request template instead.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context & Motivation
+      description: What is driving this change? What problem or opportunity exists?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed Architecture
+      description: Describe the target architecture. Use diagrams (ASCII/mermaid) if helpful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected Repos & Systems
+      description: List every repo, service, and system this touches.
+      placeholder: |
+        - retailpulses/workers
+        - retailpulses/CatalogSync
+        - VPS (160.251.141.110)
+        - Baserow tables: Products (886994)
+    validations:
+      required: true
+
+  - type: textarea
+    id: migration
+    attributes:
+      label: Migration Path
+      description: How do we get from current state to target state? Step by step.
+    validations:
+      required: true
+
+  - type: textarea
+    id: behavior-preserved
+    attributes:
+      label: Behavior That Must Not Change
+      description: What existing behavior is sacred and must be preserved?
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks
+      description: What could go wrong? What are the rollback points?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cloudflare-impact
+    attributes:
+      label: Cloudflare Dependency Impact
+      options:
+        - "Reduces Cloudflare dependency"
+        - "Increases Cloudflare dependency"
+        - "No change"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime-impact
+    attributes:
+      label: Runtime Model Impact
+      options:
+        - "No change to runtime models"
+        - "Introduces new runtime"
+        - "Retires a runtime"
+        - "Moves service between runtimes"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches were evaluated? Why was this one chosen?
+    validations:
+      required: true

@@ -1,0 +1,134 @@
+name: Agent Task
+description: Request a task to be executed by an AI agent
+title: "agent: "
+labels: ["agent", "task"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Agent Task Request
+        Fill this out when requesting work from an AI agent.
+        The more specific you are, the better the result.
+
+  - type: input
+    id: goal
+    attributes:
+      label: Goal
+      description: One sentence — what should the agent accomplish?
+      placeholder: "Fix Mercari CSV encoding for Rakuten cross-listing export"
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: Context the agent needs. What problem does this solve? What came before?
+      placeholder: "The current export produces Shift-JIS files that fail Rakuten's upload validation because of..."
+    validations:
+      required: true
+
+  - type: input
+    id: affected-repo
+    attributes:
+      label: Affected Repo / Path
+      description: Which repository and path should the agent work in?
+      placeholder: "retailpulses/rakutenops, tools/csv-export/"
+    validations:
+      required: true
+
+  - type: textarea
+    id: allowed-files
+    attributes:
+      label: Allowed Files
+      description: Files and directories the agent may modify. Use globs if helpful.
+      placeholder: |
+        tools/csv-export/*.py
+        config/csv-column-mappings.yaml
+    validations:
+      required: true
+
+  - type: textarea
+    id: forbidden-changes
+    attributes:
+      label: Forbidden Changes
+      description: What the agent must NOT touch.
+      placeholder: |
+        - Do not modify production Baserow schema
+        - Do not change wrangler.toml
+        - Do not modify other tools
+    validations:
+      required: false
+
+  - type: textarea
+    id: credentials-policy
+    attributes:
+      label: Credentials Policy
+      description: How should the agent handle credentials?
+      placeholder: |
+        - Check shell env vars, local .env, then master_credentials.md
+        - Do not commit .env or secrets
+        - Do not expose secret values in logs or summaries
+    validations:
+      required: false
+
+  - type: textarea
+    id: external-agent-policy
+    attributes:
+      label: External Agent CLI Policy
+      description: Are external agent CLIs allowed for this task?
+      placeholder: |
+        Default: no external agent CLIs unless explicitly requested.
+        If allowed: use only ./agents/run-<agent>.sh wrapper scripts.
+        Do not substitute one CLI for another.
+    validations:
+      required: false
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation Commands
+      description: How should the agent verify its work?
+      placeholder: |
+        python -m compileall tools/csv-export/
+        python tools/csv-export/validate_csv.py --sample data/test-export.csv
+    validations:
+      required: false
+
+  - type: textarea
+    id: summary-requirements
+    attributes:
+      label: Final Summary Requirements
+      description: What must the agent include in its final report?
+      placeholder: |
+        - Files changed
+        - Validation run
+        - Deployment impact
+        - Cloudflare dependency impact
+        - Remaining risks
+    validations:
+      required: false
+
+  - type: dropdown
+    id: cloudflare-dependency
+    attributes:
+      label: May this task add Cloudflare dependency?
+      description: Is the agent allowed to introduce new Cloudflare-specific dependencies?
+      options:
+        - "No — Cloudflare dependency not allowed for this task"
+        - "Yes — if clearly justified and isolated behind an adapter"
+        - "N/A — this task does not touch runtime infrastructure"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: deployment-allowed
+    attributes:
+      label: Is deployment allowed?
+      description: May the agent deploy or publish?
+      options:
+        - "No — preparation only"
+        - "Yes — deploy to dev/staging only"
+        - "Yes — deploy to production (requires explicit approval separately)"
+    validations:
+      required: true

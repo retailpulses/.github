@@ -1,0 +1,146 @@
+name: Deploy Change
+description: Propose a change to deployment configuration or workflow
+title: "deploy: "
+labels: ["deployment", "infrastructure"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Deploy Change Request
+        Use this for any change that affects how, when, or where code is deployed.
+
+  - type: dropdown
+    id: affected-runtime
+    attributes:
+      label: Affected Runtime
+      description: Which runtime family does this change?
+      options:
+        - Cloudflare Worker
+        - VPS Node service
+        - Python cron / agent runtime
+        - Static frontend
+        - GitHub Actions only
+        - n8n workflow
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: trigger-changes
+    attributes:
+      label: Trigger Changes
+      description: How does the deployment trigger change?
+      placeholder: |
+        Before: deploy on push to main
+        After: deploy on workflow_dispatch only, with environment selector
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment Affected
+      options:
+        - dev only
+        - staging only
+        - production only
+        - dev + production
+        - all environments
+    validations:
+      required: true
+
+  - type: textarea
+    id: secrets-affected
+    attributes:
+      label: Secrets Affected
+      description: List any secrets that need to be added, removed, or rotated. Never paste secret values.
+      placeholder: |
+        New: CLOUDFLARE_API_TOKEN (for wrangler deploy)
+        Removed: (none)
+        Rotated: (none)
+    validations:
+      required: false
+
+  - type: input
+    id: deploy-target
+    attributes:
+      label: Deployment Target
+      description: Where does the deploy land?
+      placeholder: "Cloudflare Workers (account 3c508be...) / VPS 160.251.141.110:8787 / etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: smoke-test
+    attributes:
+      label: Smoke Test
+      description: How is the deploy verified after it lands?
+      placeholder: |
+        curl https://service-name.workers.dev/health → expect HTTP 200
+        Or: SSH to VPS, systemctl is-active service-name → expect "active"
+    validations:
+      required: true
+
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback Plan
+      description: How do we undo this deploy if it's bad?
+      placeholder: |
+        1. Re-run workflow with ref=<previous-commit-sha>
+        2. Or: git revert <commit> and push
+        3. Verify with smoke test
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pr-can-deploy
+    attributes:
+      label: Can a PR trigger deploy?
+      description: Should opening or updating a PR trigger deployment?
+      options:
+        - "No — PRs must not deploy (default)"
+        - "Yes — PR can deploy to dev/staging only"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: manual-dispatch
+    attributes:
+      label: Manual dispatch allowed?
+      description: Can a human trigger this deploy from the GitHub Actions UI?
+      options:
+        - "Yes — workflow_dispatch with environment selector"
+        - "No — fully automated trigger only"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cloudflare-impact
+    attributes:
+      label: Cloudflare / VPS Dependency Impact
+      description: Does this change affect Cloudflare or VPS dependency?
+      options:
+        - "No change"
+        - "Reduces Cloudflare dependency"
+        - "Increases Cloudflare dependency"
+        - "Adds VPS dependency"
+        - "Reduces VPS dependency"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: Concurrency is configured (no overlapping deploys)
+          required: true
+        - label: Production branch-gate is in place
+          required: true
+        - label: Smoke test is defined
+          required: true
+        - label: Rollback path is documented
+          required: true
+        - label: No secrets are hardcoded or exposed
+          required: true

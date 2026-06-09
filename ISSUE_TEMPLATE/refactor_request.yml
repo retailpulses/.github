@@ -1,0 +1,104 @@
+name: Refactor Request
+description: Propose a refactor or architecture change
+title: "refactor: "
+labels: ["refactor", "architecture"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Refactor Request
+        Use this when proposing a structural change that should preserve existing behavior.
+
+  - type: textarea
+    id: current-pain
+    attributes:
+      label: Current Pain
+      description: What is broken, painful, or limiting about the current design?
+      placeholder: "The CSV export module has 3 copies of the Shift-JIS encoder across different tools. Fixing one encoding bug requires patching all 3."
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired-direction
+    attributes:
+      label: Desired Architecture Direction
+      description: What should the new structure look like?
+      placeholder: "Extract a shared csv-encoder package that all tools import. Single source of truth for encoding logic."
+    validations:
+      required: true
+
+  - type: textarea
+    id: unchanged-behavior
+    attributes:
+      label: Behavior That Must Remain Unchanged
+      description: What must continue to work exactly as before?
+      placeholder: |
+        - CSV output encoding (Shift-JIS/CP932)
+        - Column ordering
+        - Empty field handling
+        - Baserow read paths
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Migration / Readiness Benefit
+      description: What concrete improvement does this enable?
+      placeholder: |
+        - One fix applies everywhere
+        - Easier to add new marketplace CSV formats
+        - Reduced risk of encoding drift between tools
+    validations:
+      required: true
+
+  - type: textarea
+    id: runtime-impact
+    attributes:
+      label: Runtime Impact
+      description: Does this change the runtime model (Worker vs VPS vs script)?
+      placeholder: "No change — all tools remain Python scripts."
+    validations:
+      required: true
+
+  - type: textarea
+    id: data-impact
+    attributes:
+      label: Data Impact
+      description: Does this change schemas, storage, or data flow?
+      placeholder: "No schema change. Same Baserow tables. Same CSV output format."
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation-plan
+    attributes:
+      label: Validation Plan
+      description: How will you confirm the refactor didn't break anything?
+      placeholder: |
+        - Run existing test suite
+        - Generate sample CSV and compare byte-for-byte with pre-refactor output
+        - Spot-check 5 products per marketplace
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cloudflare-impact
+    attributes:
+      label: Cloudflare Dependency Impact
+      description: Does this refactor change Cloudflare dependency?
+      options:
+        - "No change"
+        - "Reduces Cloudflare dependency"
+        - "Increases Cloudflare dependency (requires justification below)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: cloudflare-justification
+    attributes:
+      label: Cloudflare Dependency Justification
+      description: Required if "Increases Cloudflare dependency" selected above.
+      placeholder: "Explain why Cloudflare is needed, whether the dependency is isolated, what the alternative is, and migration impact."
+    validations:
+      required: false

@@ -1,0 +1,73 @@
+name: Feature Request
+description: Propose a new feature or enhancement
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        Describe what you want to build and why.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Opportunity
+      description: What problem does this solve? What opportunity does it capture?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How should this work? Be specific about inputs, outputs, and behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches did you think about? Why were they rejected?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime / Infrastructure
+      description: What runtime would this use?
+      options:
+        - Python script
+        - Cloudflare Worker
+        - VPS Node service
+        - Static frontend
+        - GitHub Actions
+        - n8n workflow
+        - Not sure — needs discussion
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Who benefits? What changes operationally?
+      placeholder: |
+        - Operators: faster CSV generation
+        - Customers: (no direct impact)
+        - Infrastructure: new Python dependency (pillow)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: cloudflare
+    attributes:
+      label: Cloudflare Dependency
+      description: Does this require new Cloudflare dependencies?
+      options:
+        - "No"
+        - "Yes — requires justification in description"
+    validations:
+      required: true

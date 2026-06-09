@@ -1,0 +1,72 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Thanks for reporting. The more detail, the faster we can fix it.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug. What did you expect to happen? What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Run `python script.py --input data/test.csv`
+        2. See encoding error on line 42
+    validations:
+      required: true
+
+  - type: input
+    id: affected-component
+    attributes:
+      label: Affected component
+      description: Which tool, script, worker, or workflow?
+      placeholder: "tools/mercari/build-mercari-csv/build_mercari_listing_csv.py"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: What environment does this occur in?
+      placeholder: |
+        - OS: macOS 15.x
+        - Python: 3.12
+        - Repo branch: main
+        - Running locally / CI / production?
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or output
+      description: Paste any error messages, stack traces, or logs. Redact secrets.
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "P0 — Production broken, urgent"
+        - "P1 — Broken but workaround exists"
+        - "P2 — Bug, not blocking"
+        - "P3 — Cosmetic / minor"
+    validations:
+      required: true
