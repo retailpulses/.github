@@ -175,7 +175,7 @@ Repos should not loosen the central rules. If a rule doesn't apply, document why
 - [Cloudflare Dependency Policy](docs/cloudflare-dependency-policy.md)
 - [Runtime Strategy](docs/runtime-strategy.md)
 - [Deployment Patterns](docs/deployment-patterns.md)
-- [Pull Request Template](.github/pull_request_template.md)
+- [Pull Request Template](PULL_REQUEST_TEMPLATE.md)
 
 ---
 

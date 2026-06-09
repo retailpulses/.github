@@ -8,9 +8,9 @@ This is a [special GitHub repository](https://docs.github.com/en/communities/set
 
 | Path | Purpose |
 |------|---------|
-| `ISSUE_TEMPLATE/` | Shared issue templates (bug, feature, agent task, refactor, deploy, architecture) |
+| `.github/ISSUE_TEMPLATE/` | Shared issue templates (bug, feature, agent task, refactor, deploy, architecture) |
 | `PULL_REQUEST_TEMPLATE.md` | Default PR template with Cloudflare dependency review |
-| `workflows/` | Reusable GitHub Actions workflows (draft) |
+| `.github/workflows/` | Reusable GitHub Actions workflows (draft) |
 | `docs/` | Engineering standards (runtime strategy, deployment patterns, Cloudflare policy) |
 | `AGENTS.md` | Default agent behavior rules for all repos |
 | `SECURITY.md` | Security policy and vulnerability reporting |
