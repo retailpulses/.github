@@ -10,6 +10,13 @@ body:
         Fill this out when requesting work from an AI agent.
         The more specific you are, the better the result.
 
+        Shared references for cross-repo work:
+        - Architect role: `retailpulses/.github/docs/agent-roles/architect-agent.md`
+        - Frontend role: `retailpulses/.github/docs/agent-roles/frontend-agent.md`
+        - Frontend guide: `retailpulses/.github/docs/frontend/frontend-design-guide.md`
+
+        Use repo-local `AGENTS.md`, `CLAUDE.md`, or `README.md` if they define stricter rules.
+
   - type: input
     id: goal
     attributes:
@@ -37,6 +44,21 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: task-type
+    attributes:
+      label: Task Type
+      description: What kind of work is this mainly asking the agent to do?
+      options:
+        - Implementation
+        - Frontend change
+        - Architecture or planning
+        - Bug fix
+        - Documentation
+        - Review only
+    validations:
+      required: true
+
   - type: textarea
     id: allowed-files
     attributes:
@@ -57,6 +79,31 @@ body:
         - Do not modify production Baserow schema
         - Do not change wrangler.toml
         - Do not modify other tools
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true for this task to count as done?
+      placeholder: |
+        - CSV exports correctly in UTF-8
+        - Existing Rakuten upload flow still works
+        - No production config changes
+        - Validation command passes
+    validations:
+      required: true
+
+  - type: textarea
+    id: shared-standards
+    attributes:
+      label: Shared Standards To Follow
+      description: List any central standards the agent should use for this task.
+      placeholder: |
+        - retailpulses/.github/docs/agent-roles/frontend-agent.md
+        - retailpulses/.github/docs/frontend/frontend-design-guide.md
+        - repo-local AGENTS.md overrides shared rules where stricter
     validations:
       required: false
 
@@ -92,6 +139,18 @@ body:
       placeholder: |
         python -m compileall tools/csv-export/
         python tools/csv-export/validate_csv.py --sample data/test-export.csv
+    validations:
+      required: false
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of Scope
+      description: Optional. What related work should the agent explicitly leave untouched?
+      placeholder: |
+        - Do not redesign adjacent pages
+        - Do not refactor unrelated services
+        - Do not change deployment workflow
     validations:
       required: false
 
