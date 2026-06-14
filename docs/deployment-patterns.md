@@ -276,26 +276,72 @@ jobs:
 ### 4.1 workers repo — `deploy-workers.yml`
 
 **Assessment:** ✅ Gold standard for Cloudflare Worker deploys.
-
 - Trigger: `workflow_dispatch` only ✅
-- Concurrency: `deploy-workers-${{ inputs.environment }}`, `cancel-in-progress: false` ✅
-- Gate: production branch-guard, package list resolver ✅
+- Concurrency: `cancel-in-progress: false` ✅
+- Gate: production branch-guard ✅
 - Deploy: serial per worker, `wrangler deploy` ✅
-- Smoke: parallel health checks, retry 5x with backoff, access-gate aware ✅
-- Summary: always runs, reports all results ✅
+- Smoke: parallel health checks, retry 5x ✅
+- Summary: always runs ✅
+
+**Gap:** No PR validation workflow. Added `pr-check.yml` (2026-06-14).
 
 ### 4.2 workers repo — `deploy-relay.yml`
 
 **Assessment:** ⚠️ Deprecated. Empty relay list. Retained for rollback reference.
 
-### 4.3 mercariops repo — `rakuten-main-image-gen.yml`
+### 4.3 CatalogSync repo — `deploy.yml`
+
+**Assessment:** ⚠️ Base deploy only. Missing concurrency, smoke, and summary.
+- Trigger: `workflow_dispatch` only ✅
+- Branch guard: ✅
+- No concurrency: ⚠️ **Added** (2026-06-14)
+- No smoke test: ⚠️ **Added** (2026-06-14)
+- No summary: ⚠️ **Added** (2026-06-14)
+
+### 4.4 boutique-listing repo — `deploy.yml`
+
+**Assessment:** ✅ Predeploy check + smoke test + branch guard. Push→dev auto-deploy is justified (internal tool).
+- Trigger: push→dev, manual→prod ✅
+- Concurrency: conditional on production (production is not canceled) ✅
+- Predeploy check script ✅
+- Smoke test ✅
+
+### 4.5 OrderMgmt repo — `deploy-worker.yml`, `deploy-relay.yml`
+
+**Assessment:** ✅ Excellent gate→deploy→smoke→summary pipeline with branch guard and concurrency.
+- Trigger: `workflow_dispatch` only ✅
+- Branch guard ✅
+- Concurrency: `cancel-in-progress: false` ✅
+- Includes `npm test` ✅
+- Smoke test with retry ✅
+- Summary with commit SHA ✅
+
+**Gap:** No separate PR validation. Test runs inside deploy workflow. Added `pr-check.yml` (2026-06-14).
+
+### 4.6 mercariops repo — `rakuten-main-image-gen.yml`
 
 **Assessment:** ✅ Clean PR check. No deploy.
-
 - Trigger: `push` + `pull_request` ✅
 - Jobs: test, lint, compile-check only ✅
-- No deploy job ✅
 - Coverage upload on push only ✅
+
+### 4.7 mercariops repo — `services/reporting/.github/workflows/deploy.yml`
+
+**Assessment:** ⚠️ Missing concurrency, smoke test, and summary. Push trigger active.
+- Added concurrency (2026-06-14)
+- Added smoke test (2026-06-14)
+- Added summary (2026-06-14)
+- Added production branch guard (2026-06-14)
+
+### 4.8 ticket handling repo — `pr-check.yml`, `deploy.yml`
+
+**Assessment:** ⚠️ Push to main deploys production. Fixed (2026-06-14).
+- PR validation: tsc + wrangler dry-run ✅
+- Push→main now deploys staging only (2026-06-14)
+- Production manual only via workflow_dispatch (2026-06-14)
+- Added production branch guard (2026-06-14)
+- Fixed concurrency: production uses `cancel-in-progress: false` (2026-06-14)
+- Added summary (2026-06-14)
 
 ---
 

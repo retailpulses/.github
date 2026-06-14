@@ -56,6 +56,21 @@
   - New health check endpoint?
 -->
 
+## Integration and Release
+
+<!--
+  How does this PR relate to other in-flight work?
+  Fill in all sections. Use "N/A" when not applicable.
+-->
+
+- **Release batch:** 
+- **Depends on issue/PR:** 
+- **Required merge order:** 
+- **Shared files/contracts:** 
+- **API or schema impact:** 
+- **Integration risk:** Low / Medium / High
+- **Integration validation required:** Yes / No
+
 ## Rollback Notes
 
 <!--
