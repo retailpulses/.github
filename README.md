@@ -1,31 +1,47 @@
 # retailpulses/.github
 
-**Central engineering governance for the Retailpulses organization.**
+This repository provides default GitHub community files and fallback templates for Retailpulses repositories.
 
-This is a [special GitHub repository](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file) that provides default community health files and reusable workflows for all repos in the org.
+The source of truth for Retailpulses engineering governance, reusable workflows, agent commands, rollout scripts, and governance standards is:
 
-## What's Here
+https://github.com/retailpulses/rp-governance-kit
+
+## What This Repo Is For
 
 | Path | Purpose |
 |------|---------|
-| `.github/ISSUE_TEMPLATE/` | Shared issue templates (bug, feature, agent task, refactor, deploy, architecture) |
-| `PULL_REQUEST_TEMPLATE.md` | Default PR template with Cloudflare dependency review |
-| `.github/workflows/` | Reusable GitHub Actions workflows (draft) |
-| `docs/` | Engineering standards (runtime strategy, deployment patterns, Cloudflare policy) |
-| `AGENTS.md` | Default agent behavior rules for all repos |
+| `.github/ISSUE_TEMPLATE/` | Default GitHub Issue templates for repos that do not define their own |
+| `PULL_REQUEST_TEMPLATE.md` | Default PR template fallback |
+| `AGENTS.md` | Lightweight organization-level default agent guidance |
 | `SECURITY.md` | Security policy and vulnerability reporting |
 | `profile/README.md` | Organization profile page |
+| `docs/` | Lightweight public/internal guidance and shared references |
 
-## How It Works
+## Boundary With rp-governance-kit
 
-- **Templates** — repos without their own issue/PR templates inherit these automatically.
-- **AGENTS.md** — repos without their own agent guidance fall back to this default.
-- **Workflows** — repos can call reusable workflows defined here (future).
-- **Docs** — engineering standards are referenced by all repos.
+This repository is the organization-level GitHub default community/template repo. GitHub uses it as a fallback when a repository does not provide local templates or community health files.
+
+It is not the source of truth for active governance logic.
+
+Use `retailpulses/rp-governance-kit` for:
+
+- reusable GitHub Actions
+- governance installer and rollout scripts
+- `rp-issue-create`
+- `rp-issue-audit`
+- `rp-issue-work`
+- `rp-issue-closeout`
+- engineering standards templates
+- documentation governance templates
+
+If repo-local governance files, this `.github` repo, and `rp-governance-kit` conflict, agents should stop and report the conflict instead of guessing.
 
 ## Repo Owners
 
 To override a default, create the equivalent file in your repo:
-- Your own `ISSUE_TEMPLATE/` → replaces the shared templates
-- Your own `PULL_REQUEST_TEMPLATE.md` → replaces the shared PR template
-- Your own `AGENTS.md` → extends or replaces the central agent guidance
+
+- Your own `.github/ISSUE_TEMPLATE/` replaces the shared Issue templates.
+- Your own `.github/pull_request_template.md` or `PULL_REQUEST_TEMPLATE.md` replaces the shared PR template.
+- Your own `AGENTS.md` extends or replaces the central agent guidance.
+
+Keep repo-local governance lightweight. Put reusable governance logic and agent commands in `rp-governance-kit`.
