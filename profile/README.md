@@ -1,6 +1,6 @@
 # Retailpulses
 
-Japan-based ecommerce operations and software. This is the organization front door: start with the repos used most often, then use the development-control links to see what is currently moving or needs a decision.
+Japan-based ecommerce operations and software. This is the organization front door: start with the repos used most often, then use the development portfolio to see what is moving, blocked, or waiting for Jim.
 
 ## Most Used
 
@@ -13,18 +13,28 @@ Japan-based ecommerce operations and software. This is the organization front do
 | [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing tooling | Listing creation/editing/publishing workflows |
 | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Engineering governance | Architecture standards, runtime/workload governance, engineering policy |
 
-## Development Control
+## Development Portfolio
 
-Use this layer when managing several development threads rather than working inside one repo.
+**Current snapshot:** Main Codex **0/3 ACTIVE** · Codex-B **0/3 ACTIVE** · **2 Needs Jim** · **1 VERIFYING** · **1 READY**
 
-| Surface | Purpose |
-|---|---|
-| [Development Portfolio](https://github.com/retailpulses/inbox/issues/116) | Canonical POC and portfolio-control decisions |
-| [Portfolio state](https://github.com/retailpulses/inbox/blob/main/agents/portfolio-manager/portfolio.json) | Machine-readable WIP projection for Portfolio Manager and execution agents |
-| [Development Dashboard](https://ops.homesbliss.net/development) | Live 3+3 execution slots, Needs Jim, stalled/almost-done work, and later bounded Jim feedback |
-| [Inbox issues](https://github.com/retailpulses/inbox/issues) | Organization-level work queue and durable cross-repo artifacts |
+| Priority | Workstream | State / owner | What happens next | Artifacts |
+|---|---|---|---|---|
+| P0 | Production health / Sales Brief self-healing | **VERIFYING** · Main Codex | Verify final authoritative health/readback evidence; no Jim action currently | [Issue #110](https://github.com/retailpulses/inbox/issues/110) · [PR #50](https://github.com/retailpulses/commerce-ops/pull/50) · [PR #51](https://github.com/retailpulses/commerce-ops/pull/51) |
+| P0 | Supabase Batch 0/1 security rollout | **BLOCKED · Needs Jim** · Codex-B | Production activation is still a separately gated mutation after implementation merged | [Issue #104](https://github.com/retailpulses/inbox/issues/104) · [PR #47](https://github.com/retailpulses/commerce-ops/pull/47) |
+| P0 | Commerce Ops Phase 2 production-source cutover | **BLOCKED · Needs Jim** · Main Codex | Orders production deploy is waiting at the protected Production approval gate | [Issue #13](https://github.com/retailpulses/commerce-ops/issues/13) · [Approve/check run](https://github.com/retailpulses/commerce-ops/actions/runs/34752608872) |
+| P1 | CatalogSync release retention / disk recurrence prevention | **READY** · Codex-B | Verify/implement the smallest safe release-retention fix; disk watcher itself is already complete | [Issue #106](https://github.com/retailpulses/inbox/issues/106) · [Watcher #107](https://github.com/retailpulses/inbox/issues/107) · [PR #108](https://github.com/retailpulses/inbox/pull/108) |
 
-**Operating model:** GitHub Issues/PRs/docs remain the detailed engineering truth. `inbox` holds portfolio-level state and cross-repo decisions. The Development Dashboard is a projection/control surface, not another task database.
+**Portfolio control:** [canonical Portfolio Issue #116](https://github.com/retailpulses/inbox/issues/116) · [machine state](https://github.com/retailpulses/inbox/blob/main/agents/portfolio-manager/portfolio.json) · [all Inbox issues](https://github.com/retailpulses/inbox/issues)
+
+### How to use this page
+
+1. Start here to see the organization-level WIP and whether Jim is needed.
+2. Open the linked canonical Issue / PR / workflow run.
+3. Approve or comment **there**, so the decision lands directly in durable engineering history.
+4. Portfolio Manager reconciles the result back into the portfolio state and this snapshot.
+5. Main Codex / Codex-B resume from the durable artifact and recorded next action.
+
+**Operating model:** GitHub Issues/PRs/docs/runs are the detailed engineering truth. `inbox` holds portfolio-level state and cross-repo decisions. This organization page is the human coordination snapshot — not another task database.
 
 ## Runtime / Transition Repositories
 
@@ -51,4 +61,4 @@ These still matter operationally, but some source authority is moving into `comm
 
 Organization engineering and architecture governance lives in [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit). Repo-local architecture/current-state documents remain authoritative for repo-specific facts.
 
-> Keep this page low-maintenance: navigation and control entry points belong here; detailed status and documentation belong in their canonical artifacts.
+> Keep this page low-maintenance: most-used repos + current portfolio snapshot + direct artifact links. Detailed status and evidence belong in their canonical artifacts.
