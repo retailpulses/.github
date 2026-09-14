@@ -1,6 +1,6 @@
 # Retailpulses
 
-Japan-based ecommerce operations and software. This is the organization front door: start with the repos used most often, then use the development portfolio to see what is moving, blocked, or waiting for Jim.
+Japan-based ecommerce operations and software. This is the organization front door: start with the repos used most often, then use the daily development WIP list to see what still needs attention.
 
 ## Most Used
 
@@ -13,28 +13,27 @@ Japan-based ecommerce operations and software. This is the organization front do
 | [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing tooling | Listing creation/editing/publishing workflows |
 | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Engineering governance | Architecture standards, runtime/workload governance, engineering policy |
 
-## Development Portfolio
+## Development WIP
 
-**Current snapshot:** Main Codex **0/3 ACTIVE** · Codex-B **0/3 ACTIVE** · **3 Needs Jim** · **1 VERIFYING**
+This section is the MVP development dashboard. It should be refreshed daily from current GitHub evidence and contain only work that still needs follow-up.
 
-| Priority | Workstream | State / owner | What happens next | Artifacts |
+| Priority | WIP | Current state | Next action | Canonical artifacts |
 |---|---|---|---|---|
-| P0 | Production health / Sales Brief self-healing | **VERIFYING** · Main Codex | Verify final authoritative health/readback evidence; no Jim action currently | [Issue #110](https://github.com/retailpulses/inbox/issues/110) · [PR #50](https://github.com/retailpulses/commerce-ops/pull/50) · [PR #51](https://github.com/retailpulses/commerce-ops/pull/51) |
-| P0 | Supabase Batch 0/1 security rollout | **BLOCKED · Needs Jim** · Codex-B | Production activation is still a separately gated mutation after implementation merged | [Issue #104](https://github.com/retailpulses/inbox/issues/104) · [PR #47](https://github.com/retailpulses/commerce-ops/pull/47) |
-| P0 | Commerce Ops Phase 2 production-source cutover | **BLOCKED · Needs Jim** · Main Codex | Orders production deploy is waiting at the protected Production approval gate | [Issue #13](https://github.com/retailpulses/commerce-ops/issues/13) · [Approve/check run](https://github.com/retailpulses/commerce-ops/actions/runs/34752608872) |
-| P1 | CatalogSync release retention / disk recurrence prevention | **BLOCKED · Needs Jim** · Main Codex POC | Start GitHub-native OpenAI Codex agent on this existing WIP, targeting `CatalogSync`; implementation brief is already prepared | [Issue #106](https://github.com/retailpulses/inbox/issues/106) · [POC task](https://github.com/retailpulses/inbox/issues/106#issuecomment-5660053150) · [dispatch instructions](https://github.com/retailpulses/inbox/issues/106#issuecomment-5660057698) |
+| P0 | Production health / Sales Brief self-healing | VERIFYING | Verify final authoritative health/readback evidence | [Issue #110](https://github.com/retailpulses/inbox/issues/110) · [PR #50](https://github.com/retailpulses/commerce-ops/pull/50) · [PR #51](https://github.com/retailpulses/commerce-ops/pull/51) |
+| P0 | Supabase Batch 0/1 security rollout | BLOCKED — Jim decision | Approve or defer separately gated hosted production activation | [Issue #104](https://github.com/retailpulses/inbox/issues/104) · [PR #47](https://github.com/retailpulses/commerce-ops/pull/47) |
+| P0 | Commerce Ops Phase 2 production-source cutover | BLOCKED — Jim action | Resolve the current production deployment/credential gate, then continue cutover evidence | [Issue #13](https://github.com/retailpulses/commerce-ops/issues/13) · [deployment run](https://github.com/retailpulses/commerce-ops/actions/runs/34752608872) |
+| P1 | CatalogSync release retention / disk recurrence prevention | READY | Verify/implement the smallest safe release-retention fix; disk watcher itself is already complete | [Issue #106](https://github.com/retailpulses/inbox/issues/106) · [Watcher #107](https://github.com/retailpulses/inbox/issues/107) · [PR #108](https://github.com/retailpulses/inbox/pull/108) |
 
-**Portfolio control:** [canonical Portfolio Issue #116](https://github.com/retailpulses/inbox/issues/116) · [machine state](https://github.com/retailpulses/inbox/blob/main/agents/portfolio-manager/portfolio.json) · [all Inbox issues](https://github.com/retailpulses/inbox/issues)
+**Coordination:** [Portfolio MVP issue #116](https://github.com/retailpulses/inbox/issues/116) · [all Inbox issues](https://github.com/retailpulses/inbox/issues)
 
 ### How to use this page
 
-1. Start here to see the organization-level WIP and whether Jim is needed.
+1. Start here each day to see development work that is still open.
 2. Open the linked canonical Issue / PR / workflow run.
-3. Approve, assign an agent, or comment **there**, so the decision lands directly in durable engineering history.
-4. Portfolio Manager reconciles the result back into the portfolio state and this snapshot.
-5. Main Codex / Codex-B resume from the durable artifact and recorded next action.
+3. Approve or comment there so the decision lands directly in GitHub history.
+4. The next daily refresh removes completed work, updates changed work, and adds newly material WIP.
 
-**Operating model:** GitHub Issues/PRs/docs/runs are the detailed engineering truth. `inbox` holds portfolio-level state and cross-repo decisions. This organization page is the human coordination snapshot — not another task database.
+No execution-slot/WIP-limit model is required for this MVP. GitHub artifacts remain the detailed engineering source of truth; this page is only a concise daily coordination snapshot.
 
 ## Runtime / Transition Repositories
 
@@ -61,4 +60,4 @@ These still matter operationally, but some source authority is moving into `comm
 
 Organization engineering and architecture governance lives in [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit). Repo-local architecture/current-state documents remain authoritative for repo-specific facts.
 
-> Keep this page low-maintenance: most-used repos + current portfolio snapshot + direct artifact links. Detailed status and evidence belong in their canonical artifacts.
+> Keep this page low-maintenance: most-used repos + current development WIP + direct canonical artifact links. Detailed status and evidence belong in their canonical artifacts.
