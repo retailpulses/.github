@@ -15,14 +15,14 @@ Japan-based ecommerce operations and software. This is the organization front do
 
 ## Development Portfolio
 
-**Current snapshot:** Main Codex **0/3 ACTIVE** · Codex-B **0/3 ACTIVE** · **2 Needs Jim** · **1 VERIFYING** · **1 READY**
+**Current snapshot:** Main Codex **0/3 ACTIVE** · Codex-B **0/3 ACTIVE** · **3 Needs Jim** · **1 VERIFYING**
 
 | Priority | Workstream | State / owner | What happens next | Artifacts |
 |---|---|---|---|---|
 | P0 | Production health / Sales Brief self-healing | **VERIFYING** · Main Codex | Verify final authoritative health/readback evidence; no Jim action currently | [Issue #110](https://github.com/retailpulses/inbox/issues/110) · [PR #50](https://github.com/retailpulses/commerce-ops/pull/50) · [PR #51](https://github.com/retailpulses/commerce-ops/pull/51) |
 | P0 | Supabase Batch 0/1 security rollout | **BLOCKED · Needs Jim** · Codex-B | Production activation is still a separately gated mutation after implementation merged | [Issue #104](https://github.com/retailpulses/inbox/issues/104) · [PR #47](https://github.com/retailpulses/commerce-ops/pull/47) |
 | P0 | Commerce Ops Phase 2 production-source cutover | **BLOCKED · Needs Jim** · Main Codex | Orders production deploy is waiting at the protected Production approval gate | [Issue #13](https://github.com/retailpulses/commerce-ops/issues/13) · [Approve/check run](https://github.com/retailpulses/commerce-ops/actions/runs/34752608872) |
-| P1 | CatalogSync release retention / disk recurrence prevention | **READY** · Codex-B | Verify/implement the smallest safe release-retention fix; disk watcher itself is already complete | [Issue #106](https://github.com/retailpulses/inbox/issues/106) · [Watcher #107](https://github.com/retailpulses/inbox/issues/107) · [PR #108](https://github.com/retailpulses/inbox/pull/108) |
+| P1 | CatalogSync release retention / disk recurrence prevention | **BLOCKED · Needs Jim** · Main Codex POC | Start GitHub-native OpenAI Codex agent on this existing WIP, targeting `CatalogSync`; implementation brief is already prepared | [Issue #106](https://github.com/retailpulses/inbox/issues/106) · [POC task](https://github.com/retailpulses/inbox/issues/106#issuecomment-5660053150) · [dispatch instructions](https://github.com/retailpulses/inbox/issues/106#issuecomment-5660057698) |
 
 **Portfolio control:** [canonical Portfolio Issue #116](https://github.com/retailpulses/inbox/issues/116) · [machine state](https://github.com/retailpulses/inbox/blob/main/agents/portfolio-manager/portfolio.json) · [all Inbox issues](https://github.com/retailpulses/inbox/issues)
 
@@ -30,7 +30,7 @@ Japan-based ecommerce operations and software. This is the organization front do
 
 1. Start here to see the organization-level WIP and whether Jim is needed.
 2. Open the linked canonical Issue / PR / workflow run.
-3. Approve or comment **there**, so the decision lands directly in durable engineering history.
+3. Approve, assign an agent, or comment **there**, so the decision lands directly in durable engineering history.
 4. Portfolio Manager reconciles the result back into the portfolio state and this snapshot.
 5. Main Codex / Codex-B resume from the durable artifact and recorded next action.
 
