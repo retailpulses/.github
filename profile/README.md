@@ -1,40 +1,54 @@
 # Retailpulses
 
-Japan-based ecommerce operations and software. This page is the primary entry point for navigating and managing the Retailpulses GitHub organization.
+Japan-based ecommerce operations and software. This is the organization front door: start with the repos used most often, then use the development-control links to see what is currently moving or needs a decision.
 
-## Start Here
+## Most Used
 
-| Repo | Role | Use it when... |
+| Repo | Role | Go here for... |
 |---|---|---|
-| [inbox](https://github.com/retailpulses/inbox) | Cross-repo coordination, investigations, handovers, knowledge | You are not yet sure which runtime repo owns the work, or the topic spans multiple repos |
-| [commerce-ops](https://github.com/retailpulses/commerce-ops) | Shared commerce platform and operational capabilities | Work concerns shared commerce data, platform runtime, inquiries/tickets, operator workflows, or capabilities previously handled in ops-portal |
-| [CatalogSync](https://github.com/retailpulses/CatalogSync) | Catalog, inventory and marketplace synchronization | Work concerns product/catalog synchronization, availability, inventory or marketplace state |
-| [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing management and publishing tooling | Work concerns listing creation, editing, publishing or listing operator workflows |
-| [RPagentOS](https://github.com/retailpulses/RPagentOS) | Agent-driven ecommerce operations | Work concerns autonomous/agent workflows, operational loops or agent-owned ecommerce tasks |
-| [OrderMgmt](https://github.com/retailpulses/OrderMgmt) | Order runtime | Work concerns order ingestion, processing, fulfillment or order lifecycle logic |
-| [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Organization engineering and architecture governance | Work concerns architecture standards, issue/PR governance, reusable engineering policy or repository governance |
+| [inbox](https://github.com/retailpulses/inbox) | Cross-repo coordination + portfolio | New/unclear work, investigations, handovers, knowledge, cross-repo decisions |
+| [commerce-ops](https://github.com/retailpulses/commerce-ops) | Canonical operator-app source | Ops Portal, Inquiry, Orders/Tickets consolidation, shared commerce runtime work |
+| [CatalogSync](https://github.com/retailpulses/CatalogSync) | Catalog + marketplace sync | Inventory, availability, marketplace state, synchronization |
+| [RPagentOS](https://github.com/retailpulses/RPagentOS) | Agent-driven ecommerce operations | Operational loops, agent-owned ecommerce work, listing intelligence |
+| [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing tooling | Listing creation/editing/publishing workflows |
+| [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Engineering governance | Architecture standards, runtime/workload governance, engineering policy |
 
-## Other Active Runtime Repositories
+## Development Control
 
-| Repo | Purpose |
+Use this layer when managing several development threads rather than working inside one repo.
+
+| Surface | Purpose |
 |---|---|
-| [inquiry-automation](https://github.com/retailpulses/inquiry-automation) | Customer inquiry automation |
-| [ticket-handling](https://github.com/retailpulses/ticket-handling) | Ticket handling and related runtime workflows |
+| [Development Portfolio](https://github.com/retailpulses/inbox/issues/116) | Canonical POC and portfolio-control decisions |
+| [Portfolio state](https://github.com/retailpulses/inbox/blob/main/agents/portfolio-manager/portfolio.json) | Machine-readable WIP projection for Portfolio Manager and execution agents |
+| [Development Dashboard](https://ops.homesbliss.net/development) | Live 3+3 execution slots, Needs Jim, stalled/almost-done work, and later bounded Jim feedback |
+| [Inbox issues](https://github.com/retailpulses/inbox/issues) | Organization-level work queue and durable cross-repo artifacts |
+
+**Operating model:** GitHub Issues/PRs/docs remain the detailed engineering truth. `inbox` holds portfolio-level state and cross-repo decisions. The Development Dashboard is a projection/control surface, not another task database.
+
+## Runtime / Transition Repositories
+
+These still matter operationally, but some source authority is moving into `commerce-ops`. Check current-state/cutover evidence before starting new engineering work here.
+
+| Repo | Current role |
+|---|---|
+| [OrderMgmt](https://github.com/retailpulses/OrderMgmt) | Existing order runtime / legacy source during Commerce Ops cutover |
+| [inquiry-automation](https://github.com/retailpulses/inquiry-automation) | Existing inquiry runtime / transition repository |
+| [ticket-handling](https://github.com/retailpulses/ticket-handling) | Existing ticket runtime / transition repository |
 | [skills](https://github.com/retailpulses/skills) | Shared agent skills and capabilities |
-| [retailpulses-tool-services](https://github.com/retailpulses/retailpulses-tool-services) | Shared tool/service integrations used by agents and applications |
+| [retailpulses-tool-services](https://github.com/retailpulses/retailpulses-tool-services) | Shared tool/service integrations |
 
-## Work Routing
+## Route Work
 
-- **Unsure where work belongs?** Start in [inbox](https://github.com/retailpulses/inbox).
-- **Shared commerce platform / shared database / operator workflow?** Use [commerce-ops](https://github.com/retailpulses/commerce-ops).
-- **Catalog or inventory synchronization?** Use [CatalogSync](https://github.com/retailpulses/CatalogSync).
-- **Listing creation or publishing?** Use [boutique-listing](https://github.com/retailpulses/boutique-listing).
-- **Agent-driven operational capability?** Use [RPagentOS](https://github.com/retailpulses/RPagentOS).
-- **Order processing?** Use [OrderMgmt](https://github.com/retailpulses/OrderMgmt).
-- **Architecture or engineering governance?** Use [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit).
+- **Not sure where it belongs or spans repos?** → [inbox](https://github.com/retailpulses/inbox)
+- **Operator apps / shared commerce platform / current consolidation work?** → [commerce-ops](https://github.com/retailpulses/commerce-ops)
+- **Catalog, inventory or marketplace synchronization?** → [CatalogSync](https://github.com/retailpulses/CatalogSync)
+- **Agent operational loop or listing intelligence?** → [RPagentOS](https://github.com/retailpulses/RPagentOS)
+- **Listing operator tooling?** → [boutique-listing](https://github.com/retailpulses/boutique-listing)
+- **Architecture / engineering governance?** → [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit)
 
 ## Governance
 
-Canonical engineering and architecture governance lives in [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit). Repository-local architecture and current-state documents remain the source of truth for repo-specific facts.
+Organization engineering and architecture governance lives in [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit). Repo-local architecture/current-state documents remain authoritative for repo-specific facts.
 
-> Keep this page intentionally small. It should point to the correct owning repository rather than duplicate repository documentation.
+> Keep this page low-maintenance: navigation and control entry points belong here; detailed status and documentation belong in their canonical artifacts.
