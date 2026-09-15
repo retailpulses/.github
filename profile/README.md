@@ -1,6 +1,6 @@
 # Retailpulses
 
-面向日本市场的电商运营与软件团队。这里是组织级入口：优先从最常用仓库进入，再查看当前 Active Engineering WIP 与跨仓库 Issue Triage。
+面向日本市场的电商运营与软件团队。这里是组织级入口：优先从最常用仓库进入，再查看当前 Active Engineering WIP、Issue Dashboard 与跨仓库 Issue Triage。
 
 ## 最常用仓库
 
@@ -15,38 +15,61 @@
 
 ## Active Engineering WIP
 
-这是优先查看的执行层视图：只保留正在实施、部署、验证，或因明确 blocker / owner action 而暂停的工作。Open Issue 本身不等于 Active WIP。最后复核：**2026-09-15 JST**。
+这是优先查看的执行层视图：只保留正在实施、部署、验证，或因 genuine hard block / owner approval 而暂停的工作。Open Issue 本身不等于 Active WIP。最后执行复核：**2026-09-15 JST**。
 
-| 优先级 | 当前工作 | 执行状态 | 下一步 | Canonical 记录 |
-|---|---|---|---|---|
-| P0 | Supabase API 安全边界加固 | **执行中 / 阶段完成** — Batch 0+1 已生产激活；最后一个已识别的 broad-executable Giga COGS import `SECURITY DEFINER` RPC 也已通过 PR #70 合并并在生产完成 ACL readback。#104 仍未达到整体 DoD：table/RLS、`SECURITY DEFINER` views、`search_path`、runtime identity、Advisor final disposition 与最终 critical-path 验证仍需收口 | 以最新生产结果重新 baseline #104 剩余 DoD，按最小安全 batch 继续处理 table/view/function/runtime-identity 剩余项；不要继续把已完成 PR #70 当成开放 blocker | [inbox #104](https://github.com/retailpulses/inbox/issues/104) · [PR #70](https://github.com/retailpulses/commerce-ops/pull/70) · [corrective PR #60](https://github.com/retailpulses/commerce-ops/pull/60) |
-| P0 | Commerce Ops 生产源码 / deployment ownership cutover | **部分完成** — Ops Portal、Inquiry、Orders 已有 `commerce-ops` exact-SHA 生产 readback；Orders VPS 成功 run #34821378666 已验证。Tickets 与 database / migration-source ownership 仍未完成。组织 Actions 预算已恢复到 `$15` hard cap，后续 VPS 操作默认不依赖 GitHub-hosted Actions | 完成 Tickets exact-SHA cutover、business smoke 与 rollback evidence；随后收敛 database migration ownership/history gate，并据证据关闭 Phase 2 | [commerce-ops #13](https://github.com/retailpulses/commerce-ops/issues/13) · [成功 Orders VPS run](https://github.com/retailpulses/commerce-ops/actions/runs/34821378666) · [database governance #115](https://github.com/retailpulses/inbox/issues/115) |
-| P1 | CatalogSync release retention / VPS 磁盘复发防护 | **Awaiting owner action** — 事故清理与每日 WeCom disk watcher 已完成；真正导致 71 GB 历史 release 堆积的 bounded retention 尚未落地。#106 已被定义为 GitHub-native Codex POC，但启动 coding agent 需要在 GitHub UI 手工 `Assign to agent` | 在 #106 选择 OpenAI Codex，target repo=`retailpulses/CatalogSync`；让 agent 只实现最小 retention PR，保护 `current` / `marketplace-current` 与明确 rollback window，随后再做 VPS deploy/readback | [inbox #106](https://github.com/retailpulses/inbox/issues/106) · [已完成 watcher PR #108](https://github.com/retailpulses/inbox/pull/108) |
-| P1 | Mercari 收据开具工具 | **实施中 / draft PR** — canonical v6 design 已确定；当前唯一开放的 `commerce-ops` PR #58 已完成 Ops-side scaffold，但 live OrderMgmt receipt-snapshot owner endpoint 与 issuance/storage/PDF/share path 尚未实现 | 先实现 bounded live `/api/internal/mercari/receipt-snapshot`，完成 completed/non-completed/wrong-shop VPS 验证；再做 immutable persistence、private Storage、PDF、10-day signed link 与端到端验收 | [commerce-ops #57](https://github.com/retailpulses/commerce-ops/issues/57) · [draft PR #58](https://github.com/retailpulses/commerce-ops/pull/58) · [coupon follow-up #59](https://github.com/retailpulses/commerce-ops/issues/59) |
+| 优先级 | 当前工作 | 本轮推进后的状态 | 本轮实际推进 | 下一步 / Hard block | Canonical 记录 |
+|---|---|---|---|---|---|
+| P0 | Supabase API 安全边界加固 | **执行中** — Batch 0+1、后续 broad RPC hardening 已生产落地；首轮 12-view `security_invoker` activation 因 caller canary 失败按 stop condition 回滚，随后 corrective PR #72 已生产完成：11 个兼容 view 使用 invoker semantics，`baserow_886994_compat_vw` 保留 definer 但撤销 PUBLIC/anon/authenticated SELECT | 重新读取 #104 最新生产证据，纠正此前“views 尚未处理”的旧状态；确认 PR #71 的失败 canary 与 PR #72 corrective activation 已形成安全闭环 | 继续按 #104 剩余 DoD 收敛 table/RLS、`search_path`、`supabase_admin` future-function defaults、runtime identity / Advisor residual；任何新 hosted migration 仍需独立 production canary | [inbox #104](https://github.com/retailpulses/inbox/issues/104) · [PR #71](https://github.com/retailpulses/commerce-ops/pull/71) · [corrective PR #72](https://github.com/retailpulses/commerce-ops/pull/72) |
+| P0 | Commerce Ops 生产源码 / deployment ownership cutover | **部分完成 / runtime-bound** — Ops Portal、Inquiry、Orders 已有 `commerce-ops` exact-SHA 生产 readback；Orders VPS run #34821378666 已验证。当前证据仍不足以把 Tickets 与 database/migration-source ownership 标记 Done | 本轮重新核对 #13 与相关 PR；未发现可证明 Tickets exact-SHA source cutover 已完成的新证据，避免把“deploy workflow 存在”误写成 cutover 完成 | **Hard block：当前执行环境没有 Cloudflare/VPS production runtime 控制面。** 在有 production runtime access 的 execution session 完成 Tickets exact-SHA cutover、business smoke、rollback readback，再收敛 database migration ownership/history gate | [commerce-ops #13](https://github.com/retailpulses/commerce-ops/issues/13) · [Orders run](https://github.com/retailpulses/commerce-ops/actions/runs/34821378666) · [database governance #115](https://github.com/retailpulses/inbox/issues/115) |
+| P1 | CatalogSync release retention / VPS 磁盘复发防护 | **Implementation ready / awaiting production approval** — 不再是“等待 assign coding agent”；bounded retention 已实现为 CatalogSync PR #204 | 新建 `prune-releases.sh`、deploy wrapper、测试与 runbook；保护所有 live symlink targets（含 `current` / `marketplace-current`）、一跳 `PREVIOUS_RELEASE` rollback、最新 5 个 release；未知目录不删，broken link fail-safe skip。实现过程中发现并修正“按 SHA 而非 timestamp 排序”的潜在 retention bug；deterministic test 通过 | **Hard block：首次 production activation 会删除历史 release，属于高影响操作，需要明确批准。** 批准后 merge/deploy，并记录 pre/post symlink + disk usage + WeCom watcher readback | [inbox #106](https://github.com/retailpulses/inbox/issues/106) · [CatalogSync PR #204](https://github.com/retailpulses/CatalogSync/pull/204) · [watcher PR #108](https://github.com/retailpulses/inbox/pull/108) |
+| P1 | Mercari 收据开具工具 | **实施中 / runtime-validation blocked** — draft PR #58 已从 Ops-side scaffold 推进到 OrderMgmt live owner snapshot contract | 本轮实现 authenticated `/api/internal/mercari/receipt-snapshot`、复用现有 server-side Mercari token convention、live `orderTransaction(id)` snapshot、product coupon discount / paid amount normalization、recipient fallback 与相关 tests；同时更新 PR/Issue，移除“owner endpoint 尚不存在”的旧 blocker | GitHub Actions 两个 CI job 均在 runner 启动前失败（0 steps），当前环境也无 VPS shell/token runtime，因此无法取得 live validation。**Hard block：需要 repo-capable/VPS runtime** 验证 COMPLETED / non-completed / wrong-shop / coupon order；通过后继续 POST re-fetch、immutable persistence、private Storage、PDF、10-day signed link、E2E 与 controlled deploy | [commerce-ops #57](https://github.com/retailpulses/commerce-ops/issues/57) · [draft PR #58](https://github.com/retailpulses/commerce-ops/pull/58) · [coupon follow-up #59](https://github.com/retailpulses/commerce-ops/issues/59) |
+
+## Issue Dashboard
+
+这里回答“整个 backlog 有多大”，而不是只展示被挑进 Triage 的少量 Issue。统计口径为 GitHub **open Issue（排除 PR）**，快照时间 **2026-09-15 JST**。
+
+**组织全量：318 open Issues。** 下列 10 个主要工程仓库合计 **239**；其他 Retailpulses 仓库合计 **79**。因此下面的 Issue Triage 只是 material management queue，绝不代表完整 backlog。
+
+| 主要仓库 | Open Issues | 当前管理含义 |
+|---|---:|---|
+| [inbox](https://github.com/retailpulses/inbox/issues) | **85** | 最大的跨仓库 portfolio / research / governance backlog；Active WIP 当前关联 #104、#106 |
+| [ticket-handling](https://github.com/retailpulses/ticket-handling/issues) | **30** | 仍有大量 legacy / Ticket-domain backlog；source cutover 需与 commerce-ops #13 区分 |
+| [CatalogSync](https://github.com/retailpulses/CatalogSync/issues) | **26** | sync/runtime backlog；当前重点包括 #201–#203、#188、#157/#147 |
+| [RPagentOS](https://github.com/retailpulses/RPagentOS/issues) | **24** | Agent / catalog owner backlog；含 hosted migration-history governance |
+| [commerce-ops](https://github.com/retailpulses/commerce-ops/issues) | **23** | Canonical commerce app backlog；Active WIP 当前关联 #13、#57 |
+| [OrderMgmt](https://github.com/retailpulses/OrderMgmt/issues) | **18** | 过渡 / legacy Orders backlog；新 source ownership 应优先检查 commerce-ops cutover 状态 |
+| [boutique-listing](https://github.com/retailpulses/boutique-listing/issues) | **17** | Listing tool backlog；含长期 open bundle workspace work |
+| [inquiry-automation](https://github.com/retailpulses/inquiry-automation/issues) | **7** | 过渡 Inquiry backlog |
+| [workers](https://github.com/retailpulses/workers/issues) | **7** | Worker/runtime backlog |
+| [ops-portal](https://github.com/retailpulses/ops-portal/issues) | **2** | Legacy Ops Portal repo backlog；canonical app work 优先看 commerce-ops |
+| **主要仓库 subtotal** | **239** | 上述 10 repo |
+| **Retailpulses org total** | **318** | 所有组织仓库；排除 PR |
+| **其他仓库** | **79** | `318 - 239`；用于提示 dashboard scope，不代表全部都需要立即 triage |
 
 ## Issue Triage
 
-这里是管理层面的 Issue 视图，**不重复上面的 Active WIP**。只列尚未进入明确执行、需要重新分类/决策、存在状态冲突，或有时间窗口的 material Issue；完整 backlog 仍留在各仓库。
+这里是管理层面的精选 Issue 视图，**不重复完整 backlog，也不把所有 open Issue 冒充成 Active WIP**。只列尚未进入明确执行、需要重新分类/决策、存在状态冲突，或有时间窗口的 material Issue。
 
 | 优先级 | Issue / 分类 | Triage 状态 | 下一步决策 / 动作 | Canonical Issue |
 |---|---|---|---|---|
-| P0 | CatalogSync interrupted / degraded workloads | **状态冲突 / needs authoritative reconciliation** — #147 仍要求 33 个 unknown-result 在 replay/write 前完成核对；较新的 runtime evidence 又显示相关 timer 已启用，#157 仍保留多个 degraded/blocked workload | 以 live scheduler + immutable release + business-level output 为权威证据重新核对；33 个 unknown-result 未明确前禁止猜测性 replay/write，然后分别 close、retire 或另开具体 owner issue | [CatalogSync #157](https://github.com/retailpulses/CatalogSync/issues/157) · [CatalogSync #147](https://github.com/retailpulses/CatalogSync/issues/147) |
-| P1 | Amazon SP-API 2026-09-28 product-type changes | **NEW / deadline-sensitive** — 尚无 implementation PR；风险是否影响当前 quantity sync 尚未验证 | 在 **2026-09-28 前**确认 production quantity-sync 使用的 endpoint/feed，并给出 affected / not affected 结论；只有确受影响才做最小修复 | [CatalogSync #201](https://github.com/retailpulses/CatalogSync/issues/201) |
-| P1 | Production health / bounded self-healing | **需要收口范围** — Sales Brief renewal/readback 已验证 HEALTHY，Shop4 L0 evaluator 与 continuous observation 也已部署；当前没有对应开放 implementation PR，但 umbrella #110 仍 open | 明确 #110 是否还有一个具体 next workload；若没有，关闭当前 umbrella milestone，并把后续 workload health 按 owner 拆成独立 Issue，避免形成永久 WIP | [inbox #110](https://github.com/retailpulses/inbox/issues/110) |
-| P1 | Mercari Supabase read / egress 放大 | **READY / 未进入执行** — #188 已定义 incremental candidate、durable mapping cache 与 daily full reconciliation；仍缺实现与生产 evidence | 有执行 capacity 后先做 instrumentation + durable mapping cache，再做 crash-safe incremental cursor；没有 PR 前不列入 Active WIP | [CatalogSync #188](https://github.com/retailpulses/CatalogSync/issues/188) · [mapping #187](https://github.com/retailpulses/CatalogSync/issues/187) · [cross-repo #105](https://github.com/retailpulses/inbox/issues/105) |
-| P1 | RPagentOS hosted migration history | **BLOCKED / evidence mismatch** — #133 要求 18 个 Ticket-owned comment-only markers；开放 PR #36 是 2026-07 的旧 work，描述 21 个 shared-history placeholders，不能直接视为 #133 的正确实现 | 先核对 exact hosted version set 与 canonical owner；不要直接 merge 旧 PR #36。必要时 supersede 它并开一个只覆盖 #133 18-version set 的 focused PR，再 rerun production migration dry-run | [RPagentOS #133](https://github.com/retailpulses/RPagentOS/issues/133) · [PR #36](https://github.com/retailpulses/RPagentOS/pull/36) · [失败 run](https://github.com/retailpulses/RPagentOS/actions/runs/34748527246) |
-| P1 | Rakuten Ticket Portal send button disabled | **NEW / 未诊断** — 当前还不能判断是 Portal bug 还是 Rakuten message-session constraint | 用该 ticket 的 platform/session state 与实际 send-capability contract 做 read-only diagnosis；确认产品约束后再决定修 UI eligibility 还是显示明确不可发送原因 | [commerce-ops #67](https://github.com/retailpulses/commerce-ops/issues/67) |
-| P2 | Boutique bundle workspace | **STALE / open PR since 2026-06** — #77 有完整 local/dry-run evidence，但长期没有 production acceptance；继续作为 Active WIP 会误导 | 对照当前 #76 product need 做一次快速 relevance review：仍需要则 rebase/merge + production visual smoke；需求已变化则 supersede/close PR，保留 canonical decision | [boutique-listing #76](https://github.com/retailpulses/boutique-listing/issues/76) · [PR #77](https://github.com/retailpulses/boutique-listing/pull/77) |
-| P2 | Open PR hygiene / source-of-truth drift | **需要清理** — 组织仍有一批长期开放 PR；同时出现 `CatalogSync#193` 已 closed/completed、但 implementation PR #194 仍 open 且声明“尚未部署”的状态冲突 | 通过 #111 做一次 canonicality review：对每个 stale/orphan PR 选择 merge、supersede 或 close；Issue 已 closed 但 PR/production evidence 不一致时先纠正 canonical state，不以 open PR 数量代表 WIP | [inbox #111](https://github.com/retailpulses/inbox/issues/111) · [CatalogSync PR #194](https://github.com/retailpulses/CatalogSync/pull/194) |
+| P0 | CatalogSync interrupted / degraded workloads | **状态冲突 / needs authoritative reconciliation** — #147 仍要求 unknown-result 在 replay/write 前完成核对；#157 又记录多个 degraded/blocked workload | 以 live scheduler + immutable release + business-level output 为权威证据逐 workload 核对；unknown-result 未明确前禁止猜测性 replay/write | [CatalogSync #157](https://github.com/retailpulses/CatalogSync/issues/157) · [#147](https://github.com/retailpulses/CatalogSync/issues/147) |
+| P1 | CatalogSync L0 health follow-ups | **NEW / actionable** — #202 针对 `rakuten-inventory`，#203 把已验证的 Mercari Shop4 L0 contract 延伸到 Shops 1–3；两者由 umbrella #110 拆出 | 保持 owner-local、per-workload evidence；分别完成 schedule/release/business-output readback、五态 evaluator 与 natural observation，不再把 umbrella #110 永久留作执行单元 | [CatalogSync #202](https://github.com/retailpulses/CatalogSync/issues/202) · [#203](https://github.com/retailpulses/CatalogSync/issues/203) · [inbox #110](https://github.com/retailpulses/inbox/issues/110) |
+| P1 | Amazon SP-API 2026-09-28 product-type changes | **deadline-sensitive** — production quantity-sync 是否受影响尚未验证 | 在 **2026-09-28 前**确认 production endpoint/feed，并给出 affected / not affected 结论；只有确受影响才做最小修复 | [CatalogSync #201](https://github.com/retailpulses/CatalogSync/issues/201) |
+| P1 | Mercari Supabase read / egress 放大 | **READY / 未进入执行** — #188 已定义 incremental candidate、durable mapping cache 与 daily full reconciliation | 有 capacity 后先做 instrumentation + durable mapping cache，再做 crash-safe incremental cursor；没有实际执行证据前不进入 Active WIP | [CatalogSync #188](https://github.com/retailpulses/CatalogSync/issues/188) · [mapping #187](https://github.com/retailpulses/CatalogSync/issues/187) |
+| P1 | RPagentOS hosted migration history | **BLOCKED / evidence mismatch** — #133 的 exact version set 与长期 open PR #36 的旧 shared-history scope 不一致 | 核对 hosted exact versions / canonical owner；不要把旧 PR #36 直接当成 #133 实现，必要时 supersede 后做 focused PR | [RPagentOS #133](https://github.com/retailpulses/RPagentOS/issues/133) · [PR #36](https://github.com/retailpulses/RPagentOS/pull/36) |
+| P1 | Rakuten Ticket Portal send button disabled | **未诊断** | 用 ticket 的 platform/session state 与 send-capability contract 做 read-only diagnosis；确认是产品约束还是 UI eligibility bug 后再实施 | [commerce-ops #67](https://github.com/retailpulses/commerce-ops/issues/67) |
+| P2 | Boutique bundle workspace | **STALE / open PR since 2026-06** | 对照当前 #76 product need 做 relevance review：仍需要则 rebase/merge + production visual smoke；需求已变化则 supersede/close | [boutique-listing #76](https://github.com/retailpulses/boutique-listing/issues/76) · [PR #77](https://github.com/retailpulses/boutique-listing/pull/77) |
+| P2 | Open PR hygiene / source-of-truth drift | **需要清理** — 存在 Issue 已 closed/completed、implementation PR 仍 open 且 production evidence 未对齐的情况（例如 CatalogSync #193 / PR #194） | 通过 #111 做 canonicality review：每个 stale/orphan PR 选择 merge、supersede 或 close；先纠正事实再统计 WIP | [inbox #111](https://github.com/retailpulses/inbox/issues/111) · [CatalogSync PR #194](https://github.com/retailpulses/CatalogSync/pull/194) |
 
 ### 如何使用此页面
 
-1. **先看 Active Engineering WIP**：这里回答“工程现在实际在推进什么、卡在哪里、下一步是什么”。
-2. **再看 Issue Triage**：这里回答“哪些 material Issue 需要进入执行、收口、合并、supersede 或重新判断”。
-3. 打开对应 canonical Issue / PR / workflow run 查看详细证据；审批、延后或产品决定直接留在对应 GitHub artifact。
-4. Active work 完成后立即从 WIP 移出；Issue 未关闭不代表它必须继续占据 WIP。
+1. **先看 Active Engineering WIP**：回答“工程现在实际在推进什么、这一轮推进到了哪里、真正卡在哪里”。
+2. **再看 Issue Dashboard**：回答“全局 backlog 有多大，主要 repo 的 open Issue 分布是什么”。
+3. **最后看 Issue Triage**：回答“哪些 material Issue 值得进入执行、收口、合并、supersede 或重新判断”。
+4. 打开 canonical Issue / PR / workflow run 查看详细证据；审批或产品决定直接留在对应 GitHub artifact。
+5. Active work 完成后立即从 WIP 移出；Issue 未关闭不代表它必须继续占据 WIP。
 
-GitHub artifacts 始终是详细工程事实的 source of truth；本页只是组织层面的执行与 triage 索引。
+GitHub artifacts 始终是详细工程事实的 source of truth；本页只是组织层面的执行、规模与 triage 索引。
 
 ## Runtime / 过渡仓库
 
@@ -73,4 +96,4 @@ GitHub artifacts 始终是详细工程事实的 source of truth；本页只是�
 
 组织级工程与架构治理统一放在 [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit)。涉及具体仓库的事实，以该仓库内的 architecture / current-state 文档为准。
 
-> 保持本页低维护成本：最常用仓库固定置顶；Active WIP 只放真实执行中的工作；Issue Triage 只放 material management queue。详细状态和证据留在对应 canonical artifact。
+> 保持本页低维护成本：最常用仓库固定置顶；Active WIP 只放真实执行中的工作；Issue Dashboard 提供 backlog 全景；Issue Triage 只放 material management queue。详细状态和证据留在对应 canonical artifact。
