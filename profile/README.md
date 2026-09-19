@@ -13,43 +13,85 @@
 | [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing 创建、编辑与发布工具 |
 | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Architecture、runtime/workload、database governance |
 
-## Epic Portfolio Dashboard — 2026-09-19 JST
+## Program & Epic Portfolio Dashboard — 2026-09-19 JST
 
-这里从“独立 Issue / PR 清单”升级为 **Epic-first portfolio view**。Epic 表示一个完整业务/运营/工程能力或 bounded transformation；实现可以跨仓库，也可以包含代码、数据、SOP、人工运营、会计/供应商协作和验证工作。
+组织首页采用 **Program → Epic → Issue/PR evidence** 的管理视角，而不是平铺 Issue / PR。
 
-优先级使用 **Business Value 60% + Engineering / Delivery Value 40%**。Issue / PR 是 supporting execution evidence，不再作为组织首页的主要管理颗粒度。
+当前 Program v0.1：
 
-| Priority | Initiative | Epic | Business Value | Eng. Leverage | Status | 当前判断 / 最近进展 | Blocker / Next Action | Canonical |
-|---|---|---|---|---|---|---|---|---|
-| **P0** | Catalog Reliability | **Catalog Freshness & Resilience** | **High** | **High** | Active | Giga API 1.0 retirement 暴露出 upstream failure → dead-letter → stale canonical/downstream state 的系统性 freshness 问题；已从单次 incident 提升为 freshness architecture | 优先恢复/验证 Giga 2.0 可访问 SKU，分类 4,152 dead letters，安全恢复 marketplace freshness；同时建立 freshness SLO / recovery contract | [inbox #151](https://github.com/retailpulses/inbox/issues/151) |
-| **P0** | Agent-Driven Engineering Capability | **Deterministic Engineering Delivery Controls** | **High** | **Critical** | Active | 已识别 orphan PR、未进 main、merged≠deployed、dirty worktree、重复 regression 等为 control failure，而非单次 agent mistake | 建立 Standards → deterministic control coverage matrix；先落 main-before-deploy、PR terminal state、worktree hygiene、completion evidence 等 P0 controls | [inbox #153](https://github.com/retailpulses/inbox/issues/153) |
-| **P0** | Commerce Fulfillment | **Marketplace Fulfillment Runtime Ownership & Reliability** | **High** | **High** | Active | Mercari VPS cutover 已进入 exact canary / ownership / natural-cycle acceptance；Rakuten 10/1 cutover 作为同一 capability 的平台 workstream | 完成 Mercari production acceptance + legacy retirement；并行准备 Rakuten cutover，避免按 marketplace 重复造架构 | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
-| **P0** | Commerce Fulfillment | **Mercari Multi-unit Purchase Readiness** | **High** | **High** | Active | Multi-unit 已确认需要真实库存与 order-line/partial-cancel 安全性；sandbox 不再作为 hard block | 完成 partial cancellation / procurement safety、真实库存 rollout 与 live acceptance | [commerce-ops #115](https://github.com/retailpulses/commerce-ops/issues/115) |
-| **P0/P1** | Product Content & Listing Growth | **Product Visual / Listing Image Capability** | **Critical** | **High** | Radar / forming | 已确认这是独立高价值 capability：asset model、SPU/variant关系、readiness、sequence、generation/transformation、platform rules、publish/read-back、效果学习；现有 codebase 成熟度不能代表业务价值 | 把近期 image data-model/design 收敛成 v1 capability roadmap；建立 canonical Epic anchor，并把 #64、Boutique/RPagentOS image work 纳入 | [inbox #64](https://github.com/retailpulses/inbox/issues/64) · [portfolio #149](https://github.com/retailpulses/inbox/issues/149) |
-| **P0/P1** | Financial Operations | **Accounting & Financial Operations Capability** | **High** | **High** | Active / forming | FY3 closing、canonical accounting archive、freee API round-trip、税务/工资/社保 evidence 已形成一个完整业务能力，而非零散 admin tasks | 优先完成 FY3 close control 与 freee POC；再把 recurring controls 纳入统一 accounting capability | [Accounting POC #6](https://github.com/retailpulses/inbox/issues/6) · [FY3 #133](https://github.com/retailpulses/inbox/issues/133) |
-| **P1** | Engineering Capability | **Critical Capability & Regression Test Governance** | **Medium** | **High** | Active | 已从“测试数量”转向 capability-centered regression governance；WS1 正建立 Critical Capability Registry | 完成 capability registry → test coverage/gap matrix → incident-to-regression mapping | [inbox #146](https://github.com/retailpulses/inbox/issues/146) |
-| **P1** | Engineering Capability | **CI / Runner Execution Architecture** | **Medium** | **High** | Active | 双 Mac runner 已运行；重点从单机 POC 转为 workload placement、queue/cache、macOS compatibility、production isolation 与第二节点 | 继续 daily runner evidence；完成 workload classification / routing policy，并决定 VPS second node | [inbox #147](https://github.com/retailpulses/inbox/issues/147) |
-| **P1** | Runtime Reliability | **Runtime Business Health & Observability** | **High** | **High** | Active | Production Monitor 方向已明确：检测 green scheduler / broken business，而不是再造通用 observability platform | 推进 thin health-contract POC/MVP，并把 Catalog/Commerce critical runtime 接入统一 business-health view | [inbox #120](https://github.com/retailpulses/inbox/issues/120) |
-| **P1** | Portfolio Operations | **Daily Epic Portfolio Review & Prioritization** | **High** | **High** | Active | Epic metadata 已开始回填；组织首页从 Issue/PR-first 升级为 Epic-first | 完成 active Epic registry、每日 material-progress review、priority drift/blocker/next-action 更新自动化 | [inbox #154](https://github.com/retailpulses/inbox/issues/154) |
+1. **Commerce Growth** — listing quality、content/image、pricing/promotion、channel growth。
+2. **Commerce Operations** — order → fulfillment → inquiry → after-sales。
+3. **Data & Engineering Platform** — catalog/data/runtime reliability + agent-driven engineering capability。
+4. **Company Operations** — accounting、closing、statutory/admin controls。
 
-### Portfolio rules
+> 当前仍在清理 stale/completed backlog 和收敛 Epic 边界。Four-Program mapping 是 working draft，不代表所有 Issue 已正式迁移。
 
-- **Epic first**：组织首页只展示需要管理层持续关注的 capability / transformation；Issue/PR 作为证据链接。
+### Epic execution gate
+
+**Priority ≠ Readiness。** 高业务价值 Epic 可以是 P0，但如果还没有定义清楚，就不能进入开发。
+
+| Readiness | 含义 | Allowed work |
+|---|---|---|
+| **EMPTY** | 只有问题/机会，尚无可靠边界与 DoD | discovery / research only |
+| **DEFINING** | 正在形成 scope、architecture、workstreams、DoD | audit / design / planning |
+| **DEFINED** | 已通过 Epic readiness gate | development / operational execution |
+
+**Only well-defined Epics can start development.**
+
+Defined Epic 至少应具备：problem/opportunity、target outcome、scope/non-scope、current-state evidence、capability/architecture direction、initial workstreams、dependencies、DoD、success measures、priority rationale。
+
+### Current priority radar
+
+| Priority | Program | Epic | Readiness | Value | Eng. Leverage | Current focus | Canonical |
+|---|---|---|---|---|---|---|---|
+| **P0** | Data & Engineering Platform | **Catalog Freshness & Resilience** | **DEFINED** | High | High | Giga upstream → canonical → marketplace freshness recovery；建立 freshness SLO / recovery contract | [#151](https://github.com/retailpulses/inbox/issues/151) |
+| **P0** | Data & Engineering Platform | **Deterministic Engineering Delivery Controls** | **DEFINED** | High | Critical | 把 Engineering Standards 落成 deterministic controls：main-before-deploy、orphan PR、worktree hygiene、completion evidence | [#153](https://github.com/retailpulses/inbox/issues/153) |
+| **P0** | Commerce Operations | **Marketplace Fulfillment Runtime Ownership & Reliability** | **DEFINED** | High | High | Mercari VPS cutover / production acceptance；Rakuten 作为同一 capability 的平台 workstream | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
+| **P0** | Commerce Operations | **Mercari Multi-unit Purchase Readiness** | **DEFINED** | High | High | partial cancellation / procurement safety、真实库存 rollout、live acceptance | [#115](https://github.com/retailpulses/commerce-ops/issues/115) |
+| **P0/P1** | Commerce Growth | **Product Visual / Listing Image Capability** | **DEFINING** | Critical | High | 收敛 image data model + capability layer + operator/publish/read-back workflow；**未过 readiness gate 前不启动新的 feature development** | [Image context #64](https://github.com/retailpulses/inbox/issues/64) · [Portfolio #149](https://github.com/retailpulses/inbox/issues/149) |
+| **P0/P1** | Company Operations | **Accounting & Financial Operations** | **DEFINING** | High | High | FY3 closing + canonical archive + freee round-trip；收敛 recurring financial/statutory controls 到一个 capability | [POC #6](https://github.com/retailpulses/inbox/issues/6) · [FY3 #133](https://github.com/retailpulses/inbox/issues/133) |
+| **P1** | Data & Engineering Platform | **Critical Capability & Regression Test Governance** | **DEFINED** | Medium | High | capability registry → coverage/gap matrix → incident-to-regression permanence | [#146](https://github.com/retailpulses/inbox/issues/146) |
+| **P1** | Data & Engineering Platform | **CI / Runner Execution Architecture** | **DEFINED** | Medium | High | workload placement、runner reliability、queue/cache、production isolation、second node | [#147](https://github.com/retailpulses/inbox/issues/147) |
+| **P1** | Data & Engineering Platform | **Runtime Business Health & Observability** | **DEFINING** | High | High | thin health-contract model，重点检测 green scheduler / broken business | [#120](https://github.com/retailpulses/inbox/issues/120) |
+| **P1** | Data & Engineering Platform | **Epic Portfolio Review & Automation** | **DEFINED** | High | High | Four-Program mapping、stale cleanup、Epic metadata/readiness、daily dashboard automation | [#154](https://github.com/retailpulses/inbox/issues/154) |
+
+### Portfolio operating rules
+
+- **Program first, Epic execution**：管理层首先看 4 个 Program；实际推进以 well-defined Epic 为单位。
+- **Priority ≠ Readiness**：P0 Empty/Defining Epic 的最高优先动作是把 Epic 定义清楚，而不是开始编码。
 - **Cross-repo is normal**：Epic 可以跨 Inbox、CatalogSync、commerce-ops、boutique-listing、RPagentOS。
-- **Business work counts**：Epic 下可以包含工程、运营、数据、内容、SOP、会计、供应商/外部协作，不要求所有工作都产生代码。
-- **MERGED != DONE**：完成标准看目标状态和 evidence，不看 PR 是否合并。
-- **No artificial progress**：每日没有 material change 就保持状态，不制造活动。
-- **Priority can move**：deadline、business impact、hard blocker、dependency 变化时允许重新排序，并保留依据。
+- **Business work counts**：Epic 可包含工程、运营、数据、内容、SOP、会计、供应商/外部协作和人工验证。
+- **Capability > code volume**：现有代码少不代表业务优先级低。
+- **MERGED != DONE**：完成看 capability target state 与 evidence。
+- **DOCUMENTED != ENFORCED**：critical engineering standards 应逐步转为 deterministic control。
+- **No artificial progress**：没有 material change 就保持状态。
+- **Stale cleanup first**：旧 backlog 先判定 completed / superseded / stale，再用于 Program/Epic 规划。
 
 ### Daily review focus
 
-每天对 Active Epic 只回答八个问题：状态、material progress、evidence、hard blocker、next action、是否需要 Jim 介入、priority 是否漂移、child Issue/PR 是否出现 orphan/stale。
+每天从 Program → Epic review：
 
-详细执行事实仍留在 canonical Issue / PR；本页只保留足够做 portfolio decision 的信息。
+1. Readiness 是否仍正确；是否有未定义 Epic 在偷偷开发；
+2. material progress + evidence；
+3. genuine hard blocker；
+4. single next action；
+5. 是否需要 Jim 决策/批准；
+6. priority/value 是否发生变化；
+7. child Issue/PR 是否 orphan/stale；
+8. Epic 是否达到 DoD，应关闭或转入 routine operation。
+
+详细事实仍保留在 canonical Issue / PR，本页只保留 portfolio decision 所需信息。
+
+### Canonical portfolio method
+
+- [Epic & Portfolio Operating Method](https://github.com/retailpulses/inbox/blob/main/system%20design/playbooks/epic-and-portfolio-operating-method.md)
+- [Four-Program Review Draft](https://github.com/retailpulses/inbox/blob/portfolio/four-program-review-draft/system%20design/artifacts/four-program-portfolio-review-draft-2026-09-19.md)
+- [Portfolio Audit #149](https://github.com/retailpulses/inbox/issues/149)
+- [Daily Portfolio Epic #154](https://github.com/retailpulses/inbox/issues/154)
 
 ## 使用方式
 
-1. 从 **Active Engineering WIP** 进入 exact canonical artifact。
+1. 从 **Program & Epic Portfolio Dashboard** 进入对应 canonical Epic / evidence。
 2. Issue 是 requirements / engineering facts 的 canonical work record；PR、workflow、runtime evidence 是 supporting evidence。
 3. `inbox` 只承担 cross-repo / portfolio / governance，不复制 repo-local implementation truth。
 4. 完成标准以实际 evidence 为准：**MERGED != DONE，SCHEDULED != RUN，DEPLOY STARTED != VERIFIED**。
