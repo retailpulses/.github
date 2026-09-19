@@ -13,48 +13,39 @@
 | [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing 创建、编辑与发布工具 |
 | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Architecture、runtime/workload、database governance |
 
-## Active Engineering WIP — 2026-09-17 JST
+## Epic Portfolio Dashboard — 2026-09-19 JST
 
-只列正在调查、实施、部署、验证，或已到 genuine hard block 的工作。排序遵循 canonical 60% Business Value / 40% Engineering Value 方法。
+这里从“独立 Issue / PR 清单”升级为 **Epic-first portfolio view**。Epic 表示一个完整业务/运营/工程能力或 bounded transformation；实现可以跨仓库，也可以包含代码、数据、SOP、人工运营、会计/供应商协作和验证工作。
 
-| Priority | Business Value | Engineering Value | 当前工作 | Post-execution state / 下一步 | Canonical artifacts |
-|---|---|---|---|---|---|
-| **P0** | **High · Revenue Protection / Growth** | **High** | Giga catalog upstream / Open API 1.0 retirement | Root cause 已证明；6,280 active SKUs 已 dead-letter。PR #212 false-health guard 已 merge。PR #213 v2 adapter 本地 tests 通过，但 production one-SKU read-only canary 对现有 credentials 返回 `400004 Invalid sign`。**Genuine hard block：需要 Giga-issued/confirmed Open API 2.0 Client ID/Secret + inventory/price permissions。** 成功 source read 前禁止 bulk reset/replay dead letters | [CatalogSync #210](https://github.com/retailpulses/CatalogSync/issues/210) · [PR #212](https://github.com/retailpulses/CatalogSync/pull/212) · [PR #213](https://github.com/retailpulses/CatalogSync/pull/213) |
-| **P0** | **High · Revenue Protection / Operating Leverage** | **High** | Commerce Ops post-merge runtime integrity | Orders VPS Mercari discovery/lifecycle 已 VERIFIED；其余 Cloudflare capabilities 仍部分迁移。#86 已证明 RELEASE_DRIFT / GREEN-BUT-DEAD；另发现 Mercari message-sync degraded、Rakuten close transitional、legacy reconcile paths stale。**Genuine hard block：需要 fresh VPS + Cloudflare control-plane readback 才能完成全 workload matrix 和 migration closeout。** | [commerce-ops #87](https://github.com/retailpulses/commerce-ops/issues/87) · [incident #86](https://github.com/retailpulses/commerce-ops/issues/86) |
-| **P1** | **High · Growth / Revenue Protection** | **Medium** | Shop4 top-seller listing coverage gap | Top seller 未上架具有直接 revenue impact。可继续 exact-SKU read-only forensic：Giga → owner candidate/mapping → live Shop4；bulk remediation 必须等待 #210 upstream freshness 恢复 | [CatalogSync #207](https://github.com/retailpulses/CatalogSync/issues/207) |
-| **P1** | **High · Growth / Revenue Protection** | **High** | Giga→Mercari owner API timeout | Exit 2 已收窄到 RPagentOS listing-score batch timeout；checkpoint guard PR #214 已 merge但未部署。下一步需要 owner-side latency/request correlation，再 immutable deploy + natural-cycle verification | [CatalogSync #211](https://github.com/retailpulses/CatalogSync/issues/211) · [PR #214](https://github.com/retailpulses/CatalogSync/pull/214) |
-| **P1** | **High · Revenue Protection / Strategic Enablement** | **High** | Production Monitor POC → MVP | 继续 thin business-health contract，避免自建完整 observability platform；重点验证 scheduler green 但 business stale 的 failure semantics | [inbox #120](https://github.com/retailpulses/inbox/issues/120) · [PR #121](https://github.com/retailpulses/inbox/pull/121) |
-| **P1** | **High · Revenue Protection / Strategic Enablement** | **High** | Commerce Ops production-source cutover | Source consolidation 已完成较多，但 `MERGED != DONE`。Tickets exact-SHA production provenance、business smoke/rollback 和 shared migration ownership 仍需完成，并与 #87 runtime integrity evidence 对齐 | [commerce-ops #13](https://github.com/retailpulses/commerce-ops/issues/13) · [inbox #115](https://github.com/retailpulses/inbox/issues/115) |
-| **P1** | **Medium · Revenue Protection / Operating Leverage** | **High** | CatalogSync release retention / VPS disk recurrence | Retention implementation 已 merge；首次 production cleanup 会删除历史 release，因此仍需显式 production approval + pre/post disk/release/symlink readback | [inbox #106](https://github.com/retailpulses/inbox/issues/106) · [CatalogSync PR #204](https://github.com/retailpulses/CatalogSync/pull/204) |
+优先级使用 **Business Value 60% + Engineering / Delivery Value 40%**。Issue / PR 是 supporting execution evidence，不再作为组织首页的主要管理颗粒度。
 
-## Issue Dashboard
+| Priority | Initiative | Epic | Business Value | Eng. Leverage | Status | 当前判断 / 最近进展 | Blocker / Next Action | Canonical |
+|---|---|---|---|---|---|---|---|---|
+| **P0** | Catalog Reliability | **Catalog Freshness & Resilience** | **High** | **High** | Active | Giga API 1.0 retirement 暴露出 upstream failure → dead-letter → stale canonical/downstream state 的系统性 freshness 问题；已从单次 incident 提升为 freshness architecture | 优先恢复/验证 Giga 2.0 可访问 SKU，分类 4,152 dead letters，安全恢复 marketplace freshness；同时建立 freshness SLO / recovery contract | [inbox #151](https://github.com/retailpulses/inbox/issues/151) |
+| **P0** | Agent-Driven Engineering Capability | **Deterministic Engineering Delivery Controls** | **High** | **Critical** | Active | 已识别 orphan PR、未进 main、merged≠deployed、dirty worktree、重复 regression 等为 control failure，而非单次 agent mistake | 建立 Standards → deterministic control coverage matrix；先落 main-before-deploy、PR terminal state、worktree hygiene、completion evidence 等 P0 controls | [inbox #153](https://github.com/retailpulses/inbox/issues/153) |
+| **P0** | Commerce Fulfillment | **Marketplace Fulfillment Runtime Ownership & Reliability** | **High** | **High** | Active | Mercari VPS cutover 已进入 exact canary / ownership / natural-cycle acceptance；Rakuten 10/1 cutover 作为同一 capability 的平台 workstream | 完成 Mercari production acceptance + legacy retirement；并行准备 Rakuten cutover，避免按 marketplace 重复造架构 | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
+| **P0** | Commerce Fulfillment | **Mercari Multi-unit Purchase Readiness** | **High** | **High** | Active | Multi-unit 已确认需要真实库存与 order-line/partial-cancel 安全性；sandbox 不再作为 hard block | 完成 partial cancellation / procurement safety、真实库存 rollout 与 live acceptance | [commerce-ops #115](https://github.com/retailpulses/commerce-ops/issues/115) |
+| **P0/P1** | Product Content & Listing Growth | **Product Visual / Listing Image Capability** | **Critical** | **High** | Radar / forming | 已确认这是独立高价值 capability：asset model、SPU/variant关系、readiness、sequence、generation/transformation、platform rules、publish/read-back、效果学习；现有 codebase 成熟度不能代表业务价值 | 把近期 image data-model/design 收敛成 v1 capability roadmap；建立 canonical Epic anchor，并把 #64、Boutique/RPagentOS image work 纳入 | [inbox #64](https://github.com/retailpulses/inbox/issues/64) · [portfolio #149](https://github.com/retailpulses/inbox/issues/149) |
+| **P0/P1** | Financial Operations | **Accounting & Financial Operations Capability** | **High** | **High** | Active / forming | FY3 closing、canonical accounting archive、freee API round-trip、税务/工资/社保 evidence 已形成一个完整业务能力，而非零散 admin tasks | 优先完成 FY3 close control 与 freee POC；再把 recurring controls 纳入统一 accounting capability | [Accounting POC #6](https://github.com/retailpulses/inbox/issues/6) · [FY3 #133](https://github.com/retailpulses/inbox/issues/133) |
+| **P1** | Engineering Capability | **Critical Capability & Regression Test Governance** | **Medium** | **High** | Active | 已从“测试数量”转向 capability-centered regression governance；WS1 正建立 Critical Capability Registry | 完成 capability registry → test coverage/gap matrix → incident-to-regression mapping | [inbox #146](https://github.com/retailpulses/inbox/issues/146) |
+| **P1** | Engineering Capability | **CI / Runner Execution Architecture** | **Medium** | **High** | Active | 双 Mac runner 已运行；重点从单机 POC 转为 workload placement、queue/cache、macOS compatibility、production isolation 与第二节点 | 继续 daily runner evidence；完成 workload classification / routing policy，并决定 VPS second node | [inbox #147](https://github.com/retailpulses/inbox/issues/147) |
+| **P1** | Runtime Reliability | **Runtime Business Health & Observability** | **High** | **High** | Active | Production Monitor 方向已明确：检测 green scheduler / broken business，而不是再造通用 observability platform | 推进 thin health-contract POC/MVP，并把 Catalog/Commerce critical runtime 接入统一 business-health view | [inbox #120](https://github.com/retailpulses/inbox/issues/120) |
+| **P1** | Portfolio Operations | **Daily Epic Portfolio Review & Prioritization** | **High** | **High** | Active | Epic metadata 已开始回填；组织首页从 Issue/PR-first 升级为 Epic-first | 完成 active Epic registry、每日 material-progress review、priority drift/blocker/next-action 更新自动化 | [inbox #154](https://github.com/retailpulses/inbox/issues/154) |
 
-统计口径：GitHub open Issues（排除 PR），主要 canonical active repos；快照 2026-09-17 JST。
+### Portfolio rules
 
-| Repo | Open Issues |
-|---|---:|
-| [inbox](https://github.com/retailpulses/inbox/issues) | **76** |
-| [commerce-ops](https://github.com/retailpulses/commerce-ops/issues) | **30** |
-| [CatalogSync](https://github.com/retailpulses/CatalogSync/issues) | **29** |
-| [RPagentOS](https://github.com/retailpulses/RPagentOS/issues) | **23** |
-| [boutique-listing](https://github.com/retailpulses/boutique-listing/issues) | **15** |
-| [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit/issues) | **8** |
-| **主要 canonical repos 合计** | **181** |
+- **Epic first**：组织首页只展示需要管理层持续关注的 capability / transformation；Issue/PR 作为证据链接。
+- **Cross-repo is normal**：Epic 可以跨 Inbox、CatalogSync、commerce-ops、boutique-listing、RPagentOS。
+- **Business work counts**：Epic 下可以包含工程、运营、数据、内容、SOP、会计、供应商/外部协作，不要求所有工作都产生代码。
+- **MERGED != DONE**：完成标准看目标状态和 evidence，不看 PR 是否合并。
+- **No artificial progress**：每日没有 material change 就保持状态，不制造活动。
+- **Priority can move**：deadline、business impact、hard blocker、dependency 变化时允许重新排序，并保留依据。
 
-Issue 数量表示 backlog scale，不表示 priority。
+### Daily review focus
 
-## Issue Triage
+每天对 Active Epic 只回答八个问题：状态、material progress、evidence、hard blocker、next action、是否需要 Jim 介入、priority 是否漂移、child Issue/PR 是否出现 orphan/stale。
 
-| Priority | Business Value | Engineering Value | Material Issue / 当前判断 | Next action | Canonical Issue |
-|---|---|---|---|---|---|
-| **P0** | High | High | Giga upstream outage：external v2 credential 已成为明确 hard block | Giga v2 credential → one-SKU read canary → mapping validation → bounded recovery | [CatalogSync #210](https://github.com/retailpulses/CatalogSync/issues/210) |
-| **P0** | High | High | Commerce Ops migration closeout：已有 concrete silent-death evidence，不能按 repo merge 状态宣告完成 | fresh Cloudflare/VPS readback → complete workload matrix → remediate P0/P1 drift | [commerce-ops #87](https://github.com/retailpulses/commerce-ops/issues/87) |
-| **P1** | High | Medium | Shop4 coverage gap：直接影响可售商品，但 supplier state 当前 stale | exact-SKU forensic 可并行；bulk listing 等 #210 | [CatalogSync #207](https://github.com/retailpulses/CatalogSync/issues/207) |
-| **P1** | High | High | Giga→Mercari timeout：publisher 未死，但 owner dependency 间歇失败 | owner latency evidence + deploy checkpoint guard + natural recovery verification | [CatalogSync #211](https://github.com/retailpulses/CatalogSync/issues/211) |
-| **P1** | Medium | High | Supabase security boundary：仍是 shared platform least-privilege / RLS / RPC exposure work | 继续 caller/runtime identity classification，再做最小 hosted cutover | [inbox #104](https://github.com/retailpulses/inbox/issues/104) |
-| **P1** | Medium | High | Mercari/Supabase read amplification：full reads 与 mapping fetch 仍有成本风险 | instrumentation → durable mapping cache → crash-safe incremental cursor；daily full reconciliation 保留 | [CatalogSync #188](https://github.com/retailpulses/CatalogSync/issues/188) · [inbox #80](https://github.com/retailpulses/inbox/issues/80) |
-| **P1** | Medium | High | RPagentOS hosted migration history：owner/history mismatch 会阻断 governed deploy | 核对 exact hosted versions 与 canonical owner；禁止 migration repair/历史重写 | [RPagentOS #133](https://github.com/retailpulses/RPagentOS/issues/133) |
-| **P2** | Medium | Medium | Receipt issuance：operator MVP 有价值，但不是当前 production incident | 完成 dependency packaging/private persistence boundary，再做 PDF/storage/signed URL E2E | [commerce-ops #57](https://github.com/retailpulses/commerce-ops/issues/57) · [PR #58](https://github.com/retailpulses/commerce-ops/pull/58) |
+详细执行事实仍留在 canonical Issue / PR；本页只保留足够做 portfolio decision 的信息。
 
 ## 使用方式
 
