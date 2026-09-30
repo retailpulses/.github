@@ -1,103 +1,231 @@
 # Retailpulses
 
-面向日本市场的电商运营与软件团队。这里是组织级工程入口。详细事实、审批和反馈仍落在各 canonical GitHub Issue / PR / runtime evidence。
+面向日本市场的电商运营与软件团队。
 
-## 最常用仓库
+这个页面是 **组织级 Portfolio / Triage 首页**。它不是 Issue 列表，也不是实现状态的第二份数据库；它从公司目标向下回答：
 
-| 仓库 | 定位 |
-|---|---|
-| [inbox](https://github.com/retailpulses/inbox) | 跨仓库 portfolio / governance / 未明确归属事项 |
-| [commerce-ops](https://github.com/retailpulses/commerce-ops) | Canonical commerce 运营应用：Ops Portal、Inquiry、Orders、Tickets |
-| [CatalogSync](https://github.com/retailpulses/CatalogSync) | 商品目录、库存与 marketplace synchronization |
-| [RPagentOS](https://github.com/retailpulses/RPagentOS) | Product Catalog owner、运营自动化与 Listing intelligence |
-| [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing 创建、编辑与发布工具 |
-| [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Architecture、runtime/workload、database governance |
+> **我们现在在推进哪些 Program？每个 Program 下有哪些 Epic？每个 Epic 的下一层执行 Issue / evidence 在哪里？**
 
-## Program & Epic Portfolio Dashboard — 2026-09-19 JST
+详细事实、实现状态、审批和完成证据始终保留在对应的 canonical GitHub Issue / PR / runtime evidence。
 
-组织首页采用 **Program → Epic → Issue/PR evidence** 的管理视角，而不是平铺 Issue / PR。
+---
 
-当前 Program v0.1：
+## Portfolio hierarchy
 
-1. **Commerce Growth** — listing quality、content/image、pricing/promotion、channel growth。
-2. **Commerce Operations** — order → fulfillment → inquiry → after-sales。
-3. **Data & Engineering Platform** — catalog/data/runtime reliability + agent-driven engineering capability。
-4. **Company Operations** — accounting、closing、statutory/admin controls。
+```text
+Company / Business Goal
+        ↓
+Program
+        ↓
+Epic
+        ↓
+Issue / Workstream
+        ↓
+Task / PR / Manual Action
+        ↓
+Deploy / Read-back / Operational Evidence
+```
 
-> 当前仍在清理 stale/completed backlog 和收敛 Epic 边界。Four-Program mapping 是 working draft，不代表所有 Issue 已正式迁移。
+### 层级定义
 
-### Epic execution gate
-
-**Priority ≠ Readiness。** 高业务价值 Epic 可以是 P0，但如果还没有定义清楚，就不能进入开发。
-
-| Readiness | 含义 | Allowed work |
+| Level | 用途 | Canonical record |
 |---|---|---|
-| **EMPTY** | 只有问题/机会，尚无可靠边界与 DoD | discovery / research only |
+| **Program** | 公司级战略结果；容纳多个相关 capability / transformation | 通常由 `inbox` 协调 |
+| **Epic** | 一个可完成、可验收的 business capability 或 bounded transformation | canonical Epic Issue |
+| **Issue / Workstream** | 可独立交付的 feature、investigation、incident remediation、operational change | owning repository Issue |
+| **Task / PR / Action** | 执行单元 | PR / task / manual action |
+| **Evidence** | 证明结果真正发生 | deploy SHA / runtime read-back / operational evidence |
+
+**管理层从 Program → Epic 看；执行层从 Epic → Issue → evidence 看。**
+
+---
+
+# 1. Programs
+
+当前 Portfolio 使用四个顶层 Program。Program 是稳定的战略分组，不应因为 repository 重组而频繁变化。
+
+## Program A — Commerce Growth
+
+**Outcome:** 提升商品内容质量、listing readiness、pricing / promotion 能力和渠道增长。
+
+### Active / defining Epics
+
+| Epic | Readiness | Current outcome / focus | Canonical |
+|---|---|---|---|
+| **Product Visual / Listing Image Capability** | DEFINING | 建立 image data model、asset provenance、variant applicability、operator review、publish/read-back capability | [Image context #64](https://github.com/retailpulses/inbox/issues/64) · [Portfolio #149](https://github.com/retailpulses/inbox/issues/149) |
+
+下层 implementation / research Issue 应链接回对应 Epic；不要在 Program 层直接管理 PR。
+
+---
+
+## Program B — Commerce Operations
+
+**Outcome:** 建立可靠的 order → fulfillment → inquiry → after-sales 运营链路，并保持 marketplace-specific runtime 的可验证性。
+
+### Active Epics
+
+| Epic | Readiness | Current outcome / focus | Canonical |
+|---|---|---|---|
+| **Marketplace Fulfillment Runtime Ownership & Reliability** | DEFINED | Mercari / Rakuten fulfillment runtime ownership、production acceptance、recovery | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
+| **Mercari Multi-unit Purchase Readiness** | DEFINED | partial cancellation / procurement safety、真实库存 rollout、live acceptance | [#115](https://github.com/retailpulses/commerce-ops/issues/115) |
+
+Repository consolidation、runtime migration 或单一 feature 只有在它们服务于 Epic outcome 时才进入 Portfolio；repository 本身不是 Portfolio 层级。
+
+---
+
+## Program C — Data & Engineering Platform
+
+**Outcome:** 让 catalog/data/runtime 与 agent-driven engineering delivery 具备可靠、可恢复、可验证的基础能力。
+
+### Active Epics
+
+| Epic | Readiness | Current outcome / focus | Canonical |
+|---|---|---|---|
+| **Catalog Freshness & Resilience** | DEFINED | Giga upstream → canonical → marketplace freshness；freshness SLO / recovery contract | [#151](https://github.com/retailpulses/inbox/issues/151) |
+| **Deterministic Engineering Delivery Controls** | DEFINED | main-before-deploy、orphan PR、worktree hygiene、completion evidence 等 deterministic controls | [#153](https://github.com/retailpulses/inbox/issues/153) |
+| **Critical Capability & Regression Test Governance** | DEFINED | capability registry → coverage/gap matrix → incident-to-regression permanence | [#146](https://github.com/retailpulses/inbox/issues/146) |
+| **CI / Runner Execution Architecture** | DEFINED | workload placement、runner reliability、queue/cache、production isolation | [#147](https://github.com/retailpulses/inbox/issues/147) |
+| **Runtime Business Health & Observability** | DEFINING | 检测“scheduler green / business broken”；建立 thin health-contract model | [#120](https://github.com/retailpulses/inbox/issues/120) |
+| **Epic Portfolio Review & Automation** | DEFINED | Program mapping、Epic metadata/readiness、stale cleanup、dashboard operating loop | [#154](https://github.com/retailpulses/inbox/issues/154) |
+
+---
+
+## Program D — Company Operations
+
+**Outcome:** 建立可靠的 accounting、closing、statutory / administrative controls 和公司运营证据链。
+
+### Active / defining Epics
+
+| Epic | Readiness | Current outcome / focus | Canonical |
+|---|---|---|---|
+| **Accounting & Financial Operations** | DEFINING | FY3 closing、canonical archive、freee round-trip、recurring financial/statutory controls | [POC #6](https://github.com/retailpulses/inbox/issues/6) · [FY3 #133](https://github.com/retailpulses/inbox/issues/133) |
+
+---
+
+# 2. Epic execution gate
+
+**Priority ≠ Readiness。**
+
+高价值或紧急的 Epic 仍然必须先有足够定义，才能进入 implementation。
+
+| Readiness | Meaning | Allowed work |
+|---|---|---|
+| **EMPTY** | 已识别机会/问题，但 target state 和边界不足 | discovery / research |
 | **DEFINING** | 正在形成 scope、architecture、workstreams、DoD | audit / design / planning |
-| **DEFINED** | 已通过 Epic readiness gate | development / operational execution |
+| **DEFINED** | 已通过 readiness gate | development / operational execution |
 
-**Only well-defined Epics can start development.**
+一个 DEFINED Epic 至少应明确：
 
-Defined Epic 至少应具备：problem/opportunity、target outcome、scope/non-scope、current-state evidence、capability/architecture direction、initial workstreams、dependencies、DoD、success measures、priority rationale。
+1. Problem / opportunity
+2. Target outcome
+3. Scope / non-scope
+4. Current-state evidence
+5. Capability / architecture direction
+6. Initial workstreams / child Issues
+7. Dependencies / hard constraints
+8. Definition of Done
+9. Success measures
+10. Priority rationale
 
-### Current priority radar
+**只有 `epic-readiness:defined` 的 Epic 才进入 implementation。**
 
-| Priority | Program | Epic | Readiness | Value | Eng. Leverage | Current focus | Canonical |
-|---|---|---|---|---|---|---|---|
-| **P0** | Data & Engineering Platform | **Catalog Freshness & Resilience** | **DEFINED** | High | High | Giga upstream → canonical → marketplace freshness recovery；建立 freshness SLO / recovery contract | [#151](https://github.com/retailpulses/inbox/issues/151) |
-| **P0** | Data & Engineering Platform | **Deterministic Engineering Delivery Controls** | **DEFINED** | High | Critical | 把 Engineering Standards 落成 deterministic controls：main-before-deploy、orphan PR、worktree hygiene、completion evidence | [#153](https://github.com/retailpulses/inbox/issues/153) |
-| **P0** | Commerce Operations | **Marketplace Fulfillment Runtime Ownership & Reliability** | **DEFINED** | High | High | Mercari VPS cutover / production acceptance；Rakuten 作为同一 capability 的平台 workstream | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
-| **P0** | Commerce Operations | **Mercari Multi-unit Purchase Readiness** | **DEFINED** | High | High | partial cancellation / procurement safety、真实库存 rollout、live acceptance | [#115](https://github.com/retailpulses/commerce-ops/issues/115) |
-| **P0/P1** | Commerce Growth | **Product Visual / Listing Image Capability** | **DEFINING** | Critical | High | 收敛 image data model + capability layer + operator/publish/read-back workflow；**未过 readiness gate 前不启动新的 feature development** | [Image context #64](https://github.com/retailpulses/inbox/issues/64) · [Portfolio #149](https://github.com/retailpulses/inbox/issues/149) |
-| **P0/P1** | Company Operations | **Accounting & Financial Operations** | **DEFINING** | High | High | FY3 closing + canonical archive + freee round-trip；收敛 recurring financial/statutory controls 到一个 capability | [POC #6](https://github.com/retailpulses/inbox/issues/6) · [FY3 #133](https://github.com/retailpulses/inbox/issues/133) |
-| **P1** | Data & Engineering Platform | **Critical Capability & Regression Test Governance** | **DEFINED** | Medium | High | capability registry → coverage/gap matrix → incident-to-regression permanence | [#146](https://github.com/retailpulses/inbox/issues/146) |
-| **P1** | Data & Engineering Platform | **CI / Runner Execution Architecture** | **DEFINED** | Medium | High | workload placement、runner reliability、queue/cache、production isolation、second node | [#147](https://github.com/retailpulses/inbox/issues/147) |
-| **P1** | Data & Engineering Platform | **Runtime Business Health & Observability** | **DEFINING** | High | High | thin health-contract model，重点检测 green scheduler / broken business | [#120](https://github.com/retailpulses/inbox/issues/120) |
-| **P1** | Data & Engineering Platform | **Epic Portfolio Review & Automation** | **DEFINED** | High | High | Four-Program mapping、stale cleanup、Epic metadata/readiness、daily dashboard automation | [#154](https://github.com/retailpulses/inbox/issues/154) |
+---
 
-### Portfolio operating rules
+# 3. Epic → Issue execution model
 
-- **Program first, Epic execution**：管理层首先看 4 个 Program；实际推进以 well-defined Epic 为单位。
-- **Priority ≠ Readiness**：P0 Empty/Defining Epic 的最高优先动作是把 Epic 定义清楚，而不是开始编码。
-- **Cross-repo is normal**：Epic 可以跨 Inbox、CatalogSync、commerce-ops、boutique-listing、RPagentOS。
-- **Business work counts**：Epic 可包含工程、运营、数据、内容、SOP、会计、供应商/外部协作和人工验证。
-- **Capability > code volume**：现有代码少不代表业务优先级低。
-- **MERGED != DONE**：完成看 capability target state 与 evidence。
-- **DOCUMENTED != ENFORCED**：critical engineering standards 应逐步转为 deterministic control。
-- **No artificial progress**：没有 material change 就保持状态。
-- **Stale cleanup first**：旧 backlog 先判定 completed / superseded / stale，再用于 Program/Epic 规划。
+每个 Epic 应成为下层工作的唯一 portfolio parent，而不是让 Program 直接连接大量零散 Issue。
 
-### Daily review focus
+```text
+Program
+└── Epic (target state + DoD)
+    ├── Issue / Workstream A
+    │   ├── PR
+    │   └── runtime / read-back evidence
+    ├── Issue / Workstream B
+    │   └── manual / operational evidence
+    └── Issue / Workstream C
+        └── PR / deploy / acceptance
+```
 
-每天从 Program → Epic review：
+### Issue triage
 
-1. Readiness 是否仍正确；是否有未定义 Epic 在偷偷开发；
-2. material progress + evidence；
-3. genuine hard blocker；
-4. single next action；
-5. 是否需要 Jim 决策/批准；
-6. priority/value 是否发生变化；
-7. child Issue/PR 是否 orphan/stale；
-8. Epic 是否达到 DoD，应关闭或转入 routine operation。
+一个 Issue 应能明确回答：
 
-详细事实仍保留在 canonical Issue / PR，本页只保留 portfolio decision 所需信息。
+- **Parent Epic**：它服务哪个 Epic？
+- **Owner / repository**：事实和实现归谁？
+- **Deliverable**：这个 Issue 独立完成什么？
+- **Next action**：下一步是什么？
+- **Evidence / DoD**：什么证明它完成？
 
-### Canonical portfolio method
+没有有效 Parent Epic 的长期工作应被检查：它可能是新 Epic 的 discovery、routine operation、incident，或者 stale/orphan work。
 
+---
+
+# 4. Portfolio review
+
+日常 review 顺序固定为：
+
+**Program → Epic → child Issues → evidence**
+
+对每个 active Epic 检查：
+
+1. **State** — active / blocked / watch / done
+2. **Readiness** — EMPTY / DEFINING / DEFINED 是否仍正确
+3. **Material progress** — target state 有什么真实变化
+4. **Evidence** — merge / deploy / runtime read-back / completed operational action
+5. **Hard blocker** — 是否存在真正的 external / authority / dependency block
+6. **Next action** — 单一最有价值的下一步
+7. **Decision required** — 是否需要 owner / Jim 决策
+8. **Child hygiene** — orphan / stale Issue 或 PR
+9. **Completion** — 是否已达到 Epic DoD，应关闭并转入 routine operation
+
+如果没有 material change，就保持 **no material change**；不要制造进度。
+
+---
+
+# 5. Completion rules
+
+Portfolio completion 以 outcome 和 evidence 为准：
+
+- **MERGED != DONE**
+- **SCHEDULED != RUN**
+- **DEPLOY STARTED != VERIFIED**
+- **DOCUMENTED != ENFORCED**
+
+PR 是 implementation evidence，不是 Portfolio outcome。
+
+跨 repository 是正常状态：Epic 可以同时包含 `inbox`、`commerce-ops`、`CatalogSync`、`RPagentOS`、`boutique-listing` 或其他 owning repositories 的 Issue。
+
+---
+
+# 6. Canonical control plane
+
+## Portfolio / cross-repo coordination
+
+- [inbox](https://github.com/retailpulses/inbox) — Program / Epic coordination、cross-repo governance、未明确归属事项
 - [Epic & Portfolio Operating Method](https://github.com/retailpulses/inbox/blob/main/system%20design/playbooks/epic-and-portfolio-operating-method.md)
-- [Four-Program Review Draft](https://github.com/retailpulses/inbox/blob/portfolio/four-program-review-draft/system%20design/artifacts/four-program-portfolio-review-draft-2026-09-19.md)
 - [Portfolio Audit #149](https://github.com/retailpulses/inbox/issues/149)
 - [Daily Portfolio Epic #154](https://github.com/retailpulses/inbox/issues/154)
 
-## 使用方式
+## Primary execution repositories
 
-1. 从 **Program & Epic Portfolio Dashboard** 进入对应 canonical Epic / evidence。
-2. Issue 是 requirements / engineering facts 的 canonical work record；PR、workflow、runtime evidence 是 supporting evidence。
-3. `inbox` 只承担 cross-repo / portfolio / governance，不复制 repo-local implementation truth。
-4. 完成标准以实际 evidence 为准：**MERGED != DONE，SCHEDULED != RUN，DEPLOY STARTED != VERIFIED**。
+| Repository | Ownership |
+|---|---|
+| [commerce-ops](https://github.com/retailpulses/commerce-ops) | Ops Portal、Inquiry、Orders、Tickets |
+| [CatalogSync](https://github.com/retailpulses/CatalogSync) | Catalog、inventory、marketplace synchronization |
+| [RPagentOS](https://github.com/retailpulses/RPagentOS) | Product Catalog owner、automation、listing intelligence |
+| [boutique-listing](https://github.com/retailpulses/boutique-listing) | Listing creation / editing / publishing |
+| [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | Deterministic repository governance controls |
 
-## Governance
+## Governance references
 
 - [Engineering Triage Methodology](https://github.com/retailpulses/inbox/blob/main/docs/17_ENGINEERING_TRIAGE_METHODOLOGY.md)
 - [Issue Governance](https://github.com/retailpulses/inbox/blob/main/docs/14_ISSUE_GOVERNANCE.md)
-- [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit)
+
+---
+
+## Source-of-truth rule
+
+这个组织首页应保持为 **thin portfolio view**。
+
+Program / Epic 定义、决策历史、Issue 状态和执行证据不应只存在于本 README。Canonical management knowledge 应落在 `retailpulses/inbox` 或对应 owning repository；这个页面只负责把最重要的 top-down 结构投影到 GitHub organization 首页。
