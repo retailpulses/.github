@@ -57,6 +57,7 @@ Deploy / Read-back / Operational Evidence
 | **Cross-platform Commerce Growth** | DEFINED | Mercari / Rakuten / Amazon JP 的可衡量增长、margin-safe execution 和跨渠道优先级 | [#267](https://github.com/retailpulses/inbox/issues/267) |
 | **Canonical Product Facts & Multi-platform Listings** | DEFINED | canonical product facts、copy impact、platform adapters、listing drift/read-back | [#202](https://github.com/retailpulses/inbox/issues/202) |
 | **Canonical Product Images** | DEFINED | canonical image set、asset provenance、quality review、platform image sets | [#218](https://github.com/retailpulses/inbox/issues/218) |
+| **Catalog Freshness & Resilience** | DEFINED | Giga upstream → canonical → marketplace freshness；freshness SLO / recovery contract | [#151](https://github.com/retailpulses/inbox/issues/151) |
 | **Marketplace Fulfillment Runtime Ownership & Reliability** | DEFINED | Mercari / Rakuten fulfillment runtime ownership、production acceptance、recovery | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
 | **Mercari Multi-unit Purchase Readiness** | DEFINED | partial cancellation / procurement safety、真实库存 rollout、live acceptance | [#115](https://github.com/retailpulses/commerce-ops/issues/115) |
 | **Marketplace Offer & Commercial Operations** | DEFINING | seller/offer、price/inventory/promotion 的 canonical operational loop | [#234](https://github.com/retailpulses/inbox/issues/234) |
@@ -67,13 +68,14 @@ Commerce Program 可以跨 `commerce-ops`、`CatalogSync`、`boutique-listing`�
 
 ## Program C — Data & Engineering Platform
 
-**Outcome:** 让 runtime、agent-driven engineering delivery、CI/testing 和工程治理具备可靠、可恢复、可验证的基础能力。\n\nCatalog 业务能力不再放在 Program C；其中 **Catalog Freshness & Resilience #151 已移入 Program A**。
+**Outcome:** 让 runtime、agent-driven engineering delivery、CI/testing 和工程治理具备可靠、可恢复、可验证的基础能力。
+
+Catalog 业务能力不再放在 Program C；其中 **Catalog Freshness & Resilience #151 已移入 Program A**。
 
 ### Active Epics
 
 | Epic | Readiness | Current outcome / focus | Canonical |
 |---|---|---|---|
-| **Catalog Freshness & Resilience** | DEFINED | Giga upstream → canonical → marketplace freshness；freshness SLO / recovery contract | [#151](https://github.com/retailpulses/inbox/issues/151) |
 | **Engineering Delivery Reliability & Release Safety** | DEFINED | deterministic merge/release controls、staging/acceptance、runtime reconciliation、engineering hygiene | [#153](https://github.com/retailpulses/inbox/issues/153) |
 | **Critical Capability & Regression Test Governance** | DEFINED | capability registry → coverage/gap matrix → incident-to-regression permanence | [#146](https://github.com/retailpulses/inbox/issues/146) |
 | **Local Execution & Verification Platform** | DEFINED | workload placement、runner reliability、queue/cache、production isolation | [#147](https://github.com/retailpulses/inbox/issues/147) |
