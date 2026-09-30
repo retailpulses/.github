@@ -57,6 +57,8 @@ Deploy / Read-back / Operational Evidence
 | **Cross-platform Commerce Growth** | DEFINED | Mercari / Rakuten / Amazon JP 的可衡量增长、margin-safe execution 和跨渠道优先级 | [#267](https://github.com/retailpulses/inbox/issues/267) |
 | **Canonical Product Facts & Multi-platform Listings** | DEFINED | canonical product facts、copy impact、platform adapters、listing drift/read-back | [#202](https://github.com/retailpulses/inbox/issues/202) |
 | **Canonical Product Images** | DEFINED | canonical image set、asset provenance、quality review、platform image sets | [#218](https://github.com/retailpulses/inbox/issues/218) |
+| **Rakuten Catalog 2.0** | DEFINED | existing Rakuten catalog 的完整质量升级、批次治理和运营验收 | [#170](https://github.com/retailpulses/inbox/issues/170) |
+| **Amazon JP Existing Listings Growth** | DEFINED | 现有 Amazon JP listings 的商业就绪、测量、内容/广告实验和增长闭环 | [#212](https://github.com/retailpulses/inbox/issues/212) |
 | **Catalog Freshness & Resilience** | DEFINED | Giga upstream → canonical → marketplace freshness；freshness SLO / recovery contract | [#151](https://github.com/retailpulses/inbox/issues/151) |
 | **Marketplace Fulfillment Runtime Ownership & Reliability** | DEFINED | Mercari / Rakuten fulfillment runtime ownership、production acceptance、recovery | [Mercari #123](https://github.com/retailpulses/commerce-ops/issues/123) · [Rakuten #152](https://github.com/retailpulses/commerce-ops/issues/152) |
 | **Mercari Multi-unit Purchase Readiness** | DEFINED | partial cancellation / procurement safety、真实库存 rollout、live acceptance | [#115](https://github.com/retailpulses/commerce-ops/issues/115) |
@@ -81,6 +83,10 @@ Catalog 业务能力不再放在 Program C；其中 **Catalog Freshness & Resili
 | **Local Execution & Verification Platform** | DEFINED | workload placement、runner reliability、queue/cache、production isolation | [#147](https://github.com/retailpulses/inbox/issues/147) |
 | **Runtime Business Health & Observability** | DEFINING | 检测“scheduler green / business broken”；建立 thin health-contract model | [#120](https://github.com/retailpulses/inbox/issues/120) |
 | **Epic Portfolio Review & Automation** | DEFINED | Program mapping、Epic metadata/readiness、stale cleanup、dashboard operating loop | [#154](https://github.com/retailpulses/inbox/issues/154) |
+| **Supabase Production Security Boundary & RLS Hardening** | DEFINED | production DB exposure、runtime identity、least privilege、RLS/grants and verified cutover | [#104](https://github.com/retailpulses/inbox/issues/104) |
+| **Canonical Identity, Authorization & Audit** | DEFINING | Ops Portal shared identity、authorization、actor/audit model and provider decision | [#252](https://github.com/retailpulses/inbox/issues/252) |
+| **Canonical Lab — Agent Development & Promotion Model** | DEFINED | Mac mini local capability development、Local Git、promotion boundary and workspace governance | [#258](https://github.com/retailpulses/inbox/issues/258) |
+| **Local AI Inference & Business Automation** | DEFINING | governed local-model inference capability、benchmarking and bounded business/engineering use | [#165](https://github.com/retailpulses/inbox/issues/165) |
 
 ---
 
