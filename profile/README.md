@@ -105,7 +105,7 @@ Catalog 业务能力不再放在 Program C；其中 **Catalog Freshness & Resili
 | **Epic Portfolio Review & Automation** | DEFINED | Program mapping、Epic metadata/readiness、stale cleanup、dashboard operating loop | [#154](https://github.com/retailpulses/inbox/issues/154) |
 | **Supabase Production Security Boundary & RLS Hardening** | DEFINED | production DB exposure、runtime identity、least privilege、RLS/grants and verified cutover | [#104](https://github.com/retailpulses/inbox/issues/104) |
 | **Canonical Identity, Authorization & Audit** | DEFINING | Ops Portal shared identity、authorization、actor/audit model and provider decision | [#252](https://github.com/retailpulses/inbox/issues/252) |
-| **Canonical Lab — Agent Development & Promotion Model** | DEFINED | Mac mini local capability development、Local Git、promotion boundary and workspace governance | [#258](https://github.com/retailpulses/inbox/issues/258) |
+| **Mac mini Local Capability Development & Promotion Model** | DEFINED | Mac mini local capability development、Local Git、promotion boundary and workspace governance | [#258](https://github.com/retailpulses/inbox/issues/258) |
 | **Local AI Inference & Business Automation** | DEFINING | governed local-model inference capability、benchmarking and bounded business/engineering use | [#165](https://github.com/retailpulses/inbox/issues/165) |
 
 ---
