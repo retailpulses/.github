@@ -10,6 +10,26 @@
 
 ---
 
+## Current Release Train
+
+**2026-W40 Commerce Ops Sunday Release — DEFINED / EXECUTION PLANNING**
+
+当前 Commerce Ops 使用一个跨 Epic 的 bounded Release Train，把本周已定义的开发工作集中到同一个周日生产发布窗口，减少工作日 production change 的干扰。
+
+**W40 committed focus:**
+- **P0:** Queue → Supporting Filters → Date Ranking operator workbench quick wins（#293 / #267 等）
+- business-readable entity deep links and record addressability（#321）
+- Ticket managed Template UX quick win
+- production promotion: coordinated Sunday release only after merged-main / acceptance / rollback gates
+
+**Control plane:** [commerce-ops#322 — 2026-W40 Commerce Ops Sunday Release](https://github.com/retailpulses/commerce-ops/issues/322)
+
+**Next train planning:** [commerce-ops#324 — 2026-W41 Commerce Ops](https://github.com/retailpulses/commerce-ops/issues/324) — configurable copywriting, bounded local-Qwen evaluation, Knowledge-enhanced drafting, and blocked/carryover queue work are current candidates.
+
+Release Train 是临时 delivery boundary，不取代 Program / Epic / Issue hierarchy。详细 scope、PR、release readiness 和 deployment evidence 以对应 Train Issue 与 owning Issues/PRs 为准。
+
+---
+
 ## Portfolio hierarchy
 
 ```text
