@@ -44,6 +44,59 @@
 
 已见消费者包括 CatalogSync、commerce-ops、inbox、RPagentOS 等；这不是完整迁移名单。实施前必须枚举当前活跃仓库、默认分支、开放 PR、Workflow 引用、安装脚本和本地使用者，记录具体 ref、作用及验证方式。代码搜索受索引和结果上限影响，不能以“没搜到”证明没有消费者。未检查 GitHub Actions 设置、凭据权限、当前 runner 在线状态、实际触发历史或本地工具部署。
 
+### 2.1 关键业务仓库依赖核查（2026-10-22 补充）
+
+**范围：** 固定默认分支快照下的完整目录、全部根级 Workflow、治理声明、命中的当前政策入口、工具副本及相关治理脚本。另读取 CatalogSync 实际引用的旧 kit 历史 Workflow，而非用 kit 最新 main 代替。结果为代码级核查；未运行 CI、部署、数据库操作，未核验组织 Actions 设置和归档后的平台调用行为。
+
+| 仓库 | 核查 commit | Workflow 结论 |
+| --- | --- | --- |
+| [commerce-ops](https://github.com/retailpulses/commerce-ops/tree/42e397088c681c3dacd395456f5a1dde7089ad4c) | `42e397088c681c3dacd395456f5a1dde7089ad4c` | 19 个根级 Workflow 均读取；未发现直接 `uses: retailpulses/rp-governance-kit/...`，不等于该仓库没有治理依赖 |
+| [CatalogSync](https://github.com/retailpulses/CatalogSync/tree/a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4) | `a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4` | 10 个根级 Workflow 均读取；4 个直接调用旧 kit；其中 post-deploy 仅声明 `workflow_call`，未在该快照其他根级 Workflow 中发现其调用方，实际使用需查运行/外部消费者 |
+
+#### CatalogSync：CI / 发布依赖清单
+
+以下路径均位于 [CatalogSync/.github/workflows](https://github.com/retailpulses/CatalogSync/tree/a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4/.github/workflows)。
+
+| 消费文件 | 旧 kit 目标 / ref | 迁移需要保护的接口 |
+| --- | --- | --- |
+| `governance-checks.yml` | `governance-checks.yml@f2696cf447ee52903938e580d299e4073093586c` | main PR 检查；固定历史行为、job/check 名称与 runner 需求 |
+| `database-governance.yml` | `database-governance-checks.yml@6be2977b370975c117cce9ed1d1fb437518072d2` | DB 路径过滤、BLOCKING / PRODUCTION_GATE / ADVISORY 三类检查；不能迁移时降为仅提醒 |
+| `post-deploy-governance.yml` | `post-deploy-governance.yml@12056e83066536fff6804209f049f6de4b107081` | environment、target、smoke 输入及 comment/artifact 行为；实际调用方待核实 |
+| `deploy-vps.yml` | `vps-immutable-release.yml@main` | 手动 deploy/rollback、exact merged release SHA gate、production environment、adapter 接口、SSH secret 名称及并发保护 |
+
+**传递依赖与版本风险：**
+
+- 实际固定版本的 [database-governance-checks.yml](https://github.com/retailpulses/rp-governance-kit/blob/6be2977b370975c117cce9ed1d1fb437518072d2/.github/workflows/database-governance-checks.yml) 内部 checkout `retailpulses/rp-governance-kit`，ref 使用 `${{ github.workflow_sha }}`。迁移必须证明解析到正确的新仓库实现 commit，并校验脚本来源；只修改顶层 `uses:` 不够。
+- `deploy-vps.yml@main` 的中央 VPS Workflow 进一步调用旧仓库 `post-deploy-governance.yml@main`。先固定经验证的来源版本及嵌套链，再迁移，避免中央 main 同时变化导致无法比较。
+- CatalogSync 固定的历史 post-deploy Workflow 使用 ubuntu-latest；此前审计到的 kit main 版本使用 self-hosted 标签。不得直接用最新版本替代旧固定版本并宣称是“只换地址”，应明确兼容迁移与版本升级的差异。
+- 历史 post-deploy 实现执行消费者根目录的 `bin/rp-deploy-closeout` 和 `bin/rp-repo-housekeeping`；缺失工具时可能 warning 后退出成功。因此 Workflow 绿灯不足以证明 closeout 和 artifact 已产生，需读回实际输出。
+- CatalogSync 保留 7 个根级 `bin/rp-*` 工具；`.github/governance-ref.txt` 与 `governance/local.yaml` 均指向 `12056e83066536fff6804209f049f6de4b107081`，但两个检查 Workflow 固定不同 SHA，VPS 又为 main。**不存在一个可统一替换的“当前 kit 版本”。**
+- `governance/local.yaml` 的 database/architecture owner、`AGENTS.md`、`CLAUDE.md`、`docs/16_*`、`docs/17_*`、`docs/18_*`、架构及部署说明需要同步新的政策位置。保留本地 `architecture` 配置、capability registry、invalidating surfaces、只读/最小权限限制，不用中央模板覆盖。
+- 原生产发布的 adapter、SSH secret 名称、environment、权限和 runner 可用性均需验证；本核查未触发发布或查看 secret 值。
+
+#### commerce-ops：App 级声明、工具与治理流程
+
+| 依赖面 | 当前事实 | 整合 / 退役要求 |
+| --- | --- | --- |
+| 根级 CI / 发布 | 当前 19 个 Workflow 没有直接引用 kit；`phase0a-governance.yml` 调用本地 `scripts/ci/phase0a-pr-governance.py`，该脚本为 WARN 模式 | 保留本地治理及生产迁移/发布 gate；不能因为不存在 kit Workflow 就标记为“全部迁移完成”，也不应在仓库合并时额外安装一套强制检查 |
+| App 级治理声明 | `apps/{orders,tickets,inquiry,ops-portal}/governance/local.yaml` 均引用旧 kit；orders version 为 `cd336f9ba787c985e175a2f7952a044342eed0fa`，另外三者为 `12056e83066536fff6804209f049f6de4b107081` | 四个 App 分别迁移并记录 ref 映射；orders 的 owned domain / workloads 和各 App 的限制必须保留 |
+| 数据库政策入口 | 四个 App 的 `docs/16_DATABASE_GOVERNANCE.md` 均链接旧 kit `4eb1c7229ddee7b1cf2d813c6adbc86302615287` 的政策及中央 YAML 注册表；版本不同于 local.yaml | 区分“文档指针版本”和“安装/声明版本”；逐一映射，不凭 governance_version 批量升级所有政策 |
+| 本地工具 | 四个 App 各有 7 个 `bin/rp-*` 副本，共 28 个路径；`rp-issue-work` / `rp-issue-audit` 包含旧安装器/ownership 指引 | 工具源码留在本地可运行；后续安装/升级使用新发布入口，路径与工作目录必须按 App 测试 |
+| 目录假设 | closeout/housekeeping 副本按根级 `bin/`、`.github/` 或仓库 Workflow 名查找；现 monorepo 的工具实际位于 `apps/*/bin/` | 先验证真实调用 cwd 与参数；不得在同语义导入中顺便移动全部工具，也不能把探测不到治理文件判定为未治理 |
+| 生产迁移及发布 | 业务 Workflow 使用本地脚本、release SHA、production environment 和 App 路径 | 不替换为 CatalogSync 的发布模型；保持既有 audit/apply 分离、精确版本与现有外部写入边界 |
+| 中央 companion 工作 | Inquiry Phase / SYNC inventory 仍要求在 kit 更新 ownership/capabilities/access/workloads，并记录已有中央与本地 schedule/status 差异 | 权威切换时把未完成 companion 工作交接至 .github，保留原 Issue/PR 证据；搬仓库不等于这些业务差异已经修复或生产激活 |
+
+四个 App 的治理指针和工具是 monorepo 中保留的独立路径，迁移时不得按旧 OrderMgmt/ticket-handling/inquiry-automation/ops-portal 独立仓库结构重新安装。历史审批 PR/Issue 链接保留旧地址作为证据，不机械改写成 .github 的相同编号。中央 YAML 中如仍存在旧业务仓库身份，只记录待 reconciliation；纯仓库整合不能隐式扩大权限、改 owner 或激活 workload。
+
+#### 纳入 P3–P5 的必要 gate
+
+1. **试点后先迁移低风险检查。** CatalogSync 普通治理/DB 检查各自建立 ref 映射，验证应通过/应失败 fixture、过滤范围、脚本来源及 check 名；新旧差异需要说明，不能静默升级。
+2. **commerce-ops 单独处理 App 级采用。** 四套 local.yaml、政策入口及工具分别记录更新结果，保留现有本地 WARN/生产 gate。核心业务 App 不是全组织批量 installer 的试验目标。
+3. **CatalogSync 发布链最后切换。** 完成 top-level + nested Workflow + internal checkout 全链映射，验证本地 adapter、environment、secret 名称、权限与 runner；先做无生产写入的 rehearsal，实际 release 验证需另获相应授权。
+4. **区分退役和删除。** 当前不具备删除旧 kit 的条件。4 个 CatalogSync Workflow 是旧仓库可用性的明确消费者；归档是否影响 Actions 的调用/可用性须在实施阶段验证，不能靠链接能打开代替。
+5. **归档前每个活跃依赖必须有处置。** 已迁移到新固定版本，或明确批准继续保留旧不可变 ref 且验证其可读/可调用；不能留下未解释的旧 `@main` 运行依赖。historical Issue/PR 链接不是应清除的“残留”。
+6. **不夸大审计结果。** 没有直接 Workflow 引用不证明生产执行对旧 kit 绝无依赖。本轮为代码级结果；runner 本地安装副本、组织 Actions allowlist/required checks、开放 PR 使用的旧 ref、真实 run、release provenance 仍需 P0/P5 readback。
+
 ### 3. 目标内容归属及冲突处理
 
 | 内容 | 建议目标 | 处理要求 |
@@ -100,6 +153,7 @@ P4 权威切换必须有明确生效 commit/日期并同步入口。P1/P2 的暂
 - [ ] 活跃消费者清单全部有明确结果：已迁移 / 有理由保留旧固定版本 / 已停用；例外可追踪。
 - [ ] Actions 访问、runner、inputs、secrets、permissions、concurrency 和嵌套调用的实际兼容性已验证。
 - [ ] 回退路径和 ref 映射可用；旧历史仍可访问，归档安全性有证据。
+- [ ] CatalogSync 的 4 个 Workflow 及传递依赖、commerce-ops 的 4 套 App 治理声明/政策入口/工具，均按 §2.1 完成迁移或获准兼容处置。
 - [ ] Canonical README、Agent 指令及 adoption 文档完成权威切换，主计划状态与事实一致。
 
 ### 7. 用户审阅决策
@@ -134,3 +188,5 @@ P4 权威切换必须有明确生效 commit/日期并同步入口。P1/P2 的暂
 ## 维护记录
 
 - 2026-10-22：完成两个默认分支的目录、关键入口及下游样本核查；建立 GOV-B01 整合提案与 GOV-B02 后续项。仅计划记录，不计作整合进展。
+
+- 2026-10-22：补充 commerce-ops / CatalogSync 固定快照审计、29 个 Workflow 的直接依赖检查、历史 Workflow 传递依赖和 App 级采用矩阵，新增关键业务消费者的退役 gate。未改动业务仓库或执行任何发布。
