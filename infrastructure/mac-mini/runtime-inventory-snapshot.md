@@ -1,11 +1,34 @@
 # Mac mini Runtime Inventory — Observed Snapshot
+
 **与 YAML 的关系：** `runtime-inventory.yaml` 是唯一的 Runtime Registry（15 项）；本文件是同一批 Runtime 的只读现场快照。此前第一张表只列出其中 **5 项监听端口的服务**，所以出现 5 vs 15 的表面差异，并非两套清单。SQLite 数据资产另外计数，不作为 Runtime 进程。
 **Host:** rp-macmini-01  
 **Observed:** 2026-10-22 14:35 JST (initial discovery)  
 **Method:** Read-only shell inspection via authorized Mac mini connection  
 **Coverage:** Partial; not a certification of all active jobs or their health.
 
-## Runtime observations — 15 registered entries\n\n以下记录对应 YAML 的 15 个 Runtime ID。PID 为采样时刻的临时值，不代表当前仍在运行。\n\n| Runtime ID | 观察状态 | PID（采样时） |\n| --- | --- | --- |\n| `storeops-portal` | Running; TCP 8765 | 90417 |\n| `mercari-operations-ui` | Running; TCP 8795 | 81073 |\n| `rakuten-operations-ui` | Running; TCP 8794 | 5042 |\n| `portal-auth-proxy` | Running; TCP 8790 | 5041 |\n| `inquiry-sqlite-viewer` | Running; TCP 8001 | 27193 |\n| `mercari-copy-scheduler` | Loaded; last success unknown | — |\n| `local-database-sync` | Loaded; last success unknown | — |\n| `canonical-data-daily` | Loaded; last success unknown | — |\n| `canonical-data-reconcile` | Loaded; last success unknown | — |\n| `stock-monitor-daily` | Loaded; last success unknown | — |\n| `rakuten-login-watch` | Loaded; launchctl status 2, needs diagnosis | — |\n| `timesale-staging-pull` | Cron configured; last success unknown | — |\n| `machine-snapshot` | Cron configured; last success unknown | — |\n| `github-actions-runner-01` | Running | not independently verified |\n| `github-actions-runner-02` | Running | not independently verified |\n\n## Confirmed listening processes
+## Runtime observations — 15 registered entries
+
+以下记录对应 YAML 的 15 个 Runtime ID。PID 为采样时刻的临时值，不代表当前仍在运行。
+
+| Runtime ID | 观察状态 | PID（采样时） |
+| --- | --- | --- |
+| `storeops-portal` | Running; TCP 8765 | 90417 |
+| `mercari-operations-ui` | Running; TCP 8795 | 81073 |
+| `rakuten-operations-ui` | Running; TCP 8794 | 5042 |
+| `portal-auth-proxy` | Running; TCP 8790 | 5041 |
+| `inquiry-sqlite-viewer` | Running; TCP 8001 | 27193 |
+| `mercari-copy-scheduler` | Loaded; last success unknown | — |
+| `local-database-sync` | Loaded; last success unknown | — |
+| `canonical-data-daily` | Loaded; last success unknown | — |
+| `canonical-data-reconcile` | Loaded; last success unknown | — |
+| `stock-monitor-daily` | Loaded; last success unknown | — |
+| `rakuten-login-watch` | Loaded; launchctl status 2, needs diagnosis | — |
+| `timesale-staging-pull` | Cron configured; last success unknown | — |
+| `machine-snapshot` | Cron configured; last success unknown | — |
+| `github-actions-runner-01` | Running | not independently verified |
+| `github-actions-runner-02` | Running | not independently verified |
+
+## Confirmed listening processes
 
 | Service | PID | Address | Evidence |
 | --- | ---: | --- | --- |
