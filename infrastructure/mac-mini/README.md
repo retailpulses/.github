@@ -1,22 +1,25 @@
-# Mac mini Runtime Registry
+# Mac mini Runtime Inventory
 
-Canonical inventory for rp-macmini-01. This registry documents registered application runtimes and their operational contract; it is not a live monitoring service.
+This directory maintains the canonical inventory of Mac mini runtimes and local data assets.
 
-- `runtime-inventory.yaml`: version-controlled registry of known runtime identities, execution modes, code paths and state references.
-- `runtime-inventory-snapshot.md`: timestamped read-only observed evidence and unresolved gaps.
+## Files and counting
 
-## Maintenance
-- Update the registry when a runtime is introduced, deployed, relocated, disabled or retired.
-- Record actual checkout commit SHA and executable path after verification; never infer from directory names.
-- Mark unverified details UNKNOWN. Loaded LaunchAgent does not prove a successful run.
-- Runtime discovery must remain read-only: do not restart, disable, clean up, or modify jobs as part of inventory.
-- GitHub stores no tokens, credentials, environment variable values or private configuration contents.
-- Production runtime code changes require explicit deployment/activation; Git pull in a development checkout is not deployment.
-- A running Python process and its checkout are distinct: verify process command, code path, scheduler and state independently.
-- Avoid per-runtime tracking issues unless there is a concrete defect to fix.
+- `runtime-inventory.yaml`: canonical machine-readable registry of runtime identities, execution entrypoints, and local database assets.
+- `runtime-inventory-snapshot.md`: timestamped observations for **the same runtime IDs**, including running processes, loaded schedulers, and outstanding verification.
 
-## Scope
-macOS LaunchAgents and LaunchDaemons, cron, long-running services, scheduled Python jobs, supporting proxies, and relevant GitHub Actions runners. Excludes ordinary interactive IDE/browser processes unless part of a registered production workflow.
+The initial inventory contains **15 runtime entries**. The five listening services in the earlier snapshot were only a subset, not a different inventory. Database files are listed separately under `data_assets` and are **not counted as running services**.
+
+## Rules
+
+1. Update the registry when a runtime or local database asset is added, moved, deployed, disabled, or retired.
+2. Keep transient PIDs, observed health and execution results in the snapshot, not in canonical runtime definitions.
+3. Distinguish database instances, SQLite data files, and synchronization jobs.
+4. Mark unverified paths, commits, status and backups as UNKNOWN rather than guessing.
+5. Discover runtime state read-only; inventory does not authorize deployment, restarts or cleanup.
+6. Never commit credentials, tokens, connection secrets, environment values or customer data.
 
 ## Refresh
-On rp-macmini-01 inspect `launchctl list`, `crontab -l`, `ps`, `lsof`, relevant plist files, Git checkout status/HEAD, and recent execution logs. Update the snapshot with timestamp and evidence; reconcile against registry. Do not publish secret-bearing command lines or environment variables.
+
+On the Mac mini inspect launchctl, crontab, processes, listening ports, Git checkout HEADs and relevant execution logs. For databases, verify instance existence, configured file locations, logical ownership and backup arrangements without reading business data. Reconcile each observed runtime ID against YAML.
+
+This is an initial partial inventory, not a complete health certification.
