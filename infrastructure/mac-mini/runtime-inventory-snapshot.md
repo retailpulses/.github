@@ -1,5 +1,5 @@
 # Mac mini Runtime Inventory — Observed Snapshot
-
+//what is the relationship with runtime-inventory.yaml? why the numbers are  different in 2 files?
 **Host:** rp-macmini-01  
 **Observed:** 2026-10-22 14:35 JST (initial discovery)  
 **Method:** Read-only shell inspection via authorized Mac mini connection  
