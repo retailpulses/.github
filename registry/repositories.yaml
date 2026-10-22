@@ -1,0 +1,124 @@
+schema_version: "0.1"
+organization: retailpulses
+snapshot_date: "2026-10-22"
+source: "GitHub repository listing; descriptions selectively corroborated against README"
+notes:
+  - "Lifecycle is GitHub archived flag, not production runtime status."
+  - "UNKNOWN roles require repository-level review."
+  - "This registry does not replace repository-owned architecture or deployment docs."
+repositories:
+  - name: .github
+    url: https://github.com/retailpulses/.github
+    lifecycle: active_repository
+    role: engineering_registry
+    note: "中央 Engineering / Infrastructure Registry 与组织 GitHub 默认文件"
+  - name: rp-governance-kit
+    url: https://github.com/retailpulses/rp-governance-kit
+    lifecycle: active_repository
+    role: governance_current
+    note: "当前生效的治理工具、Workflow 与标准；迁移见 .github#11"
+  - name: inbox
+    url: https://github.com/retailpulses/inbox
+    lifecycle: active_repository
+    role: cross_system_work
+    note: "跨系统工作、早期 POC 与运营协调"
+  - name: commerce-ops
+    url: https://github.com/retailpulses/commerce-ops
+    lifecycle: active_repository
+    role: production_app_source
+    note: "运营产品 Monorepo，产品级生产拓扑权威"
+  - name: store-ops
+    url: https://github.com/retailpulses/store-ops
+    lifecycle: active_repository
+    role: store_operations
+    note: "Marketplace Store Operations"
+  - name: commerce-lab
+    url: https://github.com/retailpulses/commerce-lab
+    lifecycle: active_repository
+    role: local_analytics_tools
+    note: "本地分析、数据工作流和实验工具"
+  - name: CatalogSync
+    url: https://github.com/retailpulses/CatalogSync
+    lifecycle: active_repository
+    role: catalog_sync
+    note: "Catalog 数据同步"
+  - name: retailpulses-tool-services
+    url: https://github.com/retailpulses/retailpulses-tool-services
+    lifecycle: active_repository
+    role: tool_services
+    note: "MCP、CLI 与可执行工具服务"
+  - name: RPagentOS
+    url: https://github.com/retailpulses/RPagentOS
+    lifecycle: active_repository
+    role: agent_platform
+    note: "Agent OS 相关代码；当前运行归属未核实"
+  - name: boutique-listing
+    url: https://github.com/retailpulses/boutique-listing
+    lifecycle: active_repository
+    role: product_source_unverified
+    note: "产品源码；具体当前职责未核实"
+  - name: OrderMgmt
+    url: https://github.com/retailpulses/OrderMgmt
+    lifecycle: active_repository
+    role: legacy_or_transition_unverified
+    note: "与 commerce-ops 的迁移关系需核实，未归档"
+  - name: workers
+    url: https://github.com/retailpulses/workers
+    lifecycle: active_repository
+    role: unverified
+    note: "仓库存在，内容与部署状态未核实"
+  - name: Archon
+    url: https://github.com/retailpulses/Archon
+    lifecycle: active_repository
+    role: unverified
+    note: "当前用途待核实"
+  - name: homebliss-vpn
+    url: https://github.com/retailpulses/homebliss-vpn
+    lifecycle: active_repository
+    role: infrastructure_code_unverified
+    note: "VPN 相关代码，运行状态未核实"
+  - name: homebliss-rustdesk
+    url: https://github.com/retailpulses/homebliss-rustdesk
+    lifecycle: active_repository
+    role: infrastructure_code_unverified
+    note: "远程桌面相关代码，运行状态未核实"
+  - name: homepage
+    url: https://github.com/retailpulses/homepage
+    lifecycle: active_repository
+    role: unverified
+    note: "网站相关仓库，部署状态未核实"
+  - name: gigacatlogsync
+    url: https://github.com/retailpulses/gigacatlogsync
+    lifecycle: archived
+    role: archived
+    note: "已归档"
+  - name: mail-integration
+    url: https://github.com/retailpulses/mail-integration
+    lifecycle: archived
+    role: archived
+    note: "已归档"
+  - name: baserow-wecom-notifier
+    url: https://github.com/retailpulses/baserow-wecom-notifier
+    lifecycle: archived
+    role: archived
+    note: "已归档"
+  - name: ticket-handling
+    url: https://github.com/retailpulses/ticket-handling
+    lifecycle: archived
+    role: archived
+    note: "已归档；源码可能已整合至 commerce-ops"
+  - name: inquiry-automation
+    url: https://github.com/retailpulses/inquiry-automation
+    lifecycle: archived
+    role: archived
+    note: "已归档；源码可能已整合至 commerce-ops"
+  - name: ops-portal
+    url: https://github.com/retailpulses/ops-portal
+    lifecycle: archived
+    role: archived
+    note: "已归档；源码可能已整合至 commerce-ops"
+  - name: internal-capability-layer
+    url: https://github.com/retailpulses/internal-capability-layer
+    lifecycle: archived
+    role: archived
+    note: "已归档；运行与继任边界待核实"
