@@ -1,0 +1,123 @@
+schema_version: 0.1
+host: rp-macmini-01
+timezone: Asia/Tokyo
+observed_at: "2026-10-22T14:35:34+09:00"
+status_note: "Initial partial read-only discovery; repository, commit, launch config, and last success not yet fully attested."
+runtimes:
+  - id: storeops-portal
+    product: StoreOPS Portal
+    execution_mode: launchagent
+    launch_label: com.retailpulses.mercari-local-ui
+    checkout_path: /Users/agent/work/store-ops-listing-runtime
+    entrypoint: apps/mercari/new-products-to-listing/mount_portal.py
+    listen: "127.0.0.1:8765"
+    observed_pid: 90417
+    observed_status: running
+    git_commit: UNKNOWN
+    notes: "References customer-agent, commerce-lab-ui and commerce-lab-listing runtime paths; verify dependencies."
+  - id: mercari-operations-ui
+    product: Mercari Operations
+    execution_mode: launchagent
+    launch_label: com.retailpulses.storeops-ui-mercari
+    entrypoint: "python -m apps.mercari.ui.console"
+    state_path: "/Users/agent/Library/Application Support/store-ops/mercari.sqlite3"
+    listen: "127.0.0.1:8795"
+    observed_pid: 81073
+    observed_status: running
+    git_commit: UNKNOWN
+  - id: rakuten-operations-ui
+    product: Rakuten Operations
+    execution_mode: launchagent
+    launch_label: com.retailpulses.storeops-ui-rakuten
+    entrypoint: "python -m apps.rakuten.ui.server"
+    state_path: "/Users/agent/Library/Application Support/store-ops/rakuten.sqlite3"
+    listen: "127.0.0.1:8794"
+    observed_pid: 5042
+    observed_status: running
+    git_commit: UNKNOWN
+  - id: portal-auth-proxy
+    product: Portal Access
+    execution_mode: launchagent
+    launch_label: com.retailpulses.mercari-portal-authproxy
+    entrypoint: /Users/agent/work/local-tools/rp-portal-auth-proxy/portal_auth_proxy.py
+    listen: "127.0.0.1:8790"
+    observed_pid: 5041
+    observed_status: running
+    git_commit: UNKNOWN
+  - id: inquiry-sqlite-viewer
+    product: Inquiry Experiment
+    execution_mode: launchagent
+    launch_label: com.retailpulses.inquiry-experiment-sqlite-viewer
+    entrypoint: /Users/agent/.local/share/retailpulses/sqlite-viewer/sqlite_viewer.py
+    listen: "127.0.0.1:8001"
+    observed_pid: 27193
+    observed_status: running
+    git_commit: UNKNOWN
+  - id: mercari-copy-scheduler
+    product: Mercari Copy
+    execution_mode: launchagent
+    launch_label: com.retailpulses.mercari-copy-scheduler
+    observed_status: loaded_not_running_at_sample
+    git_commit: UNKNOWN
+  - id: local-database-sync
+    product: Analytical Node
+    execution_mode: launchagent
+    launch_label: com.retailpulses.rp-local-database-sync
+    observed_status: loaded_not_running_at_sample
+    git_commit: UNKNOWN
+  - id: canonical-data-daily
+    product: Canonical Data
+    execution_mode: launchagent
+    launch_label: com.retailpulses.canonical-data-daily
+    observed_status: loaded_not_running_at_sample
+    git_commit: UNKNOWN
+  - id: canonical-data-reconcile
+    product: Canonical Data
+    execution_mode: launchagent
+    launch_label: com.retailpulses.canonical-data-reconcile
+    observed_status: loaded_not_running_at_sample
+    git_commit: UNKNOWN
+  - id: stock-monitor-daily
+    product: Stock Monitor
+    execution_mode: launchagent
+    launch_label: com.retailpulses.stock-monitor-daily
+    observed_status: loaded_not_running_at_sample
+    git_commit: UNKNOWN
+  - id: rakuten-login-watch
+    product: Rakuten Operations
+    execution_mode: launchagent
+    launch_label: com.retailpulses.storeops.rakuten-login-watch
+    observed_status: needs_diagnosis
+    last_launchctl_status: 2
+    git_commit: UNKNOWN
+  - id: timesale-staging-pull
+    product: Time Sale
+    execution_mode: cron
+    schedule: "* * * * *"
+    checkout_path: /Users/agent/work/repos/commerce-ops
+    entrypoint: apps/timesale/local_offer/pull_staged_batches.py
+    log_path: /Users/agent/Library/Logs/rp-timesale-staging.log
+    observed_status: scheduled_unverified
+    git_commit: UNKNOWN
+  - id: machine-snapshot
+    product: Mac mini Infrastructure
+    execution_mode: cron
+    schedule: "17 2 * * *"
+    entrypoint: /Users/agent/.local/lib/rp-machine-snapshot/scripts/rp-machine-snapshot.rb
+    log_path: /Users/agent/Library/Logs/rp-machine-snapshot.log
+    observed_status: scheduled_unverified
+    git_commit: UNKNOWN
+  - id: github-actions-runner-01
+    product: CI
+    execution_mode: launchdaemon
+    launch_label: com.retailpulses.github-runner.rp-macmini-01
+    entrypoint: /Users/agent/actions-runners/rp-macmini-01/runsvc.sh
+    observed_status: running
+    git_commit: UNKNOWN
+  - id: github-actions-runner-02
+    product: CI
+    execution_mode: launchdaemon
+    launch_label: com.retailpulses.github-runner.rp-macmini-02
+    entrypoint: /Users/agent/actions-runners/rp-macmini-02/runsvc.sh
+    observed_status: running
+    git_commit: UNKNOWN
