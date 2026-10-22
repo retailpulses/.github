@@ -6,11 +6,14 @@ The source of truth for Retailpulses engineering governance, reusable workflows,
 
 https://github.com/retailpulses/rp-governance-kit
 
-## Consolidation proposal / 整合计划审阅
+## Backlog 与计划审阅
 
-请在 [Canonical Backlog](BACKLOG.md) 审阅 `rp-governance-kit → .github` 整合计划（GOV-B01）及 README 模板与机器校验待办（GOV-B02）。
+Backlog 直接使用 [GitHub Issues](https://github.com/retailpulses/.github/issues) 管理，不另维护 Markdown Backlog 文件。具体状态、决策、依赖与验收以对应 Issue 为准。
 
-**状态：PROPOSED，尚未实施或切换治理权威。** 以下现行职责划分继续有效；Backlog 的存在或合并不代表迁移已经批准或完成。
+- [#11 — rp-governance-kit → .github 整合计划](https://github.com/retailpulses/.github/issues/11)：包含关键业务仓库依赖审计、迁移阶段、兼容/回退及待审阅决策。
+- [#12 — README 模板、创建流程与机器校验](https://github.com/retailpulses/.github/issues/12)。
+
+整合方案仍待审阅，尚未实施或切换治理权威；以下现行职责划分继续有效。
 
 ## What This Repo Is For
 
