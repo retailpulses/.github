@@ -1,6 +1,6 @@
 # Retailpulses Internal Product MVP Engineering Principles
 
-> Version: v0.2 | Status: **Reference Guideline (non-binding)** | Date: 2026-10-22
+> Version: v0.3 | Status: **Reference Guideline (non-binding)** | Date: 2026-10-22
 >
 > Scope: 内部产品、Portal、Agent、Runner、自动化系统。此文档不修改 CI、Rulesets、审批或现有 Sprint Definition of Done。
 
@@ -45,12 +45,23 @@ MVP 不等于 Prototype；减少功能范围，不牺牲必要的工程完整性
 4. **Recoverability**：必要状态可恢复；有副作用的可重试操作采取适当幂等保护；不安全的重试必须明确处理方式。
 5. **Testability**：核心路径和高风险失败路径具有与风险相称的自动化验证。
 6. **Maintainability**：职责、配置、入口和必要恢复说明可识别。
-7. **Security**：密钥不入代码/日志，最小权限，敏感数据和生产写入边界受保护。
+7. **Security — Concrete Minimum Controls**：仅适用第 6 节 S01–S04 的具体要求；不得从抽象安全目标推导出额外系统或审批。
 
-## 6. Conditional NFR
+## 6. Security — Concrete Minimum Controls
+
+以下四项是小规模内部 MVP 的具体安全底线；满足要求即可，不强制采用统一安全平台。
+
+- **S01 凭证不泄露**：真实密钥不得提交 Git、嵌入浏览器/前端构建产物或写入日志。可复用现有环境变量、被 Git 忽略的本地 `.env`、Cloudflare/GitHub Secrets；不强制引入 Vault 或 Credential Gateway。
+- **S02 生产副作用入口有认证边界**：从公网可访问、且可修改生产业务状态、发布 Listing、发送消息或执行财务动作的入口，必须有可验证的认证/授权边界。允许复用现有 Token、Session、网络访问限制或受信代理；不默认要求 SSO、RBAC 或人工审批。
+- **S03 高权限凭证不越界**：Service Role 等高权限后端凭证不得暴露给浏览器或不可信客户端。既有可信后端运行环境可按当前授权使用凭证；进一步细分权限须由具体风险驱动，不默认要求创建多套身份。
+- **S04 禁止安全名义下的未授权扩建**：新增 SSO、RBAC、Vault、Credential Gateway、审批工作流、轮换平台或安全扫描平台，须有具体风险依据或明确产品/架构授权；不能仅凭笼统 Security Best Practices 自动加入 MVP。
+
+**最高约束：No NFR shall authorize unrequested infrastructure, workflow, or product functionality.**
+
+## 7. Conditional NFR
 按真实场景评估 Performance、High Availability、Advanced Scalability、Detailed Audit Trail、Backup & Disaster Recovery、Advanced Monitoring、Concurrency Control；不得自动变成全体 MVP 的基础设施要求。
 
-## 7. Architecture & Operations
+## 8. Architecture & Operations
 - **Reuse Before Build**：Existing Capability → Small Extension → New Component → New Infrastructure。
 - **Logical Separation Before Physical Separation**：逻辑边界不要求独立服务/仓库。
 - **Avoid Premature Generalization**：无已确认需求，不建设通用 Framework。
@@ -58,7 +69,7 @@ MVP 不等于 Prototype；减少功能范围，不牺牲必要的工程完整性
 - **Prefer Reversible Decisions**：优先低迁移成本的技术选择。
 - **No Fake Human Gates**：技术失败和诊断不足不应默认转换成人工审批。
 
-## 8. Reference MVP Review Checklist
+## 9. Reference MVP Review Checklist
 - [ ] 功能范围已授权
 - [ ] 无不必要的新组件/架构复杂度
 - [ ] 核心成功、失败路径可预测
@@ -66,8 +77,8 @@ MVP 不等于 Prototype；减少功能范围，不牺牲必要的工程完整性
 - [ ] 执行与失败状态可诊断
 - [ ] 关键失败可安全恢复
 - [ ] 扩展边界清晰，无过早实现
-- [ ] 安全基线满足
+- [ ] S01–S04 适用安全边界满足（不增加未经授权的安全系统）
 - [ ] 完成声明有测试与运行证据
 
-## 9. Governance
+## 10. Governance
 本规范是 **Reference Guideline — Non-binding**。可在 MVP TRD、Architecture Review、Agent 任务和 Sprint 讨论中引用，但**不自动新增审批、CI Gate、Ruleset 或阻塞性 Acceptance Gate**。未来若要升级为强制规范，需另行明确授权。
