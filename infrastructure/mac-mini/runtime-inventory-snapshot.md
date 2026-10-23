@@ -76,3 +76,21 @@ These cross-checkout references need explicit Git HEAD and dependency verificati
 6. Keep runtime configuration values and credentials out of GitHub.
 
 **No runtime configuration or process was changed during this inventory.**
+
+
+## 2026-10-23 13:06 JST — Time Sale Sprint #115 deployment verification
+
+**Scope:** targeted live deployment inspection on `rp-macmini-01`; this supplements the original 2026-10-22 partial 15-runtime inventory, not a full rescan of every entry.
+
+- **StoreOPS Portal / `storeops-portal`**: TCP `127.0.0.1:8765` running, observed PID `38653` after restart; launch label `com.retailpulses.mercari-local-ui`.
+- **Actual launch chain:** `/Users/agent/Library/Application Support/Retailpulses/mercari-local-ui-launch.py` → `/Users/agent/work/store-ops-listing-runtime/apps/mercari/new-products-to-listing/mount_portal.py` → `/Users/agent/work/commerce-lab-ui-runtime/apps/mercari/local_offer/mercari_local_ui.py` → `timesale_builder_ui.py` → canonical `apps.mercari.timesale.portal`.
+- **Time Sale pinned runtime:** `/Users/agent/work/store-ops-timesale-runtime`, detached Git SHA `9008a69dbdf6607109a2cfa2ed0256ab6cb24be1` (StoreOps PR #119 merged). Launcher sets `STOREOPS_ROOT` to this path; the thin shim resolves the canonical Time Sale module from it. This is a separate Time Sale code checkout, **not a second HTTP service/scheduler**.
+- **Deployment-specific UI wiring:** existing Commerce Lab UI runtime shim now calls `portal.get(query)` rather than `portal.page()`, and the 8765 route forwards the URL query, enabling Shop-scoped historical campaign restoration. These are local runtime edits in the existing dirty Commerce Lab UI checkout; they **must be canonicalized into GitHub** rather than lost on a future runtime refresh.
+- **Python environment:** Portal uses `/Users/agent/work/commerce-lab/services/canonical-lab/.venv/bin/python`; installed `openpyxl==3.1.5` plus `et-xmlfile==2.0.0` for the newly deployed Time Sale module. The dependency needs to be captured in the canonical runtime dependency manifest.
+- **Smoke evidence:** `/`, `/mercari/timesale?shop=shop1`, `?shop=shop2`, `?shop=shop3`, `?shop=shop4`, `/mercari/new-listings`, `/inquiry-review` returned HTTP 200. Shop1 and Shop4 pages rendered `Latest Generated Campaign` and `Download CSV` with correct existing job IDs; Shop1 `mercari-upload.csv` download returned HTTP 200 and SHA-256 `9186e9b999e26977219ee0fe476339dbd274e9c0a9ee82830f88127a74982f9e`, matching the SQLite-linked file validation.
+- **Safety:** no Seller upload/API write, no new cron or new listener, no SQLite schema migration. Original `store-ops-runtime` checkout was not moved; shared New Listings and Inquiry pages stayed reachable.
+- **Remaining acceptance:** native browser file-selection/cancel interaction not yet attested; historical Shop2 artifacts missing (no download advertised). Full operator workflow and runtime retirement not yet certified.
+- **Residual legacy runtime:** `timesale-staging-pull` still exists in user crontab, invoking a missing `pull_staged_batches.py` every minute; prior filtered-crontab write hung despite backup. `com.retailpulses.timesale-local` system LaunchDaemon remains loaded but not running; it references old Commerce Ops Local Offer and shared Supabase startup. Do not remove it without dependency confirmation. Track both in StoreOps #117.
+- **Integration references:** StoreOps [PR #119](https://github.com/retailpulses/store-ops/pull/119), [Sprint #115](https://github.com/retailpulses/store-ops/issues/115), [retirement #117](https://github.com/retailpulses/store-ops/issues/117).
+
+**Registry follow-up:** The 15 original runtime IDs remain unchanged. `storeops-portal` is still one service, but the YAML should eventually record the Time Sale module checkout and `STOREOPS_ROOT` as a dependency rather than create a duplicate runtime ID.
