@@ -102,7 +102,7 @@ runtimes:
     git_commit: UNKNOWN
 
 # Database assets are not counted as runtime processes.
-# Paths below were observed in UI process arguments; file existence and backups remain unverified.
+# Verification evidence and transient status belong in runtime-inventory-snapshot.md.
 data_assets:
   - id: mercari-ops-sqlite
     type: sqlite_file
@@ -132,9 +132,10 @@ data_assets:
     docker_volume: supabase_db_local-supabase-smoke
     volume_mount: /var/lib/postgresql/data
     source_checkout: /Users/agent/work/commerce-lab/services/canonical-lab
-    verification: running_container_and_schema_read_only_verified_2026-10-23
     backup_policy: UNKNOWN
-    notes: "Canonical Product local facts; external_identities maps giga sku to variant_id; current_facts contains current source_unit_price via fact_definitions. Do not confuse with public schema or cloud production Supabase."
+    restore_procedure: UNKNOWN
+    dependencies: UNKNOWN
+    notes: "Local Canonical Lab PostgreSQL instance, distinct from hosted production Supabase. Container and volume names are observed configuration identifiers; backup and service dependencies remain to be inventoried."
 
 unverified_database_scope:
   - "Other local PostgreSQL instances or databases, if any, remain unverified; only canonical-lab-local-postgres is attested."
