@@ -94,3 +94,12 @@ These cross-checkout references need explicit Git HEAD and dependency verificati
 - **Integration references:** StoreOps [PR #119](https://github.com/retailpulses/store-ops/pull/119), [Sprint #115](https://github.com/retailpulses/store-ops/issues/115), [retirement #117](https://github.com/retailpulses/store-ops/issues/117).
 
 **Registry follow-up:** The 15 original runtime IDs remain unchanged. `storeops-portal` is still one service, but the YAML should eventually record the Time Sale module checkout and `STOREOPS_ROOT` as a dependency rather than create a duplicate runtime ID.
+
+
+## 2026-10-23 — Local Canonical Product PostgreSQL verification
+
+Read-only inspection on `rp-macmini-01` confirmed Docker container `supabase_db_local-supabase-smoke`, PostgreSQL database `postgres`, host port `54322` → container port `5432`, persistent Docker volume `supabase_db_local-supabase-smoke` mounted at `/var/lib/postgresql/data`. This is **one database asset**, not an additional application runtime among the 15 registered services.
+
+The actual populated canonical schemas are `canonical_product`, `canonical_history`, and `canonical_images`; `public` alone is not representative of this database. In `canonical_product`, `variants` had 6,346 rows, `external_identities` had 6,332 Giga SKU identities, and `current_facts` had 6,299 facts for `production.product_commercials.source_unit_price`. Verified sample `N504P501336W` mapped to a Canonical Variant and standard unit price ¥11,800; no customer data or credentials are recorded here.
+
+**Ownership:** source checkout `/Users/agent/work/commerce-lab/services/canonical-lab`; source and schema details in its README/CANONICAL_LAB.md. This local canonical facts store is distinct from cloud production Supabase and from the Store OPS SQLite cost-review ledger. Backup policy and independent backup verification remain **UNKNOWN**; no backups or restores were executed. No database or service configuration was changed.
