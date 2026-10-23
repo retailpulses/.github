@@ -1,11 +1,11 @@
-# Mac mini Runtime Inventory
+# Mac mini Infrastructure Inventory
 
-This directory maintains the canonical inventory of Mac mini runtimes and local data assets.
+This directory maintains the canonical infrastructure registry for Mac mini execution runtimes and local data assets (database instances and database files). It does not document application data quality or business-rule verification.
 
 ## Files and counting
 
 - `runtime-inventory.yaml`: canonical machine-readable registry of runtime identities, execution entrypoints, and local database assets.
-- `runtime-inventory-snapshot.md`: timestamped observations for **the same runtime IDs**, including running processes, loaded schedulers, and outstanding verification.
+- `runtime-inventory-snapshot.md`: timestamped read-only observations of registered runtime IDs and data-asset IDs, including running processes, database instance presence, and outstanding infrastructure checks.
 
 The initial inventory contains **15 runtime entries**. The five listening services in the earlier snapshot were only a subset, not a different inventory. Database files are listed separately under `data_assets` and are **not counted as running services**.
 
@@ -20,6 +20,6 @@ The initial inventory contains **15 runtime entries**. The five listening servic
 
 ## Refresh
 
-On the Mac mini inspect launchctl, crontab, processes, listening ports, Git checkout HEADs and relevant execution logs. For databases, verify instance existence, configured file locations, logical ownership and backup arrangements without reading business data. Reconcile each observed runtime ID against YAML.
+On the Mac mini inspect launchctl, crontab, processes, listening ports, Git checkout HEADs and relevant execution logs. For databases, inspect engine/container identity, configured ports, volumes, lifecycle ownership, dependencies, and backup/restore arrangements without reading business data. Do not record product row counts, specific SKU prices, business reconciliation results, or application acceptance evidence here. Reconcile each observed runtime ID against YAML.
 
 This is an initial partial inventory, not a complete health certification.
