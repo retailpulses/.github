@@ -47,7 +47,7 @@ Two GitHub Actions runner services were observed as running.
 | `mercari-ops-sqlite` | SQLite file | `/Users/agent/Library/Application Support/store-ops/mercari.sqlite3` | Observed in Mercari UI arguments; file and backup not checked |
 | `rakuten-ops-sqlite` | SQLite file | `/Users/agent/Library/Application Support/store-ops/rakuten.sqlite3` | Observed in Rakuten UI arguments; file and backup not checked |
 
-**Not yet inventoried:** local PostgreSQL/Supabase instances and databases, other SQLite/DuckDB files, data volumes and backup policies. The Local Database Sync LaunchAgent is a sync job, **not** the database itself.
+**Database inventory coverage:** one local PostgreSQL/Supabase instance is recorded below. Other PostgreSQL instances, SQLite/DuckDB assets, backup and restore arrangements remain partially inventoried. The Local Database Sync LaunchAgent is a sync job, **not** the database itself.
 
 ## Scheduler evidence
 
@@ -96,10 +96,23 @@ These cross-checkout references need explicit Git HEAD and dependency verificati
 **Registry follow-up:** The 15 original runtime IDs remain unchanged. `storeops-portal` is still one service, but the YAML should eventually record the Time Sale module checkout and `STOREOPS_ROOT` as a dependency rather than create a duplicate runtime ID.
 
 
-## 2026-10-23 — Local Canonical Product PostgreSQL verification
+## 2026-10-23 — Local PostgreSQL instance observation
 
-Read-only inspection on `rp-macmini-01` confirmed Docker container `supabase_db_local-supabase-smoke`, PostgreSQL database `postgres`, host port `54322` → container port `5432`, persistent Docker volume `supabase_db_local-supabase-smoke` mounted at `/var/lib/postgresql/data`. This is **one database asset**, not an additional application runtime among the 15 registered services.
+**Asset ID:** `canonical-lab-local-postgres` (see `runtime-inventory.yaml`)
 
-The actual populated canonical schemas are `canonical_product`, `canonical_history`, and `canonical_images`; `public` alone is not representative of this database. In `canonical_product`, `variants` had 6,346 rows, `external_identities` had 6,332 Giga SKU identities, and `current_facts` had 6,299 facts for `production.product_commercials.source_unit_price`. Verified sample `N504P501336W` mapped to a Canonical Variant and standard unit price ¥11,800; no customer data or credentials are recorded here.
+| Infrastructure property | Observed on Mac mini |
+| --- | --- |
+| Host | `rp-macmini-01` |
+| Runtime | Docker container `supabase_db_local-supabase-smoke` |
+| Database engine | PostgreSQL supplied by local Supabase |
+| Logical database | `postgres` |
+| Endpoint | Host port `54322` mapped to container port `5432` |
+| Persistence | Docker named volume `supabase_db_local-supabase-smoke` mounted at `/var/lib/postgresql/data` |
+| Logical schemas | `canonical_product`, `canonical_history`, `canonical_images` |
+| Source workspace | `/Users/agent/work/commerce-lab/services/canonical-lab` |
+| Backup / restore | UNKNOWN — not inspected |
+| Dependent application/runtime inventory | UNKNOWN — not reconciled |
 
-**Ownership:** source checkout `/Users/agent/work/commerce-lab/services/canonical-lab`; source and schema details in its README/CANONICAL_LAB.md. This local canonical facts store is distinct from cloud production Supabase and from the Store OPS SQLite cost-review ledger. Backup policy and independent backup verification remain **UNKNOWN**; no backups or restores were executed. No database or service configuration was changed.
+**Observation method:** read-only Docker container, mount, port and PostgreSQL schema inspection. The container was running at observation time; this does **not** certify application readiness, data freshness, backup coverage, or recovery capability. No configuration was changed.
+
+**Next infrastructure inventory gaps:** confirm the instance's lifecycle/startup ownership, persistent volume backup and restore process, and dependent runtime/service relationships. Keep application-specific product counts, prices and field-level data checks in the owning product documentation, not this registry.
