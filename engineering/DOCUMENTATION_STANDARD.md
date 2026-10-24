@@ -58,3 +58,25 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 
 ## 11. Compatibility
 不强制重命名现有 DESIGN.md、design.md、01_ARCHITECTURE.md 或 TRD。使用 README/DOC_INDEX 标明角色和链接。与现行中央架构治理发生冲突时，记录冲突并先取得明确决定，禁止静默覆盖。
+
+## 12. Foundational References and source authority (Pilot)
+
+跨产品、跨仓库复用的外部 API Dictionary、平台规则、第三方字段/错误码契约及稳定的基础数据定义，属于 **Foundational References**，不应隐藏在某个 Product Design、TRD 或 App 的历史 SOP 中。
+
+- **Organization-level discovery**：统一从 [Foundational Reference Registry](../references/README.md) 查找。Registry 负责稳定 Reference ID、Owner、类型、Canonical source、来源版本、验证范围/日期、消费者、状态和未核实项；初期采用 Markdown + 链接，不新增服务或数据库。
+- **Authority separation**：供应商官方文档或机器可读 schema 是外部契约来源；组织级 Reference 是内部可检索、可核验的整理/索引，不得假装替代官方来源。内部 API 的 executable schema 与代码仍由服务 Owner 仓库维护；产品特定映射、配置、测试和部署证据留在相应产品仓库。
+- **One canonical entry**：跨产品内容以组织级 Registry 为统一入口。旧产品目录中的重复 Dictionary 标为 Retired/Superseded 并链接新入口；历史 POC/SOP 作为证据保留，不得以新旧两个可编辑副本并行维护。
+- **Version & status**：区分 Registered / Partially Verified / Verified（明确字段、环境和适用范围）/ Stale / Superseded / Retired。来源可访问不等于行为已核实；POC、代码、Merged、Deployed、Runtime Verified 分别标注。API 版本淘汰必须显式注明，不能把旧版当 fallback。
+- **Security**：Reference 只能包含脱敏样本、占位符及凭据获取方式链接，禁止嵌入真实 Secret、Token、Cookie 或敏感顾客数据；从当前文件移除 Secret 不等于清理 Git 历史或使其失效。
+
+### Fact Verification Gate
+
+- **Product Decision**（Sponsor）：目标业务行为、安全降级与产品边界。
+- **Technical Fact / Assumption**（Engineering/Agent）：实际 API 能力、字段语义、授权、数据粒度、时效、错误、版本、限制；主动检索 Reference、官方资料、代码及必要只读验证，保留来源、日期、适用环境和脱敏证据。
+- **Implementation Decision**（Engineering）：在已核实契约下的适配器、数据流、错误处理和测试方案。
+
+设计可在 Draft/Sponsor Review 阶段列出未核实事实；但影响核心行为、数据权威或验收的 **blocking technical fact**，原则上必须在 Design Baseline Approval 前核实，或由 Sponsor 明确批准不依赖该事实的安全降级。不能要求 Sponsor 猜 API 字段，也不能把未知事实静默写成 Verified。
+
+推荐链路：**Official Source → Foundational Reference → Verified Fact → Product Requirement → Technical Contract → Implementation Evidence**。Design 引用 Reference ID 和对业务行为的影响，TRD 记录技术契约、验证证据及 unresolved facts，避免复制大段 API Dictionary。上游 API 变更、响应冲突、新消费者或运行事故触发按影响范围重新核实。
+
+试点案例：[Giga Open API 2.0](../references/giga/open-api-2.0.md)（1.0 Retired，2.0 Required）、[Mercari Inquiry](../references/mercari/inquiry-api.md)、[Rakuten RMS](../references/rakuten/rms-api.md)。详细补全工作见 [Issue #19](https://github.com/retailpulses/.github/issues/19)。
