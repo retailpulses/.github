@@ -66,3 +66,15 @@ Focus: consolidate appended chapters and successive POC feedback into living pro
 ### Updated copyable instruction for agents
 
 在原有迁移步骤之前，先读取 `retailpulses/.github/references/README.md` 并识别所有跨仓库 Foundational References；逐项检查 source/version/verification scope，主动核实 blocking technical facts，记录脱敏证据；把 Reference ID 与验证状态写入 Design/TRD 的相应位置，退役重复字典但保留历史证据。Sponsor 负责业务决策，不负责验证 API 事实。不要因引用了 Reference 就声称 API 已经 Runtime Verified。
+
+## UI Sketch consolidation and optional promotion
+
+迁移产品设计时，**UI Sketch 默认属于 `DESIGN.md`**，而不是默认独立的 UI Spec：
+
+1. Inventory 时同时发现历史 Sketch、Wireframe、Mermaid、截图、Figma/HTML 原型及其来源，区分设计意图与已运行界面证据。
+2. 将仍有效的核心界面草图就近放入相应 Workflow/Requirement 章节，或汇总到简洁的 UI/UX Design 章节；保留关键交互、状态与 Requirement ID 关联，不把图示当成新的业务规则来源。
+3. 仅在单文件难以维护时将细节 **promote** 到 `docs/ui/` 等从属文件。保留 `DESIGN.md` 内的核心 UI 概览、决策和入口链接；不强制为每个产品新建 UI 目录。
+4. 标注 Exploratory / Approved / Implemented / Runtime Verified 状态；设计批准不等于生产界面已验证。迁移时保留历史原型及证据引用，避免静默丢失有效交互设计。
+5. PR reconciliation 检查 UI 与业务流程是否一致、链接是否有效、独立细节是否产生平行设计权威；如 UI 调整改变产品行为，按既有 Sponsor 决策流程处理。
+
+Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分直接整合进 `DESIGN.md`；只有维护复杂度确实需要时才拆分，拆分后仍以 `DESIGN.md` 为唯一产品设计权威。
