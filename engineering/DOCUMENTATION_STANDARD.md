@@ -1,6 +1,6 @@
 # Retailpulses Documentation Standard v1.0 (Proposed)
 
-Status: Proposed — pending Sponsor approval and pilot validation
+Status: Pilot — merged for trial adoption; subject to pilot findings
 Owner: retailpulses/.github
 Governance: https://github.com/retailpulses/.github/issues/16
 Language: 简体中文为主；保留产品、代码和日本业务的原生术语。
@@ -54,7 +54,7 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 产品行为、架构、数据所有权、关键接口或已验证运行状态变化时，在同一 PR 中更新相应权威文档，或明确说明为何无需更新。Patch 不强制新增文档。PR closeout 应写明：相关 Requirement ID、变更的权威文件、测试/运行证据、未解决差异。部署状态必须有独立运行证据。
 
 ## 10. Adoption and acceptance
-先在 Monthly P&L（需求/计算契约）和 New Products to Listing（历史追加收敛）双试点，不一次性改造全组织。验收：Owner 不看代码能理解能力/流程/规则；Agent 能从 Requirement ID 找到契约；原有有效业务语义无损；历史证据可追溯；没有新建平行任务账本。试点完成并批准后再标记本规范 Approved。
+先在 Monthly P&L（需求/计算契约）和 New Products to Listing（历史追加收敛）双试点，不一次性改造全组织。验收：Owner 不看代码能理解能力/流程/规则；Agent 能从 Requirement ID 找到契约；原有有效业务语义无损；历史证据可追溯；没有新建平行任务账本。试点验证完成并完成必要修订后，再将本规范标记为 Approved。
 
 ## 11. Compatibility
 不强制重命名现有 DESIGN.md、design.md、01_ARCHITECTURE.md 或 TRD。使用 README/DOC_INDEX 标明角色和链接。与现行中央架构治理发生冲突时，记录冲突并先取得明确决定，禁止静默覆盖。
