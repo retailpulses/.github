@@ -90,3 +90,20 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 - 拆分后 `DESIGN.md` **仍保留核心 UI 概览、关键交互决策、Requirement 关联和明确链接**；独立文件是从属细节，不成为第二个 Product Design Authority。变更影响已批准产品行为时，应先同步修订 Design 的相应规则。
 - 区分 Exploratory Sketch、Approved UI Specification 与 Implemented / Runtime Verified；批准草图不等于界面已上线。原型和截图不能取代真实运行证据。
 - 小产品不强制创建独立 UI Spec、Design System、Figma 文件或目录；优先减少碎片化和重复维护。
+
+## 14. Progressive design: concept, POC, architecture and deployment (P0)
+
+设计不是单向的阶段瀑布：**Concept / Draft Design ↔ targeted POC / Experiment → evidence-based refinement → Design Baseline → implementation → deployment → runtime verification**。后续变更可再次启动 POC。早期允许未完成的技术假设，但阻断核心行为的技术事实需在批准前验证或明确采用不依赖该事实的安全降级（见 §12）。
+
+| Concern | Default authority / artifact | Promotion rule |
+|---|---|---|
+| Product concept, user outcome, workflows, UI sketch | `DESIGN.md` | UI 细节复杂时拆至 `docs/ui/`；DESIGN 仍为唯一产品行为权威 |
+| Early POC / experiment | Issue 或 DESIGN 中简短 hypothesis + result + limitation + decision link | 方法、数据、可复用结果复杂时放 `docs/experiments/`；不将实验日志堆入 living DESIGN |
+| Components, ownership, key tech stack and **target deployment** | Architecture（小产品可先写在 DESIGN 的简短 Architecture 段） | 复杂后提升独立 Architecture；参见 [Template](templates/ARCHITECTURE.md) |
+| Significant hard-to-reverse trade-off | ADR | 仅重大决策单独 ADR；一般技术栈清单留 Architecture |
+| API/data details and acceptance contracts | TRD / Contracts | 按风险和规模拆分，不复制跨产品 Foundational References |
+| Actual code, deployed release, runtime/health and evidence | Current State / operational evidence | 与 To-Be 独立；Merged ≠ Deployed ≠ Runtime Verified |
+
+POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design impact**。POC 通过不自动批准技术栈、部署方案或生产可靠性。技术栈选择应比较现有内部能力、成熟开源、原生平台与自建成本；重大锁定或难逆转取舍写 ADR。部署设计应交代目标环境、service/worker/job、触发、网络与凭据边界、运维责任、备份恢复和验证方式；**真实部署位置**必须通过 Current State/运行证据证明。
+
+组织级配套入口：[Engineering Principles](ENGINEERING_PRINCIPLES.md)、[Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md)。文档以最小可理解集合起步，只有阅读、协作、复用或审计需求证明必要时才拆分；不得以模板创建文件数量作为完成标准。
