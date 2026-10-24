@@ -78,3 +78,15 @@ Focus: consolidate appended chapters and successive POC feedback into living pro
 5. PR reconciliation 检查 UI 与业务流程是否一致、链接是否有效、独立细节是否产生平行设计权威；如 UI 调整改变产品行为，按既有 Sponsor 决策流程处理。
 
 Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分直接整合进 `DESIGN.md`；只有维护复杂度确实需要时才拆分，拆分后仍以 `DESIGN.md` 为唯一产品设计权威。
+
+## P0 migration: early POC, stack, deployment and architecture
+
+在既有 Inventory / Extract / Reconcile / Draft / Validate 中补充：
+
+1. **Concept and experiments**：收集产品目标、未验证假设及早期 POC（Issue、草稿、代码、实验数据）；提炼 Hypothesis → Method → Result → Limitations → Design Impact。仅将当前有效结论写入 DESIGN，实验细节保留在 Issue 或独立 experiments 文档。
+2. **Technical choices**：识别现行技术栈与候选方案，区分 Proposed / Verified / Deployed；组件职责、数据所有权、关键技术选择归 Architecture；重大长期取舍归 ADR，避免把每个库的选择升级为 ADR。
+3. **Deployment topology**：分别建立 Target Deployment（Architecture）与 Observed Runtime（Current State / Evidence）；列出运行主机、service/worker/job、触发、Secrets、监控、备份和恢复。代码存在或配置提交不证明进程已运行。
+4. **Architecture review**：重大跨系统或风险较高的迁移，按 [Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md) 检查 Ownership、Truth、Authority、Transitions、Flow、Idempotency、Reconciliation、Failure、Evidence 和 Safe Change；小改动按需裁剪。
+5. **Progressive promotion**：小项目允许把简短 Architecture/POC 结论写在 DESIGN 内；复杂度提升后将技术细节提升到 [Architecture Template](templates/ARCHITECTURE.md)、TRD、ADR 或 experiments。保留 DESIGN 的核心约束、决策和引用，不产生平行权威。
+
+迁移 PR 还应说明：哪些 POC 结果影响了目标设计、哪些技术栈/部署仍属假设、哪些运行状态有证据，以及是否需要独立的 ADR/Current State。完整方法以 [Engineering Principles](ENGINEERING_PRINCIPLES.md) 为组织级入口；原始研究案例继续留在 inbox。
