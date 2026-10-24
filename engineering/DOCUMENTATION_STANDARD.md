@@ -80,3 +80,13 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 推荐链路：**Official Source → Foundational Reference → Verified Fact → Product Requirement → Technical Contract → Implementation Evidence**。Design 引用 Reference ID 和对业务行为的影响，TRD 记录技术契约、验证证据及 unresolved facts，避免复制大段 API Dictionary。上游 API 变更、响应冲突、新消费者或运行事故触发按影响范围重新核实。
 
 试点案例：[Giga Open API 2.0](../references/giga/open-api-2.0.md)（1.0 Retired，2.0 Required）、[Mercari Inquiry](../references/mercari/inquiry-api.md)、[Rakuten RMS](../references/rakuten/rms-api.md)。详细补全工作见 [Issue #19](https://github.com/retailpulses/.github/issues/19)。
+
+## 13. UI Sketch as part of Product Design (default)
+
+**默认将 UI Sketch / Wireframe / 核心交互说明直接放在产品 `DESIGN.md` 中**，作为对应 Capability、Workflow 和 Requirement 的视觉表达，而非另立一份必须维护的设计权威。优先就近嵌入相关 Workflow 章节；当多个界面需要整体说明时，也可使用一个精简的 `UI/UX Design` 章节。允许 Markdown、Mermaid、嵌入图片及原型链接，不规定单一绘图工具。
+
+- 每个重要 Sketch 说明对应 Workflow/Requirement ID、关键用户操作和必要状态（如 Empty、Loading、Error、Success）；只写影响用户行为的细节，避免重复完整业务规则。
+- **渐进拆分（promotion）**：当草图数量、文件体积、协作频率或交互复杂度使单一 `DESIGN.md` 难以阅读维护时，可将详细 Wireframe、交互状态或 HTML Prototype 提升至 `docs/ui/` 等独立文件。无固定数量门槛，不要求预先建目录。
+- 拆分后 `DESIGN.md` **仍保留核心 UI 概览、关键交互决策、Requirement 关联和明确链接**；独立文件是从属细节，不成为第二个 Product Design Authority。变更影响已批准产品行为时，应先同步修订 Design 的相应规则。
+- 区分 Exploratory Sketch、Approved UI Specification 与 Implemented / Runtime Verified；批准草图不等于界面已上线。原型和截图不能取代真实运行证据。
+- 小产品不强制创建独立 UI Spec、Design System、Figma 文件或目录；优先减少碎片化和重复维护。
