@@ -1,6 +1,6 @@
 # Design Migration Guide — Agent Handoff
 
-Status: Proposed v1.0
+Status: Pilot v1.0
 Standard: [Documentation Standard](DOCUMENTATION_STANDARD.md)
 Tracking: https://github.com/retailpulses/.github/issues/16
 
