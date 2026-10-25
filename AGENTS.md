@@ -166,7 +166,7 @@ Before adding a new Cloudflare dependency (KV, D1, R2, Worker Cron, Pages, Tunne
 
 ## 7A. Development Agent Execution Environment
 
-**Policy: Environment-aware execution (2026-10-25).** Codex Cloud is not the default or mandatory development environment; neither is local Codex CLI. Choose the environment that minimizes end-to-end time to a verified outcome, considering source checkout isolation, dependency/cache availability, data and runtime access, feedback-loop latency, and integration/production verification.
+**Policy: Environment-aware execution (effective 2026-10-25; supersedes any earlier Cloud-first preference).** The former Cloud-first direction is **withdrawn**: do not treat Codex Cloud as the primary, preferred, or mandatory development agent solely because it is cloud-hosted. Neither Codex Cloud nor local Codex CLI is the organization-wide default. The current `AGENTS.md` did not contain a literal Cloud-first mandate to delete; this paragraph explicitly replaces any such historical recommendation in discussions, issues, or handovers. Choose the environment that minimizes end-to-end time to a verified outcome, considering source checkout isolation, dependency/cache availability, data and runtime access, feedback-loop latency, and integration/production verification.
 
 - Prefer **Codex Cloud** for self-contained implementation, refactoring, documentation, UI/API changes, and tests that can be reliably verified in an isolated cloud checkout.
 - Prefer **local Codex CLI** on an authorized host for tasks requiring local SQLite/Supabase, Mac mini services, authenticated runtime/browser profiles, actual-data replay, or immediate deployment and smoke-test feedback.
