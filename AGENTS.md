@@ -80,14 +80,14 @@ Before any production mutation, report:
 
 ### 5.1 Credential Lookup, Creation, and Rotation
 
-- Agents must not create real credentials, API keys, or tokens.
-- Agents must not rotate credentials without explicit user request.
+- Agents must not create real credentials, API keys, or tokens unless the accepted task calls for it.
+- Agents must not rotate credentials unless the accepted task explicitly calls for it.
 - Agents may:
   - Add placeholder names to `.env.example`
   - Document required secret names in PR descriptions or deployment docs
   - Add GitHub Actions secret references to existing or expected secrets
-- For credential lookup, first use the existing authorized Credential Registry and its documented access path. A missing local index file or a failed lookup alone is not evidence that the credential does not exist.
-- Escalate only when the credential is absent, the requester has not authorized access, or the task requires creating or rotating it. Report:
+- For credential lookup, first use the existing Credential Registry and its documented access path. Access reasonably required to implement or verify the accepted task is authorized even when the design does not name the credential; do not ask again for that access.
+- Pause only if the credential is absent, materially different targets/environments are possible, access would expand account/customer/action scope, or the required access path is unavailable or needs an unplanned security change. If the task calls for creating or rotating a credential, follow that scope without asking again; report missing inputs or material ambiguity:
   - Credential name
   - Purpose
   - Expected storage location

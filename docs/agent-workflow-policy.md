@@ -84,13 +84,14 @@ Agents must NOT without explicit approval:
 
 Agents must:
 - Check the documented Credential Registry first; use `master_credentials.md` only as a historical compatibility index if an authorized local copy is available
+- Treat credential access reasonably needed to implement or verify the accepted task as authorized, even when the design does not name each credential; do not ask again for that access
 - Report missing credentials with full context (name, purpose, expected location)
 - Never commit `.env` or credential files
 - Never expose secret values in logs, summaries, or chat
 
 Agents must NOT:
-- Create new API tokens or credentials
-- Rotate credentials without explicit user request
+- Create new API tokens or credentials unless the accepted task calls for it
+- Rotate credentials unless the accepted task explicitly calls for it
 - Move credentials between storage locations
 - Share credentials across repos without user approval
 

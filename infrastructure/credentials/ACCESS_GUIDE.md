@@ -1,8 +1,10 @@
 # Credential Access Guide
 
 This guide documents the observed Mac mini credential registry and its existing
-local import/access paths. It does not authorize reading an arbitrary secret,
-creating a credential, rotating one, or changing production configuration.
+local import/access paths. Authorization follows the accepted task: a task
+authorizes the minimum credential access reasonably needed to implement or
+verify its goal, even when the design does not name each credential. This guide
+does not expand a task to unrelated credentials, targets, or side effects.
 
 ## Where
 
@@ -44,10 +46,15 @@ project/environment or in a product-owned runtime store.
 
 ## Authorized value access
 
-Only after the task owner authorizes access to a specific credential for a
-specific purpose, an authorized Mac mini database operator may use the local
-interactive `psql` session below. This is the existing access method; it is not
-a new CLI or a remote service.
+When an accepted issue or request reasonably requires a credential to implement
+or verify its stated goal, that task authorizes the minimum matching access; do
+not ask again merely because the design did not list the credential by name.
+Use registry metadata to identify the matching service, project, environment,
+and purpose. Pause only when materially different targets or environments are
+possible, access would expand the task's account/customer/action scope, or the
+required access path needs an unplanned security change. An authorized Mac mini
+database operator may use this existing local `psql` method; it is not a new
+CLI or remote service.
 
 ```sh
 docker exec -it supabase_db_local-supabase-smoke psql -U postgres -d postgres
@@ -68,11 +75,11 @@ WHERE name = :'credential_name'
 ```
 
 The result is sensitive. Keep it in the authorized local terminal and transfer
-it only through the task's already authorized destination. Do not use shell
+it only through the destination established by the task. Do not use shell
 tracing, command-line arguments, SQL files, clipboard history, screenshots,
 logs, issue comments, chat, or CI output to carry a value. Exit with `\q` when
-finished. If there is no explicit authorization for the value or destination,
-stop after metadata lookup and report the missing authorization as the blocker.
+finished. If no matching credential exists, or the intended destination cannot
+be established from the task, report that blocker; do not guess or substitute.
 
 ## Register or update
 
@@ -87,15 +94,18 @@ deleted and replaced in the same transaction.
 
 For an authorized registration/update on the Mac mini:
 
-1. Confirm the exact local source file and the authorization to import/update
-   its credentials. Never paste values into a command or this repository.
+1. If the accepted task calls for registration/update, that task authorizes the
+   required import; do not ask for authorization again. Use its identified
+   source file. If no source file is identified or available, report the missing
+   source rather than guessing. Never paste values into a command or this
+   repository.
 2. Create a fresh owner-only local backup before changing rows:
 
    ```sh
-  umask 077
-  backup_dir=/Users/agent/work/local-supabase-smoke/backups/credential-registry
-  mkdir -p "$backup_dir"
-  chmod 700 "$backup_dir"
+   umask 077
+   backup_dir=/Users/agent/work/local-supabase-smoke/backups/credential-registry
+   mkdir -p "$backup_dir"
+   chmod 700 "$backup_dir"
    backup_file="$backup_dir/pre-credential-registry-$(date +%Y%m%d%H%M%S).dump"
    docker exec supabase_db_local-supabase-smoke pg_dump -U postgres -d postgres -Fc > "$backup_file"
    chmod 600 "$backup_file"
@@ -109,26 +119,25 @@ For an authorized registration/update on the Mac mini:
      /absolute/path/to/authorized-source.md
    ```
 
-4. Review the counts and confirm whether the source should replace its prior
-   rows. Import without replacement to upsert parsed keys:
+4. Import without replacement by default to upsert parsed keys:
 
    ```sh
    python3 /Users/agent/work/local-supabase-smoke/scripts/import_credentials.py \
      /absolute/path/to/authorized-source.md --apply
    ```
 
-   To replace all prior rows from the same source basename atomically, use
-   `--apply --replace-source` instead. Use the same source file for future
-   updates so its basename remains stable. Do not run this against an
-   unreviewed or guessed source.
+   Use `--apply --replace-source` only when the task requires a full refresh
+   from that same canonical source basename; it atomically removes prior rows
+   from that source before importing. Do not use it for an ordinary add/update.
 
 5. Verify only counts and metadata, never values. Keep source files and backups
    owner-only and outside Git; preserve the prior backup until recovery is no
    longer needed.
 
-Credential creation or rotation requires explicit authorization. The importer
-only registers values supplied in an already authorized source file; it does
-not create, renew, or test upstream credentials. The previously used
+The importer only registers values supplied in the task's identified source
+file; it does not create, renew, or test upstream credentials. Credential
+creation or rotation may proceed when the accepted task itself requires it;
+otherwise treat it as out of scope. The previously used
 `master_credentials.md` is not present/readable at its historical path on the
 observed host, so a future import must identify a currently authorized source.
 
@@ -138,16 +147,18 @@ observed host, so a future import must identify a currently authorized source.
   only other authorized registries/runtime configuration. If still absent,
   report the credential name, purpose, expected owner, and whether creation is
   needed; do not infer or fabricate a value.
-- **Permission denied:** stop. Do not broaden grants, disable RLS, use a client
-  API role, or switch to another identity. Request the appropriate local
-  database operator authorization.
+- **Permission denied:** use the documented local database-operator route if
+  it is available to the task. Do not broaden grants, disable RLS, use a client
+  API role, or switch identities. If the approved operator account lacks the
+  required role, report that technical access blocker; do not request the task's
+  authorization a second time.
 - **Container/database unavailable:** report the container and error class to
   the Mac mini operator. Do not start/recreate the stack or restore a backup as
   part of lookup.
 - **Expired or rotated upstream value:** record the failed service check
-  without including the value; ask the credential owner to authorize rotation
-  through the service's approved path, then register the replacement using the
-  authorized source file procedure above.
+  without including the value. If rotation is within the accepted task, use the
+  service's approved path and register the replacement from its identified
+  source; otherwise report rotation as out of scope.
 - **MacBook/cloud agent cannot reach it:** this access path is not verified for
   remote hosts. Do not tunnel, publish a port, or copy secrets. Run the
   authorized lookup on the Mac mini or document remote access as a separate
