@@ -164,6 +164,22 @@ Before adding a new Cloudflare dependency (KV, D1, R2, Worker Cron, Pages, Tunne
 
 ---
 
+## 7A. Development Agent Execution Environment
+
+**Policy: Environment-aware execution (2026-10-25).** Codex Cloud is not the default or mandatory development environment; neither is local Codex CLI. Choose the environment that minimizes end-to-end time to a verified outcome, considering source checkout isolation, dependency/cache availability, data and runtime access, feedback-loop latency, and integration/production verification.
+
+- Prefer **Codex Cloud** for self-contained implementation, refactoring, documentation, UI/API changes, and tests that can be reliably verified in an isolated cloud checkout.
+- Prefer **local Codex CLI** on an authorized host for tasks requiring local SQLite/Supabase, Mac mini services, authenticated runtime/browser profiles, actual-data replay, or immediate deployment and smoke-test feedback.
+- Cloud work may hand off runtime verification to an authorized local agent, but record the handoff explicitly. Do not call a task complete merely because a cloud PR passes CI.
+- Local work should use an isolated task branch/worktree when practical; avoid shared dirty workspaces. Cloud isolation does not excuse unmanaged branches or duplicate canonical checkouts.
+- Use the same GitHub Issue/PR, design, and acceptance criteria regardless of execution environment. Do not create separate cloud/local governance or schedulers.
+- Treat remote connectivity and credentials as **verified capabilities**, not assumptions; never create tunnels, copy secrets, or expand production access merely to satisfy an environment preference.
+- For repeated task types, compare end-to-end delivery and verified outcomes before changing the preferred environment. Do not assert an unmeasured model-speed advantage.
+
+This policy concerns **development agent execution**, not the hosting location of production services. See [Worktree Development Flow](docs/worktree-development-flow.md).
+
+---
+
 ## 8. Repository Discipline
 
 Before making changes, always identify the working context:
