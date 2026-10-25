@@ -10,7 +10,17 @@
 - [RUNTIME_375.md](https://github.com/retailpulses/commerce-lab/blob/main/packages/rp-capability/docs/RUNTIME_375.md)：CLI 安装、release/current/previous、状态、GitHub Actions 约定。
 - [CAPABILITY_LIFECYCLE.md](https://github.com/retailpulses/commerce-lab/blob/main/packages/rp-capability/docs/CAPABILITY_LIFECYCLE.md)：历史生命周期 SOP；冻结后仅作参考。
 
-## 2. 尚未核实（需 Mac mini 证据）
+## 2. Mac mini 实机证据（2026-10-25）
+
+- 设备：`rp-macmini-01`，用户 `agent`，Desktop Commander 在线只读检查。
+- CLI 已安装：`~/.local/bin/rp-capability`；`version` 返回 `engineering.verify 1.0.0-poc`，SHA `e16832653c70dd69486547ff2add2301e57852dd`；previous release `a83e062ce2b764bb657f8126aaa585a2fe4ac51e`。
+- `readback` 显示 `enabled: true`，允许 `cli` / `github-actions`。因此**未停用 CLI**。
+- `codex mcp list` 未发现 Gateway/Capability 注册项；进程初查未发现独立 Gateway Server。
+- 根因已定位：`~/.codex/AGENTS.md` 原文要求“Before using ad-hoc shell ... discover whether a registered Retailpulses capability ...”，这正是 Agent 启动时先做 Capability Discovery 的直接指令来源。已将该段替换为 Direct-First 原则，保留 Browser Cleanup 指令。
+- `~/.codex/memories/MEMORY.md` 含大量历史 Gateway/Workspace 记录；保留为历史，当前 `AGENTS.md` 已明确不得将其当作活动路由规则。
+- `~/.local/state/rp-capability/timesale-capability.jsonl` 最近修改于 2026-10-19；`timesale-weekly-stdout.log` 同日更新。**存在真实历史业务调用证据，禁止贸然关闭 CLI/Time Sale 入口。**
+
+## 3. 尚未核实（需进一步证据）
 
 | 对象 | 状态 | 证据要求 |
 |---|---|---|
@@ -21,7 +31,7 @@
 | Time Sale / 其他 Provider 的生产调用 | Unknown | 代码引用 + 运行日志 |
 | Gateway 停用是否影响业务 | Unknown | 停用前后 smoke |
 
-## 3. Freeze 状态矩阵
+## 4. Freeze 状态矩阵
 
 | 维度 | 状态 |
 |---|---|
@@ -32,7 +42,7 @@
 | 业务 Provider / Scheduler | **Preserve until verified** |
 | 历史 Release / Audit | **Preserve** |
 
-## 4. Safe Disable Runbook
+## 5. Safe Disable Runbook
 
 1. 收集所有配置、调用者、日志、进程及当前/上一个 release SHA（脱敏）。
 2. 分类：unused / legacy-required / unknown；unknown 不允许停用。
@@ -41,12 +51,12 @@
 5. 对 legacy-required 业务调用做不写入生产的健康检查，确认无回归。
 6. 写回真实执行证据、修改位置、回滚命令和剩余依赖。出现回归立即恢复原配置；不删除 State/Audit。
 
-## 5. Agent Documentation Cleanup
+## 6. Agent Documentation Cleanup
 
 - 审计全局及仓库级 `AGENTS.md`、Codex 配置、`MEMORY.md` 中 Gateway 强制路由和旧 Workspace 约定。
 - 保留历史知识，明确标注 Historical / Superseded；当前 Agent 原则为 Direct-First。
 - 不将 Gateway 文档批量复制到 Agent 启动上下文。
 
-## 6. Sprint Acceptance
+## 7. Sprint Acceptance
 
 [.github#31](https://github.com/retailpulses/.github/issues/31)：M0/M1/M3/M4 需 Mac mini 实际证据。文档已创建不代表 Sprint 完成。任何保留的生产依赖都要在此列出 owner、原因及退出条件。
