@@ -1,45 +1,52 @@
-# Retailpulses — Engineering & Infrastructure
+# Retailpulses Engineering Registry
 
-本仓库是 Retailpulses **内部工程与基础设施的 Canonical Registry 和导航入口**，同时保留 GitHub 组织默认社区文件的原生职责。
+本仓库是 Retailpulses 的组织级 Engineering、Infrastructure、Repository 与 Foundational Reference 导航入口，同时承载 GitHub Organization 默认社区文件。此处维护跨仓库标准和经证据支持的索引；不替代产品仓库的实现与运行权威，也不承载第二套工作状态库。
 
-## 权威边界（P0 已生效）
+## Canonical ownership boundaries
 
-| 领域 | Canonical owner | 说明 |
-| --- | --- | --- |
-| 跨仓库 Engineering Principles、Infrastructure Inventory、Repository Registry、中央导航 | **本仓库** | 维护跨产品身份、边界、指针和轻量规范 |
-| 当前生效的治理工具、可复用 Actions、安装器、治理政策 | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit) | **暂不切换**；依 [#11](https://github.com/retailpulses/.github/issues/11) 分阶段迁移并验证消费者 |
-| 产品架构、TRD、代码、测试、部署实现 | **各产品仓库** | 不将产品文档复制到中央仓库 |
-| Sprint、Backlog、工作状态、决策追踪 | GitHub Issues / Projects | 不建立平行 Markdown Backlog |
-| 实际生产状态、数据库内容、日志、Secret | **运行平台 / 数据系统** | GitHub 只记录脱敏资产身份、部署契约和观测证据 |
+| 领域 | 权威归属 |
+|---|---|
+| 跨仓库工程标准、组织级基础设施与仓库索引、跨产品 Foundational Reference 导航 | 本仓库；标准的采用状态见各文档 |
+| 当前生效的治理工具、策略、安装器和执行 Workflow | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit)，直到 #11 验证并批准切换 |
+| 产品 Design、Architecture、TRD、代码、测试与产品运行手册 | 对应产品仓库；具体权威由该仓库文档声明 |
+| Sprint、工作状态、交付与决策记录 | GitHub Issues / Projects |
+| 实际生产状态、数据、Secret 与运行日志 | 对应运行平台和数据系统；本仓库只收录脱敏资产身份及证据链接 |
 
-**Canonical Registry ≠ Governance 工具切换。** P0 确立本仓库作为中央工程目录的职责，但现有 Governance 执行入口、Workflow 引用和产品部署链保持不变。中央与本地冲突时应核实归属，不能默默覆盖产品事实。
+## Engineering standards & templates
 
-## 目录入口
+- [Engineering navigation](engineering/README.md)：现行文件、Pilot/Proposed 文件及迁移中内容的状态说明。
+- [Documentation Standard](engineering/DOCUMENTATION_STANDARD.md)：Pilot；不是全组织强制切换。
+- [Design Migration Guide](engineering/DESIGN_MIGRATION_GUIDE.md)：Pilot 迁移流程。
+- [Product Design template](engineering/templates/PRODUCT_DESIGN.md)：轻量参考模板。
+- [GitHub defaults and workflows](.github/workflows/README.md)：默认文件与可复用 Workflow 索引；Workflow 需消费者显式调用。
+- [Organization Agent guidance](AGENTS.md) 与 [Security policy](SECURITY.md)。
 
-| 路径 | 内容 | 状态 |
-| --- | --- | --- |
-| [engineering/](engineering/README.md) | 工程原则、标准与模板导航 | P0 索引 |
-| [infrastructure/](infrastructure/README.md) | Mac mini / Cloudflare / VPS / Database / Credentials 资产目录 | Mac mini 初始盘点；VPS / Cloudflare 仍待核实 |
-| [registry/](registry/README.md) | 全组织仓库生命周期与职责目录 | P0 快照 |
-| [docs/](docs/) | 已有共享文档 | 保留 |
-| [AGENTS.md](AGENTS.md) | 组织默认 Agent 指引 | 保留；运行时选择以现场 Registry 为准 |
-| [Credential Access Guide](infrastructure/credentials/ACCESS_GUIDE.md) | 本地 credential registry 的安全查询、访问和注册 | Mac mini 本机验证 |
-| [.github/](.github/) | GitHub 默认 Issue/PR 模板及 Workflow | 现有行为不变 |
-| [profile/](profile/) | GitHub 组织主页 | 保留 |
+## Infrastructure, runtime & workspace registry
 
-## 维护原则
+- [Infrastructure registry](infrastructure/README.md)：[Mac mini](infrastructure/mac-mini/README.md)、[Cloudflare](infrastructure/cloudflare/README.md)、[VPS](infrastructure/vps/README.md)、[databases](infrastructure/databases/README.md) 和 [credentials](infrastructure/credentials/README.md)。
+- Mac mini 当前运行观察见 [runtime inventory](infrastructure/mac-mini/runtime-inventory.yaml)；Workspace-to-runtime 的新映射仍由 [#15](https://github.com/retailpulses/.github/issues/15) 跟踪，尚无 `workspaces.yaml`。
+- Cloudflare / VPS 只读资产核验由 [#14](https://github.com/retailpulses/.github/issues/14) 跟踪；不要将目录存在理解为现场盘点已完成。
 
-1. 中央只登记跨产品事实、共同标准和权威链接；产品内细节留在产品仓库。
-2. Registry 是稳定资产身份；Snapshot 是有时间戳的现场观察，不能当作持续健康保证。
-3. 工程规范应简洁、可操作，避免模糊非功能性要求及额外审批；MVP 优先。
-4. 未验证的事实标记 UNKNOWN，不以 README、代码存在或 LaunchAgent loaded 推断生产状态。
-5. 不提交凭据、客户数据、数据库副本、敏感运行配置。
-6. 组织默认模板与 Workflow 的实际 GitHub 生效机制保持原样；中央 AGENTS 指引不等于 GitHub 自动强制应用到每个仓库。
+## Repository registry
 
-## 现有计划
+[Repository Registry](registry/README.md) · [machine-readable repository list](registry/repositories.yaml)。该清单是粗粒度组织索引，不代替各仓库自己的职责、架构或运行说明。
 
-- [#11 — 治理仓库渐进整合](https://github.com/retailpulses/.github/issues/11)：当前 Governance 权威不变；待迁移验证后再切换。
-- [#12 — README 模板](https://github.com/retailpulses/.github/issues/12)。
-- [#14 — Cloudflare / VPS Runtime Inventory](https://github.com/retailpulses/.github/issues/14)。
+## Foundational references
 
-**P0 范围：** 建立 README、目录骨架和 Repository Registry；不迁移治理工具、不修改其他仓库、不调整生产环境。
+[Foundational Reference Registry](references/README.md) 当前为 Pilot，含 GigaB2B、Mercari Inquiry 与 Rakuten RMS 的来源和核实状态。它是内部发现入口，不取代供应商官方资料；全组织资料盘点与补全由 [#19](https://github.com/retailpulses/.github/issues/19) 跟踪。
+
+## Governance & GitHub defaults
+
+GitHub Organization Overview 位于 [profile/README.md](profile/README.md)。Issue / PR 模板和 Security 默认入口保留 GitHub 原生路径；中央 [AGENTS.md](AGENTS.md) 提供默认 Agent 指引，不代表 GitHub 会对所有仓库自动强制执行。Governance 工具权威仍在 `rp-governance-kit`，迁移计划见 [#11](https://github.com/retailpulses/.github/issues/11)。
+
+## Active migration / tracking issues
+
+进度和讨论以 Issue / PR 为准；本表只指向工作入口，不复制动态状态。
+
+- [#11 Governance Kit Migration](https://github.com/retailpulses/.github/issues/11) · [#12 README Standards](https://github.com/retailpulses/.github/issues/12)
+- [#14 Cloudflare / VPS Inventory](https://github.com/retailpulses/.github/issues/14) · [#15 Workspace / Runtime Mapping](https://github.com/retailpulses/.github/issues/15)
+- [#16 Documentation Standard](https://github.com/retailpulses/.github/issues/16) · [#19 Foundational API References](https://github.com/retailpulses/.github/issues/19)
+- [#22 Engineering Methodology Migration](https://github.com/retailpulses/.github/issues/22) · [#24 Local LLM / Capability Gateway](https://github.com/retailpulses/.github/issues/24)
+- [#25 inbox → .github Asset Migration](https://github.com/retailpulses/.github/issues/25) · [#26 Credential Access Guide / AGENTS Cleanup](https://github.com/retailpulses/.github/issues/26) (已关闭；实现见已合并 PR #27/#28)
+
+> 本次 QW-01 只改善导航与迁移归属可见性，不迁移产品资产、不更改 Runtime 或生产配置。
