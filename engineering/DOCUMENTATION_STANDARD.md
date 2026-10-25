@@ -107,3 +107,35 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design impact**。POC 通过不自动批准技术栈、部署方案或生产可靠性。技术栈选择应比较现有内部能力、成熟开源、原生平台与自建成本；重大锁定或难逆转取舍写 ADR。部署设计应交代目标环境、service/worker/job、触发、网络与凭据边界、运维责任、备份恢复和验证方式；**真实部署位置**必须通过 Current State/运行证据证明。
 
 组织级配套入口：[Engineering Principles](ENGINEERING_PRINCIPLES.md)、[Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md)。文档以最小可理解集合起步，只有阅读、协作、复用或审计需求证明必要时才拆分；不得以模板创建文件数量作为完成标准。
+
+## 15. Technical Contract Completeness & Drift Prevention (Pilot Patch)
+
+目标：防止 TRD 技术契约不足导致 Coding Agent 自行假设、跨模块集成失败或验收漂移；不以文档长度、文件数量或新增审批为指标。保留 §2、§6、§7 的权威与比例原则。
+
+### 15.1 Contract completeness before implementation
+
+- **Completeness over document count**：不是每项 Requirement 都需要独立 TRD；但关键业务、金额/状态计算、数据迁移、跨系统调用及生产依赖必须具备足够可实施、可验证的契约。可写在现有 TRD/Contracts 或已有技术说明，不强制新文件。
+- Engineering Agent 按适用性检查六项：① Requirement ID 与业务行为/禁止行为映射；② 数据来源、Schema、计算、幂等及一致性；③ API/系统集成、认证、异常与重试；④ Runtime、Scheduler、配置、迁移与恢复；⑤ 正常/异常/边界及业务结果验收；⑥ As-Is 代码、目标变更范围与共享模块所有权。
+- 每项适用内容标明 **Specified / Verified / Open / N/A**，必要时附来源与验证环境。只阻断会改变核心业务行为、关键数据正确性或不可绕过的集成路径的未决事实；其余可并行推进，不增加统一的人工审批关卡。
+- 对金额、状态转换、数据映射及外部调用，优先使用具体输入、预期输出、失败示例；重要示例尽可能落实为自动化契约/回归测试。CI 或 Mock PASS 不等于真实业务结果通过。
+
+### 15.2 Integration, credential & connectivity readiness
+
+涉及跨 Repository、Runtime、网络边界或外部 Open API 的关键调用，TRD/Contracts 必须在大量依赖性编码前明确：
+
+1. **真实调用链**：Caller（Agent/Service + 实际 Runtime）→ Endpoint/Provider → 数据源；Read/Write 意图、既有 Client/Relay、网络路径与服务 Owner。
+2. **认证与权限**：既有 API Key/Service Token/OAuth/SSH/Cloudflare Access 等认证机制、所需 Scope、调用方及服务端配置名称与责任人；**只记录 Secret 所在的受控环境/配置引用，绝不记录值**。
+3. **Reuse-first discovery**：先核实已有 API Client、Credential、VPS 固定出口 Relay、Tailscale/SSH/受控 Connector 和配置是否可复用；变量缺失不等于必须新建同数量身份。不得默认 Codex Cloud、ChatGPT Work、Mac mini、MacBook 与 VPS 具有相同访问权限。
+4. **Caller-side preflight**：从**实际调用方的目标环境**执行最小、优先只读的 DNS/TLS、认证、API 权限、响应契约及必要数据可读性验证；记录脱敏命令/方法、时间、环境、结果及证据链接。代码存在、Mock 成功、变量名存在均不算 Connectivity Verified。不得为验证而发送真实客户消息或进行不必要生产写入。
+5. **Missing dependency resolution**：区分 Credential Missing、Permission Denied、Network Unreachable、Provider Contract Mismatch、Runtime Config Missing。Engineering Agent 在已有授权范围内自主修复配置/连接；仅账户持有人交互、权限扩大等不可委托事项提交 Sponsor，并附具体操作。不能把常规技术配置推给 Product Owner。
+6. **Failure/alternative**：关键依赖未验证时明确标为 Open/Blocked，记录可执行的 fallback 或不依赖该接口的安全降级；不把尚未证实的 Cloud→VPS/Relay 路径写成 Verified。允许独立模块继续开发，但不得宣称相关 E2E Ready。
+
+组织级 API Dictionary/版本/字段定义引用 `references/README.md`；基础设施与访问路径引用 `infrastructure/README.md`；产品特定映射和 Preflight 证据留在产品仓库/Issue。真实 Secret 只存在于批准的 Runtime/Secret 配置中。**本 Patch 不授权新建 Credential Gateway、Capability Layer、通用 Secret 平台、第二套 Relay 或广泛生产访问。**
+
+### 15.3 Drift reconciliation during delivery
+
+- Agent 发现 Design、TRD、Architecture、Code、Runtime 冲突时先分类：产品行为决策 → Design/Sponsor；技术事实 → Engineering 验证并更新 Contract；实现偏差 → Code/Test；实际部署状态 → Current State/运行证据。不得静默以现有代码覆盖已批准设计。
+- 共享 API、Schema、Migration、数据口径和跨 Agent 接口由明确的 Integration Owner 统一管理；Subagent 不得各自发明不兼容契约。
+- 相关 PR 在既有 closeout 中关联 Requirement ID、变更的契约、自动化/真实 E2E 验收证据与仍未验证的依赖。优先原位 Patch，不复制新的 TRD 或建立平行检查账本。
+
+**案例依据**：[inbox#451](https://github.com/retailpulses/inbox/issues/451)（Inquiry Credential/Integration late discovery）、[inbox#455](https://github.com/retailpulses/inbox/issues/455)（Cloud→VPS Relay 路径待验证）、[inbox#257](https://github.com/retailpulses/inbox/issues/257)（业务结果不能由绿色 CI 代替）、[store-ops#132](https://github.com/retailpulses/store-ops/issues/132)（Monthly P&L 技术合同与数据/迁移完整性）。
