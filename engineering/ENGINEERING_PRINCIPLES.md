@@ -1,6 +1,6 @@
 # Retailpulses Engineering Principles
 
- > Status: **Organization-level P0 adoption (pilot); original draft preserved**  
+> Status: **Organization-level P0 adoption (pilot); original draft preserved**
 > Scope: internal software, automation, data/runtime changes, and agent-assisted development across Retailpulses repositories.
 
 These principles define **how we prefer to design and evolve systems**, not a rigid implementation standard. They should guide architecture discussions, Issues, implementation plans, PR review, migrations, and agent handovers.
