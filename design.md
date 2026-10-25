@@ -79,7 +79,7 @@ Capability ID 在组织级 Design / Issue 追踪中保持稳定；名称或目�
 - **User / Consumer:** Repository Maintainer、Engineer、Agent。
 - **Expected Behavior:** 导航明示当前工具权威、消费者依赖及迁移状态；执行能力仅在消费者明确采用并验证后称为已分发。
 - **Canonical Owner / Asset:** 当前治理工具、政策、安装器与执行 Workflow 的 Owner 是 `rp-governance-kit`；`.github` 承载 GitHub 原生组织默认文件和当前 registry 导航。
-- **Current State:** In Progress / Proposed（#11 追踪分阶段整合；当前工具权威尚未切换）。
+- **Current State:** Planned / Proposed（#11 正文将分阶段整合表述为提案；当前工具权威尚未切换）。
 - **Target State:** 只有兼容性、消费者和回退路径得到验证且有明确 authority cutover 后，才更新权威声明。
 - **Related Issues:** [#11](https://github.com/retailpulses/.github/issues/11)。
 - **Acceptance Intent:** 治理使用者能选到当前生效入口，不会因导航或部分复制而丢失执行保护。
