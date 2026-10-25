@@ -25,7 +25,7 @@
 ## Infrastructure, runtime & workspace registry
 
 - [Infrastructure registry](infrastructure/README.md)：[Mac mini](infrastructure/mac-mini/README.md)、[Cloudflare](infrastructure/cloudflare/README.md)、[VPS](infrastructure/vps/README.md)、[databases](infrastructure/databases/README.md) 和 [credentials](infrastructure/credentials/README.md)。
-- Mac mini 当前运行观察见 [runtime inventory](infrastructure/mac-mini/runtime-inventory.yaml)；Workspace-to-runtime 的新映射仍由 [#15](https://github.com/retailpulses/.github/issues/15) 跟踪，尚无 `workspaces.yaml`。
+- Mac mini 运行登记见 [runtime inventory](infrastructure/mac-mini/runtime-inventory.yaml)、[workspace-to-runtime mapping](infrastructure/mac-mini/workspaces.yaml) 与其 [timestamped snapshot](infrastructure/mac-mini/runtime-inventory-snapshot.md)；映射仍为部分核实，未知项见 [#15](https://github.com/retailpulses/.github/issues/15)。
 - Cloudflare / VPS 只读资产核验由 [#14](https://github.com/retailpulses/.github/issues/14) 跟踪；不要将目录存在理解为现场盘点已完成。
 
 ## Repository registry

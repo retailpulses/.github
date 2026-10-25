@@ -78,6 +78,52 @@ These cross-checkout references need explicit Git HEAD and dependency verificati
 **No runtime configuration or process was changed during this inventory.**
 
 
+## 2026-10-25 18:53 JST — M1 workspace/runtime reconciliation
+
+**Method:** read-only inspection of the three inbox Mac mini source documents, central YAML, host Git checkouts, selected LaunchAgent/LaunchDaemon plist fields, user crontab schedules, `launchctl` states, listening sockets, and one local GET to the existing Portal route. No environment-variable values or credentials were read. No service, scheduler, process, runtime file, or production setting was changed.
+
+### Current process and scheduler observations
+
+The central inventory's initial **15 Runtime IDs** were checked against host configuration. Five local HTTP services and two GitHub runner LaunchDaemons were running at observation time; the other configured scheduled jobs are not described as healthy merely because launchd has them loaded.
+
+| Runtime ID | Verified host observation | Remaining evidence gap |
+| --- | --- | --- |
+| `storeops-portal` | LaunchAgent `com.retailpulses.mercari-local-ui`; PID 30368 listens on `127.0.0.1:8765`; GET `/mercari/timesale` returned HTTP 200. Wrapper sets `STOREOPS_ROOT` to the separate Store OPS Time Sale checkout and calls the store-ops listing mount script. | Effective code is split across checkouts; the UI checkout is dirty, so deployed/effective commit is UNKNOWN. Other dependencies may be loaded from dirty checkouts. |
+| `mercari-operations-ui` | LaunchAgent `com.retailpulses.storeops-ui-mercari`; PID 81073; working directory `/Users/agent/work/store-ops-runtime`. | Current route/readiness and effective runtime commit not independently checked. |
+| `rakuten-operations-ui` | LaunchAgent `com.retailpulses.storeops-ui-rakuten`; PID 5042; same observed working directory `/Users/agent/work/store-ops-runtime`. | Current route/readiness and effective runtime commit not independently checked. |
+| `portal-auth-proxy` | LaunchAgent `com.retailpulses.mercari-portal-authproxy`; PID 5041 listens on `127.0.0.1:8790`. | Source repository and commit unknown; program directory has no Git checkout. |
+| `inquiry-sqlite-viewer` | LaunchAgent `com.retailpulses.inquiry-experiment-sqlite-viewer`; PID 27193 listens on `127.0.0.1:8001`. | Source repository and commit unknown; installed path has no Git checkout. |
+| `mercari-copy-scheduler` | LaunchAgent loaded; last launchd exit code 0; configured RunAtLoad + KeepAlive; working directory `/Users/agent/work/commerce-lab-harvest-clean`. | No process PID at observation; last successful business run unknown; checkout dirty. |
+| `local-database-sync` | LaunchAgent loaded; last launchd exit code 0; RunAtLoad + 600-second StartInterval; script under `commerce-lab/services/canonical-lab`. | Last successful sync and effective runtime commit unknown; do not infer data freshness. |
+| `canonical-data-daily` | LaunchAgent loaded; last launchd exit code 0; calendar schedule daily 05:10 JST. | Last successful run and effective runtime commit unknown. |
+| `canonical-data-reconcile` | LaunchAgent loaded; last launchd exit code 0; calendar schedule Monday 05:40 JST. | Last successful run and effective runtime commit unknown. |
+| `stock-monitor-daily` | LaunchAgent loaded; last launchd exit code 0; calendar schedule daily 10:23 JST; working directory `/Users/agent/work/local-tools/stock-planning`. | No process PID at observation; checkout has 10 dirty paths and no configured remote; successful output unknown. |
+| `rakuten-login-watch` | LaunchAgent loaded; StartInterval 1800 seconds; launchd status 2. | Failure cause and last successful run unknown. |
+| `timesale-staging-pull` | User crontab has `* * * * *`; configured `pull_staged_batches.py` target was absent at the referenced path. | No successful execution evidence. Existing cron was left untouched. |
+| `machine-snapshot` | User crontab has `17 2 * * *`; installed entrypoint exactly matches the script in the clean local checkout (same SHA-256); configured source checkout HEAD is `bcc1b89f2e5f4c5ef9911a4c4e323377f57cc5a2`. | Last successful publication unknown; local source repository has no configured Git remote. |
+| `github-actions-runner-01` | System LaunchDaemon reports running, PID 303. | Runner installation is not a Git workspace; source release/commit not verified. |
+| `github-actions-runner-02` | System LaunchDaemon reports running, PID 302. | Runner installation is not a Git workspace; source release/commit not verified. |
+
+### Additional configured runtime found
+
+The host also has `/Library/LaunchDaemons/com.retailpulses.timesale-local.plist`, absent from the 15-ID registry. `launchctl print system/com.retailpulses.timesale-local` reports **not running**, last exit code **1**, and program path under release `commerce-ops-dfe46176144b622a7333efc43998f6cd41aef15f`. It is recorded as `timesale-local-legacy` in the registry as a configuration-only asset. Its owner, intended lifecycle, and safe retirement state are UNKNOWN. It was not loaded or started, and no cleanup was attempted.
+
+`com.retailpulses.prevent-idle-lock` is also configured as a host support LaunchAgent; it is not a product/runtime entry and was not added to the application runtime count.
+
+### Workspace / source identity
+
+`workspaces.yaml` records **11 observed paths**: nine Git checkouts with their observed HEAD/branch/dirty state and two installed code directories without Git metadata. Each has `canonical_workspace_status: UNKNOWN`; active usage proves a runtime path, not the owner-approved canonical workspace. Four Store OPS / Commerce Lab paths in the Portal chain are separate checkouts, not duplicate services. The `store-ops-runtime` checkout is used by two distinct UI runtime IDs.
+
+The inbox `system/mac-mini/SNAPSHOT.md` is dated **2026-09-29** and is historical, not current. Its `CAPABILITIES.yaml` is a local capability inventory with a different taxonomy from the central Runtime IDs: `machine-snapshot` matches by ID, while `canonical-data` groups two central jobs and `stock-monitor` differs from `stock-monitor-daily`. These are not silently merged. The local Machine Gateway capability is marked deprecated; this reconciliation neither copied its design nor changed it.
+
+### Count and boundary
+
+- **16 configured runtime entries** now appear in `runtime-inventory.yaml`: the initial 15 plus the discovered stopped legacy LaunchDaemon.
+- **Verified at observation:** 7 running processes (5 local listeners + 2 runners), 11 GUI LaunchAgent identities/configurations, 2 user cron schedules, one extra stopped LaunchDaemon, 11 path records, and the exact Machine Snapshot entrypoint-to-checkout file match.
+- **Unknown:** canonical workspace owner/status for all 11 path records; effective runtime commit for 15 of 16 runtime entries; source repository/commit for the auth proxy, SQLite viewer and runner installations; run success/freshness for all recurring jobs; `timesale-local-legacy` owner/lifecycle; root cause of Rakuten Login Watch status 2; and source validity of the absent Time Sale staging target.
+- These are infrastructure observations only. Application business health, customer data, credential values, and database freshness were not assessed.
+
+
 ## 2026-10-23 13:06 JST — Time Sale Sprint #115 deployment verification
 
 **Scope:** targeted live deployment inspection on `rp-macmini-01`; this supplements the original 2026-10-22 partial 15-runtime inventory, not a full rescan of every entry.

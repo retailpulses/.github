@@ -4,7 +4,7 @@
 
 | 范围 | 入口 | 当前状态 |
 | --- | --- | --- |
-| Mac mini | [mac-mini/](mac-mini/README.md) | 初始 Runtime / SQLite 盘点；本地 Supabase/PostgreSQL 已只读核实 |
+| Mac mini | [mac-mini/](mac-mini/README.md) | Runtime Registry、Workspace mapping 与有时间戳的只读观察；本地 Supabase/PostgreSQL 已只读核实 |
 | Cloudflare | [cloudflare/](cloudflare/README.md) | 待只读盘点 |
 | VPS | [vps/](vps/README.md) | 待只读盘点 |
 | Databases | [databases/](databases/README.md) | 跨平台数据库实例索引待建立 |
