@@ -1,7 +1,8 @@
 # AGENTS.md — Retailpulses Central Agent Guidance
 
-**Purpose:** Default agent behavior rules for all Retailpulses repositories.
-**Scope:** Applies when a repo does NOT have its own AGENTS.md or CLAUDE.md.
+**Purpose:** Organization-level Agent guidance source for Retailpulses repositories.
+**Loading:** GitHub does not automatically copy or inject this file into every repository or Agent. It applies when an Agent runtime or workspace explicitly loads this file; the runtime's supported instruction mechanism determines how repository-local `AGENTS.md` / `CLAUDE.md` files interact with it.
+**Scope:** Use as the shared baseline when loaded and when the target repo has no more specific applicable guidance. A product repository may add context and stricter rules.
 **Override:** Repos may add stricter rules in their own AGENTS.md. They should not loosen these.
 
 ## Organization Context
