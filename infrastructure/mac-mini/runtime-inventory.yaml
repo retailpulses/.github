@@ -2,17 +2,22 @@ schema_version: 0.2
 host: rp-macmini-01
 timezone: Asia/Tokyo
 
-status_note: "Initial partial read-only discovery; repository, commit, launch config, and last success not yet fully attested."
+status_note: "Read-only reconciliation observed 2026-10-25; see runtime-inventory-snapshot.md and workspaces.yaml. Effective runtime commits remain UNKNOWN unless specifically verified. No services, schedulers, or production configuration were changed."
 runtimes:
   - id: storeops-portal
     product: StoreOPS Portal
     execution_mode: launchagent
     launch_label: com.retailpulses.mercari-local-ui
     checkout_path: /Users/agent/work/store-ops-listing-runtime
-    entrypoint: apps/mercari/new-products-to-listing/mount_portal.py
+    entrypoint: "/Users/agent/Library/Application Support/Retailpulses/mercari-local-ui-launch.py"
+    working_directory: /Users/agent/work/commerce-lab-ui-runtime
     listen: "127.0.0.1:8765"
+    observed_routes:
+      - path: /mercari/timesale
+        verification: HTTP 200 on 2026-10-25
+    launch_config: /Users/agent/Library/LaunchAgents/com.retailpulses.mercari-local-ui.plist
     git_commit: UNKNOWN
-    notes: "References customer-agent, commerce-lab-ui and commerce-lab-listing runtime paths; verify dependencies."
+    notes: "Launch chain uses store-ops-listing-runtime/apps/mercari/new-products-to-listing/mount_portal.py and STOREOPS_ROOT=/Users/agent/work/store-ops-timesale-runtime; interpreter is in commerce-lab/services/canonical-lab and working directory is commerce-lab-ui-runtime. That UI checkout has local modifications, so effective runtime commit is UNKNOWN. See workspaces.yaml."
   - id: mercari-operations-ui
     product: Mercari Operations
     execution_mode: launchagent
@@ -81,13 +86,16 @@ runtimes:
     entrypoint: apps/timesale/local_offer/pull_staged_batches.py
     log_path: /Users/agent/Library/Logs/rp-timesale-staging.log
     git_commit: UNKNOWN
+    verification_status: configured_target_missing
+    notes: "User crontab contains this every-minute invocation, but pull_staged_batches.py was absent at the configured path on 2026-10-25. Do not infer successful execution; see snapshot and #15."
   - id: machine-snapshot
     product: Mac mini Infrastructure
     execution_mode: cron
     schedule: "17 2 * * *"
     entrypoint: /Users/agent/.local/lib/rp-machine-snapshot/scripts/rp-machine-snapshot.rb
     log_path: /Users/agent/Library/Logs/rp-machine-snapshot.log
-    git_commit: UNKNOWN
+    git_commit: bcc1b89f2e5f4c5ef9911a4c4e323377f57cc5a2
+    notes: "Configured installed entrypoint is byte-identical to the tracked script at this clean local checkout HEAD (SHA-256 verified 2026-10-25); repository has no configured remote, so upstream source repository remains UNKNOWN."
   - id: github-actions-runner-01
     product: CI
     execution_mode: launchdaemon
@@ -100,6 +108,13 @@ runtimes:
     launch_label: com.retailpulses.github-runner.rp-macmini-02
     entrypoint: /Users/agent/actions-runners/rp-macmini-02/runsvc.sh
     git_commit: UNKNOWN
+  - id: timesale-local-legacy
+    product: Time Sale
+    execution_mode: launchdaemon
+    launch_label: com.retailpulses.timesale-local
+    entrypoint: /Users/agent/work/releases/commerce-ops-dfe46176144b622a7333efc43998f6cd41aef15f/apps/timesale/local_offer/ensure_local_runtime.sh
+    git_commit: UNKNOWN
+    notes: "Configured system LaunchDaemon was observed not running with last exit code 1 on 2026-10-25. Release directory is not a Git checkout. This is an inventory observation only; do not load, start, restore, or remove without a separate owner decision."
 
 # Database assets are not counted as runtime processes.
 # Verification evidence and transient status belong in runtime-inventory-snapshot.md.

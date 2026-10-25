@@ -1,0 +1,143 @@
+schema_version: 1
+host: rp-macmini-01
+observed_at: "2026-10-25T18:53:33+09:00"
+authority: retailpulses/.github
+runtime_state_authority: Mac mini host and its live service configuration
+canonicality_rule: >-
+  A path being checked out, configured, or used by a process proves an observed
+  runtime workspace only. It does not designate the canonical development or
+  deployment workspace. Keep canonical_workspace_status UNKNOWN until its owner
+  and promotion status are verified.
+
+workspaces:
+  - id: store-ops-listing-runtime
+    path: /Users/agent/work/store-ops-listing-runtime
+    source_repository: https://github.com/retailpulses/store-ops.git
+    observed_head: d343944656d987ae834239f5208b79e8cebcdb38
+    branch: DETACHED
+    working_tree: clean
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [storeops-portal]
+    role: launch_chain_mount_script
+    evidence: launch wrapper and mount_portal.py paths; Git remote, HEAD, and clean status read on host
+
+  - id: commerce-lab-ui-runtime
+    path: /Users/agent/work/commerce-lab-ui-runtime
+    source_repository: https://github.com/retailpulses/commerce-lab.git
+    observed_head: b21e3f216ee982544c5d2337bef170a18b27d8fe
+    branch: runtime/main-20261009
+    working_tree: dirty
+    changed_path_count: 34
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [storeops-portal]
+    role: launchagent_working_directory_and_ui_module
+    effective_runtime_commit: UNKNOWN
+    evidence: launchd plist WorkingDirectory; local portal route responds HTTP 200; checkout has local modifications
+
+  - id: store-ops-timesale-runtime
+    path: /Users/agent/work/store-ops-timesale-runtime
+    source_repository: https://github.com/retailpulses/store-ops.git
+    observed_head: 9008a69dbdf6607109a2cfa2ed0256ab6cb24be1
+    branch: DETACHED
+    working_tree: clean
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [storeops-portal]
+    role: STOREOPS_ROOT_dependency
+    evidence: host launch wrapper sets STOREOPS_ROOT to this path; checkout is clean at observed HEAD
+
+  - id: store-ops-runtime
+    path: /Users/agent/work/store-ops-runtime
+    source_repository: https://github.com/retailpulses/store-ops.git
+    observed_head: 1094ff03acc4d12b84f7cf169c866fec708b60d7
+    branch: DETACHED
+    working_tree: clean
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [mercari-operations-ui, rakuten-operations-ui]
+    role: launchagent_working_directory
+    evidence: both UI LaunchAgent working directories point here; Git remote, HEAD, and clean status read on host
+
+  - id: commerce-lab-canonical-services
+    path: /Users/agent/work/commerce-lab/services/canonical-lab
+    git_root: /Users/agent/work/commerce-lab
+    source_repository: https://github.com/retailpulses/commerce-lab.git
+    observed_head: dc0375266ccb9995dbec560eec4ae99f6e2dd1a6
+    branch: fix/shop4-fresh-snapshot-ledger-20261019
+    branch_relation: ahead 1 / behind 7 relative to origin
+    working_tree: dirty
+    changed_path_count: 3
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [storeops-portal, local-database-sync, canonical-data-daily, canonical-data-reconcile]
+    role: portal_python_environment_and_canonical_job_scripts
+    effective_runtime_commit: UNKNOWN
+    evidence: launch wrapper interpreter and LaunchAgent script paths; parent Git checkout status read on host
+
+  - id: commerce-lab-harvest-clean
+    path: /Users/agent/work/commerce-lab-harvest-clean
+    source_repository: https://github.com/retailpulses/commerce-lab.git
+    observed_head: d930f71f8a4461a4648595de9e105009ac2f5803
+    branch: DETACHED
+    working_tree: dirty
+    changed_path_count: 2
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [mercari-copy-scheduler]
+    role: launchagent_working_directory_and_scheduler_module
+    effective_runtime_commit: UNKNOWN
+    evidence: LaunchAgent program path and WorkingDirectory; checkout has local modifications
+
+  - id: commerce-ops-timesale-staging
+    path: /Users/agent/work/repos/commerce-ops
+    source_repository: https://github.com/retailpulses/commerce-ops.git
+    observed_head: e59280c5f552da0cae95ce509a1ce9b8c9dc102f
+    branch: feat/timesale-local-runtime
+    working_tree: dirty
+    changed_path_count: 9
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [timesale-staging-pull]
+    role: every_minute_user_cron_checkout
+    effective_runtime_commit: UNKNOWN
+    evidence: user crontab schedule and checkout HEAD/status; configured pull_staged_batches.py target was absent at observation
+
+  - id: stock-planning
+    path: /Users/agent/work/local-tools/stock-planning
+    source_repository: UNKNOWN
+    observed_head: b87f7869e025064466951ddcb59f13770fe639ad
+    branch: main
+    working_tree: dirty
+    changed_path_count: 10
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [storeops-portal, stock-monitor-daily]
+    role: observed_local_code_dependency_and_launchagent_working_directory
+    effective_runtime_commit: UNKNOWN
+    evidence: UI module path reference, stock-monitor LaunchAgent WorkingDirectory, and Git status read on host; no Git remote configured
+
+  - id: rp-machine-snapshot
+    path: /Users/agent/work/local-tools/rp-machine-snapshot
+    source_repository: UNKNOWN
+    observed_head: bcc1b89f2e5f4c5ef9911a4c4e323377f57cc5a2
+    branch: main
+    working_tree: clean
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [machine-snapshot]
+    role: local_source_checkout_for_installed_cron_entrypoint
+    configured_entrypoint: /Users/agent/.local/lib/rp-machine-snapshot/scripts/rp-machine-snapshot.rb
+    entrypoint_matches_checkout: true
+    entrypoint_sha256: 20e998937802051527f02edd9aa2d34b570282f3903d1fdb85bb19aa947f5a8d
+    evidence: configured cron path and checkout script have identical SHA-256; checkout HEAD and clean status read on host
+
+  - id: portal-auth-proxy-installed
+    path: /Users/agent/work/local-tools/rp-portal-auth-proxy
+    source_repository: UNKNOWN
+    git_checkout: false
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [portal-auth-proxy]
+    role: launchagent_program_and_working_directory
+    evidence: LaunchAgent plist and existing filesystem path; no .git directory
+
+  - id: inquiry-sqlite-viewer-installed
+    path: /Users/agent/.local/share/retailpulses/sqlite-viewer
+    source_repository: UNKNOWN
+    git_checkout: false
+    canonical_workspace_status: UNKNOWN
+    runtime_ids: [inquiry-sqlite-viewer]
+    role: launchagent_program_path
+    evidence: LaunchAgent program path and existing filesystem path; no .git directory
