@@ -10,7 +10,7 @@
 - **Owner:** Jim Yang
 - **Business entity:** Retailpulses GK, Japan
 - **Core business:** Cross-platform e-commerce operations (Mercari Shops, Rakuten Ichiba, Amazon Japan), e-commerce consulting, and internal software development for operational automation.
-- **Tech stack direction:** Cloudflare Workers (current) → VPS (future target). See Section 2 for VPS inventory.
+- **Runtime direction:** Runtime ownership and deployment state are recorded in `infrastructure/`; do not infer a platform from historical plans.
 
 ---
 
@@ -26,32 +26,9 @@ If the repo has its own agent guidance, follow it. These central rules fill gaps
 
 ---
 
-## 2. VPS Inventory and Runtime Target
+## 2. Runtime Inventory and Target Selection
 
-We already have VPS infrastructure and it should be treated as the future portability target, not the local MacBook.
-
-Available VPS options:
-
-1. **ConoHa VPS Japan**
-   - Use when Japan fixed IP / domestic egress IP is required.
-   - Suitable for marketplace relay services and APIs that restrict access by Japanese IP.
-
-2. **Tencent Cloud VPS Singapore**
-   - IPv4: 43.163.84.239
-   - Specs: 2 vCPU, 4GB RAM, 60GB SSD, 1536GB/month traffic, 30Mbps peak bandwidth
-   - Use for workloads that do not require Japanese fixed IP:
-     - background jobs
-     - internal admin services
-     - staging apps
-     - agent runners
-     - batch processing
-     - non-marketplace API workers
-     - monitoring / lightweight dashboards
-
-Important:
-- Local MacBook is only for development and testing.
-- Production or scheduled workloads should run on VPS, not on the MacBook.
-- Do not put Japan-IP-sensitive relay workloads on Tencent Singapore VPS.
+The central inventory currently marks the VPS and Cloudflare runtime inventories as pending read-only verification. Historical provider names, IP addresses, specifications, or planned targets are not proof that an account, host, or service is active. Check the owning platform and its current inventory before selecting a deployment target. Keep Japan-IP-sensitive workloads on a verified Japan egress path; do not infer one from a provider or region name.
 
 ---
 
@@ -101,7 +78,7 @@ Before any production mutation, report:
 
 ## 5. Credential Safety
 
-### 5.1 Credential Creation
+### 5.1 Credential Lookup, Creation, and Rotation
 
 - Agents must not create real credentials, API keys, or tokens.
 - Agents must not rotate credentials without explicit user request.
@@ -109,8 +86,8 @@ Before any production mutation, report:
   - Add placeholder names to `.env.example`
   - Document required secret names in PR descriptions or deployment docs
   - Add GitHub Actions secret references to existing or expected secrets
-- If a task requires actual credential creation, rotation, or secret value access,
-  report it as a blocker with:
+- For credential lookup, first use the existing authorized Credential Registry and its documented access path. A missing local index file or a failed lookup alone is not evidence that the credential does not exist.
+- Escalate only when the credential is absent, the requester has not authorized access, or the task requires creating or rotating it. Report:
   - Credential name
   - Purpose
   - Expected storage location
@@ -122,13 +99,12 @@ Before any production mutation, report:
 - Check `.gitignore` includes these patterns.
 - If `.env.example` is missing, suggest creating it (with placeholder values only).
 
-### 5.3 master_credentials.md Usage
+### 5.3 Historical `master_credentials.md` Compatibility Index
 
-- `master_credentials.md` is a local credential lookup index, not a secret store.
-- It records credential names, purposes, storage locations, and retrieval methods.
-- It must never contain full secret values.
-- It must never be committed to git.
-- Use it only if explicitly available in the repo or local environment.
+- `master_credentials.md` is a historical local compatibility index, not the canonical registry or a secret store.
+- The canonical documented lookup path is [Credential Access Guide](infrastructure/credentials/ACCESS_GUIDE.md), backed by the Mac mini's local PostgreSQL credential registry.
+- Existing product workflows may still reference the file. Do not delete or migrate it until each consumer and replacement has been verified.
+- If an authorized local copy is available, use it only as a compatibility pointer; never commit it or put full values in it.
 
 ### 5.4 Never Expose Secrets in Output
 
@@ -221,7 +197,7 @@ Every agent task must produce a final summary including:
   - Required credentials:
   - Found via:
   - Missing credentials:
-  - master_credentials.md checked: Yes/No
+  - Historical master_credentials.md checked: Yes/No (only if an authorized copy is available)
   - Secrets exposed in output: No
 ```
 
