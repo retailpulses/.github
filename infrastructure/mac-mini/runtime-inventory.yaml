@@ -119,7 +119,7 @@ data_assets:
 
   - id: canonical-lab-local-postgres
     type: postgres_instance
-    product: Canonical Product / Canonical Lab
+    product: Canonical Product / Canonical Lab / Credential Registry
     engine: Supabase local PostgreSQL (Docker)
     container: supabase_db_local-supabase-smoke
     logical_database: postgres
@@ -127,6 +127,7 @@ data_assets:
       - canonical_product
       - canonical_history
       - canonical_images
+      - credential_registry
     host_port: 54322
     container_port: 5432
     docker_volume: supabase_db_local-supabase-smoke
@@ -135,9 +136,9 @@ data_assets:
     backup_policy: UNKNOWN
     restore_procedure: UNKNOWN
     dependencies: UNKNOWN
-    notes: "Local Canonical Lab PostgreSQL instance, distinct from hosted production Supabase. Container and volume names are observed configuration identifiers; backup and service dependencies remain to be inventoried."
+    notes: "Local Canonical Lab PostgreSQL instance; read-only verification on 2026-10-25 also confirmed credential_registry.credentials here. Distinct from hosted production Supabase. Container and volume names are observed configuration identifiers; full-instance backup and service dependencies remain to be inventoried."
 
 unverified_database_scope:
-  - "Other local PostgreSQL instances or databases, if any, remain unverified; only canonical-lab-local-postgres is attested."
+  - "Other local PostgreSQL instances or databases, if any, remain unverified; the observed canonical-lab-local-postgres instance also hosts the local credential registry."
   - "Other SQLite / DuckDB data files may exist and are not yet enumerated."
   - "Local Database Sync is a scheduler, not a database instance; source and destination need verification."

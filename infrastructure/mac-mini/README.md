@@ -22,4 +22,7 @@ The initial inventory contains **15 runtime entries**. The five listening servic
 
 On the Mac mini inspect launchctl, crontab, processes, listening ports, Git checkout HEADs and relevant execution logs. For databases, inspect engine/container identity, configured ports, volumes, lifecycle ownership, dependencies, and backup/restore arrangements without reading business data. Do not record product row counts, specific SKU prices, business reconciliation results, or application acceptance evidence here. Reconcile each observed runtime ID against YAML.
 
-This is an initial partial inventory, not a complete health certification.
+The local Supabase/PostgreSQL instance and its credential registry are also
+documented in the [database inventory](../databases/README.md) and
+[Credential Access Guide](../credentials/ACCESS_GUIDE.md). This is an initial
+partial inventory, not a complete health certification.

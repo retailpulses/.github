@@ -19,10 +19,11 @@
 | 路径 | 内容 | 状态 |
 | --- | --- | --- |
 | [engineering/](engineering/README.md) | 工程原则、标准与模板导航 | P0 索引 |
-| [infrastructure/](infrastructure/README.md) | Mac mini / Cloudflare / VPS / Database 资产目录 | Mac mini 初始盘点；其余逐步补充 |
+| [infrastructure/](infrastructure/README.md) | Mac mini / Cloudflare / VPS / Database / Credentials 资产目录 | Mac mini 初始盘点；VPS / Cloudflare 仍待核实 |
 | [registry/](registry/README.md) | 全组织仓库生命周期与职责目录 | P0 快照 |
 | [docs/](docs/) | 已有共享文档 | 保留 |
-| [AGENTS.md](AGENTS.md) | 组织默认 Agent 指引 | 保留；后续单独核对过时假设 |
+| [AGENTS.md](AGENTS.md) | 组织默认 Agent 指引 | 保留；运行时选择以现场 Registry 为准 |
+| [Credential Access Guide](infrastructure/credentials/ACCESS_GUIDE.md) | 本地 credential registry 的安全查询、访问和注册 | Mac mini 本机验证 |
 | [.github/](.github/) | GitHub 默认 Issue/PR 模板及 Workflow | 现有行为不变 |
 | [profile/](profile/) | GitHub 组织主页 | 保留 |
 

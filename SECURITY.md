@@ -56,9 +56,9 @@ This policy covers:
 
 ## Credential Safety
 
-Retailpulses uses a local `master_credentials.md` file as a credential lookup index. This file:
+Retailpulses maintains a local PostgreSQL Credential Registry on the Mac mini. See the [Credential Access Guide](infrastructure/credentials/ACCESS_GUIDE.md) for the verified lookup and registration path. `master_credentials.md` is a historical compatibility index; existing consumers may still depend on it, so it must not be deleted until those dependencies are migrated. It is not canonical. It must:
 
-- Records credential names, purposes, and storage locations
+- Must not be treated as a secret store or as the canonical registry
 - Never contains full secret values
 - Must never be committed to git
 - Is covered by `.gitignore`

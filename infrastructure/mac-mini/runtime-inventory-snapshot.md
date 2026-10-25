@@ -116,3 +116,15 @@ These cross-checkout references need explicit Git HEAD and dependency verificati
 **Observation method:** read-only Docker container, mount, port and PostgreSQL schema inspection. The container was running at observation time; this does **not** certify application readiness, data freshness, backup coverage, or recovery capability. No configuration was changed.
 
 **Next infrastructure inventory gaps:** confirm the instance's lifecycle/startup ownership, persistent volume backup and restore process, and dependent runtime/service relationships. Keep application-specific product counts, prices and field-level data checks in the owning product documentation, not this registry.
+
+
+## 2026-10-25 — Local credential registry read-only verification
+
+**Asset ID:** `canonical-lab-local-postgres` (also hosts the local credential registry)
+
+- Docker confirmed `supabase_db_local-supabase-smoke` running PostgreSQL 17.6. The host publishes port `54322` to container port `5432`.
+- Read-only catalog queries confirmed `credential_registry.credentials`, 67 rows, its columns, unique key `(name, project, environment)`, and RLS enabled with no row policies.
+- The `postgres` role has schema/table access. `anon`, `authenticated`, and `service_role` have no schema usage or table SELECT privilege.
+- No credential values, database business rows, or source file contents were queried. The local `psql` metadata query succeeded.
+- This confirms local registry access only. MacBook/cloud reachability and network controls remain UNKNOWN; no remote route was tested.
+- No database or runtime configuration was changed.

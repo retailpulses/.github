@@ -83,7 +83,7 @@ Agents must NOT without explicit approval:
 ## 6. Credential Interaction Rules
 
 Agents must:
-- Check `master_credentials.md` for credential lookup (if available locally)
+- Check the documented Credential Registry first; use `master_credentials.md` only as a historical compatibility index if an authorized local copy is available
 - Report missing credentials with full context (name, purpose, expected location)
 - Never commit `.env` or credential files
 - Never expose secret values in logs, summaries, or chat
@@ -136,7 +136,7 @@ Every agent task must produce a closeout summary:
 
 ### Credential Check
 - Required: [list]
-- Found via: [shell env / .env / master_credentials.md]
+- Found via: [Credential Registry / documented runtime path / historical compatibility index]
 - Missing: [list]
 - Secrets exposed in output: No
 ```
