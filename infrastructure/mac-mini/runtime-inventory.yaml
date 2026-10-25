@@ -2,7 +2,7 @@ schema_version: 0.2
 host: rp-macmini-01
 timezone: Asia/Tokyo
 
-status_note: "Read-only reconciliation observed 2026-10-25; see runtime-inventory-snapshot.md and workspaces.yaml. Effective runtime commits remain UNKNOWN unless specifically verified. No services, schedulers, or production configuration were changed."
+status_note: "Reconciliation observed 2026-10-25; see runtime-inventory-snapshot.md and workspaces.yaml. Effective runtime commits remain UNKNOWN unless specifically verified. The explicitly retired Time Sale staging cron was removed from the user crontab on 2026-10-25; no service or other scheduler was changed."
 runtimes:
   - id: storeops-portal
     product: StoreOPS Portal
@@ -86,8 +86,10 @@ runtimes:
     entrypoint: apps/timesale/local_offer/pull_staged_batches.py
     log_path: /Users/agent/Library/Logs/rp-timesale-staging.log
     git_commit: UNKNOWN
-    verification_status: configured_target_missing
-    notes: "User crontab contains this every-minute invocation, but pull_staged_batches.py was absent at the configured path on 2026-10-25. Do not infer successful execution; see snapshot and #15."
+    verification_status: retired
+    retired_at: "2026-10-25"
+    retirement_reason: "Time Sale now uses Manual Job."
+    notes: "Historical every-minute crontab identity retained for traceability; removed from rp-macmini-01 user crontab on 2026-10-25 and absence verified by crontab readback. The configured target was already absent at the last check. Historical and retirement evidence: runtime-inventory-snapshot.md and #15."
   - id: machine-snapshot
     product: Mac mini Infrastructure
     execution_mode: cron

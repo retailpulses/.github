@@ -174,3 +174,13 @@ The inbox `system/mac-mini/SNAPSHOT.md` is dated **2026-09-29** and is historica
 - No credential values, database business rows, or source file contents were queried. The local `psql` metadata query succeeded.
 - This confirms local registry access only. MacBook/cloud reachability and network controls remain UNKNOWN; no remote route was tested.
 - No database or runtime configuration was changed.
+
+## 2026-10-25 19:10 JST — Time Sale staging cron retirement
+
+**Asset ID:** `timesale-staging-pull`
+
+- Owner-approved retirement removed the old `pull_staged_batches.py` every-minute entry from the `rp-macmini-01` user crontab. The crontab was installed from a temporary mode-0600 file after diagnosing and terminating only the verified stale `crontab -` process (PID 92980; started 2026-10-20 and sleeping without a TTY for over five days).
+- Post-install `crontab -l` readback contained zero `pull_staged_batches.py` entries. Its bytes matched the expected crontab with only that one line removed; the `17 2 * * *` Machine Snapshot entry and all other entries were preserved exactly. The original backup remains at `~/.local/share/retailpulses/cron-backups/crontab-before-timesale-manual-20261025-190725.txt`.
+- `GET http://127.0.0.1:8765/mercari/timesale` returned HTTP 200 after the cron removal.
+- Time Sale's current operation is Manual Job. No old Runner was restored; no LaunchDaemon, running service, or other scheduler was changed.
+- Earlier snapshot observations that the cron was configured and the entrypoint was absent remain historical evidence, not current state.
