@@ -33,6 +33,7 @@
 ## 相关入口
 
 - [组织级 Registry 首页](../README.md)
+- [Engineering Registry Product Design](../design.md)（v0.1 Draft）
 - [Documentation Standard](DOCUMENTATION_STANDARD.md)
 - [Design Migration Guide](DESIGN_MIGRATION_GUIDE.md)
 - [Product Design template](templates/PRODUCT_DESIGN.md)

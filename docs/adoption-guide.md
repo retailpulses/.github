@@ -6,14 +6,16 @@ How Retailpulses repos inherit and override shared governance from `retailpulses
 
 ## 1. What Happens Automatically
 
-When `retailpulses/.github` exists and contains these files, every repo in the org **automatically** inherits them as defaults:
+When `retailpulses/.github` exists and contains supported community-health files, GitHub uses those files as defaults for organization repositories that do not provide their own equivalent:
 
 | Central file | Effect on downstream repos |
 |-------------|---------------------------|
 | `ISSUE_TEMPLATE/*.yml` | Appears in the issue chooser when creating a new issue, unless the repo has its own templates |
 | `PULL_REQUEST_TEMPLATE.md` | Pre-fills the PR description box, unless the repo has its own template |
 | `SECURITY.md` | Shows in the Security tab, unless the repo has its own |
-| `AGENTS.md` | Used by AI agents as default behavior guidance, unless the repo has its own |
+| `AGENTS.md` | **Not a GitHub community-health default.** This file is the organization's guidance source, but it is not automatically copied into every repository or loaded by every agent. Each agent product/runtime must support and load the file through its own repository/workspace instruction mechanism; repository-local instructions may take precedence under that mechanism. |
+
+GitHub's organization `.github` default-file mechanism applies only to the supported community-health file types listed in [GitHub Docs](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file). Agent guidance has product-specific support and configuration; for example, GitHub Copilot documents `AGENTS.md` support separately in its [custom instruction support matrix](https://docs.github.com/en/copilot/reference/custom-instructions-support). Do not infer automatic organization-wide loading from the existence of `.github/AGENTS.md`.
 
 Reusable workflows (`workflows/`) do NOT apply automatically. Repos must explicitly call them.
 
