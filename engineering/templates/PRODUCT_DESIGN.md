@@ -39,3 +39,15 @@ Only cross-cutting rules; reference detailed technical formulas/contracts rather
 Links to authoritative Architecture, TRD, Current State, ADR, and governing Issues.
 
 > This is a starting template, not a mandatory chapter-count checklist. Do not append Sprint logs or POC diaries to the living Design.
+
+
+## Optional early-stage POC / Architecture summary
+
+仅在早期探索确有必要时添加，不要求每个产品填写：
+- Open hypothesis and smallest useful POC (link to Issue / experiment evidence):
+- Result, limitations and product-design impact:
+- Critical technical assumptions / blocking facts:
+- High-level component and target deployment constraints (details in Architecture if promoted):
+- Selected stack / significant ADR / Current State links:
+
+UI Sketch 默认直接放在相关 Workflow 或 UI/UX 章节；只有复杂时拆至从属文件，DESIGN 仍保留关键概览和链接。不要把 POC 通过等同生产已部署。
