@@ -38,11 +38,19 @@ Release closeout
 
 ---
 
+## 1A. Execution Environment Selection (2026-10-25)
+
+The one-branch/one-isolated-workspace principle applies to both cloud and local agent work. A Codex Cloud task's isolated checkout is acceptable; a local Codex CLI task should use a dedicated Git worktree when practical. Neither environment is the organization-wide default.
+
+Choose Codex Cloud for independently testable code/doc tasks; choose an authorized local CLI for tight loops against Mac mini databases, actual runtimes, browser profiles, and production readback. A cloud PR may require a local verification handoff before closeout. Keep one canonical GitHub PR and acceptance trail, not parallel delivery processes. See [central AGENTS.md](../AGENTS.md#7a-development-agent-execution-environment).
+
+---
+
 ## 2. Core Rules
 
 ### 2.1 One Issue, One Branch, One Worktree
 
-Each scoped issue or task maps to exactly one branch and one worktree. Do not mix unrelated changes in one branch. Do not stack features in a single worktree.
+Each scoped issue or task maps to one task branch and one isolated checkout/worktree (including a cloud task checkout). Do not mix unrelated changes in one branch. Do not stack features in a single worktree.
 
 ### 2.2 Feature Worktrees Do Not Deploy
 
