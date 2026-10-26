@@ -30,6 +30,14 @@
 
 `engineering/` 是当前中央工程标准和模板的维护入口。根级 `docs/` 是既有共享参考材料集合，内容并非统一的现行标准，须按各自来源和上下文判断。没有因目录位置自动获得 Canonical Authority；本 Sprint 不批量搬移 `docs/` 文件。若未来迁移单项内容，应保留原始来源、状态和链接，并避免形成两个可编辑权威副本。
 
+## Documentation Standard revision notes
+
+| Date | Change | Tracking | Status |
+| --- | --- | --- | --- |
+| 2026-10-26 | Data Model 责任边界、生命周期与 Agent preflight 补充；Architecture 模板及 Migration Guide 联动。现行 §2/§15–16 保持权威，不新增必需的 Data Model 文件。 | [#42](https://github.com/retailpulses/.github/issues/42) · [PR #43](https://github.com/retailpulses/.github/pull/43) | Proposed in PR / Pilot patch，未合并前不代表 main 已生效 |
+
+此处记录**标准的关键变更摘要**，执行与讨论仍以 Issue/PR 为准；细节及历史差异由 Git history 保存，不建立平行变更台账。
+
 ## 相关入口
 
 - [组织级 Registry 首页](../README.md)
