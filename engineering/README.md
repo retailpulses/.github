@@ -34,7 +34,7 @@
 
 | Date | Change | Tracking | Status |
 | --- | --- | --- | --- |
-| 2026-10-26 | Data Model 责任边界、生命周期与 Agent preflight 补充；Architecture 模板及 Migration Guide 联动。现行 §2/§15–16 保持权威，不新增必需的 Data Model 文件。 | [#42](https://github.com/retailpulses/.github/issues/42) · [PR #43](https://github.com/retailpulses/.github/pull/43) | Proposed in PR / Pilot patch，未合并前不代表 main 已生效 |
+| 2026-10-26 | Data Model 责任边界、生命周期与 Agent preflight 补充；Architecture 模板及 Migration Guide 联动；[§18 External Methodology References](DOCUMENTATION_STANDARD.md#18-external-methodology-references-informative-issue-42) 说明 arc42、C4、Diátaxis 的参考用途与非强制边界。现行 §2/§15–16 保持权威，不新增必需的 Data Model 文件。 | [#42](https://github.com/retailpulses/.github/issues/42) · [PR #43](https://github.com/retailpulses/.github/pull/43) | Proposed in PR / Pilot patch，未合并前不代表 main 已生效 |
 
 此处记录**标准的关键变更摘要**，执行与讨论仍以 Issue/PR 为准；细节及历史差异由 Git history 保存，不建立平行变更台账。
 
