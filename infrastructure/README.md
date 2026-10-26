@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Mac mini | [mac-mini/](mac-mini/README.md) | Runtime Registry、Workspace mapping 与有时间戳的只读观察；本地 Supabase/PostgreSQL 已只读核实 |
 | Cloudflare | [cloudflare/](cloudflare/README.md) | 待只读盘点 |
-| VPS | [vps/](vps/README.md) | 待只读盘点 |
+| VPS | [vps/](vps/README.md) | 已验证一台主机的 SSH 可达性与基础身份；完整 Runtime 清单待只读盘点 |
 | Databases | [databases/](databases/README.md) | 跨平台数据库实例索引待建立 |
 | Credentials | [credentials/](credentials/README.md) | Mac mini 本地 registry 的访问与注册指南 |
 
