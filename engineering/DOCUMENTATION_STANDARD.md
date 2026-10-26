@@ -209,3 +209,15 @@ Agent 在既有 PR/Issue closeout 中给出 Requirement/Test ID、执行结果�
 **Regression illustration（非产品改造任务）：** 小型 SQLite 对话 POC 的 README 如声称“结束不留数据”，而源码实际写入 `sessions/turns/events`，Agent 必须列出 `Product privacy promise ↔ actual persistence` drift，并确认删除、保留、备份和孩子使用前的安全条件；不要求先写完整 ERD。跨平台 Monthly P&L 必须在 Schema/Contract 上区分来源事件与导出聚合、店铺/月份/订单粒度、唯一键及去重/迁移回滚，不允许以一个成功查询断言四店对账通过。相关产品 Issue：[store-ops#132](https://github.com/retailpulses/store-ops/issues/132)；家庭 POC 示意：[Yuzu PR #41](https://github.com/jimyyl/inbox/pull/41)。
 
 **Scope and compatibility:** This patch clarifies §§2, 7, 12, 14–16; it does not override their role/approval policy, mandate physical file naming, introduce a new governance platform, or authorize runtime, data or credentials changes. Design remains Draft until explicitly approved.
+
+## 18. External Methodology References (Informative; Issue #42)
+
+以下为本标准的**设计参考和完整性审查辅助资料（informative）**，不是 Retailpulses 的第二套规范或必须遵循的独立验收清单。具体约束以本标准、产品 Owner 的 Design/Architecture/Contracts 及适用的仓库规则为准。引用外部方法时优先直接链接原始维护方，并按当前问题风险裁剪。
+
+| 外部方法与维护方入口 | 借鉴用途 | 采用边界 |
+| --- | --- | --- |
+| [arc42 — Architecture Documentation](https://arc42.org/overview/) | 检查系统目标、上下文、约束、组件、部署、运行、质量场景、风险和决策是否存在实质性遗漏；与 §14 和 [Architecture Template](templates/ARCHITECTURE.md) 对照 | **Completeness reference only**；不强制采用 arc42 的章节体系、文档数量或全部视图。 |
+| [C4 Model — Diagrams](https://c4model.com/diagrams) | 统一系统上下文、容器/部署边界、组件职责及依赖关系的图示语言，减少架构讨论歧义 | **Visualization reference only**；按沟通需要选图，不要求每个产品绘制全部层级，也不以 C4 图取代数据契约。 |
+| [Diátaxis — Documentation Framework](https://diataxis.fr/) | 区分教程（Tutorial）、操作指南（How-to）、技术参考（Reference）及概念解释（Explanation），改善 README/操作手册及规范导航的可发现性 | **Information-architecture reference only**；不强制创建四套目录或改变 Product Design / TRD / Current State 的既有权威。 |
+
+**使用方式：** 在新系统、重大架构变更或文档审查中，Agent 可借助这些框架提出有证据的覆盖缺口，但必须指出本标准中对应的文档 Owner、具体未满足的风险与最小修订。不要仅因外部框架中存在某一章节就新建文件或阻断交付。详见 [Top-down review Issue #42](https://github.com/retailpulses/.github/issues/42)。
