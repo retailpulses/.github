@@ -1,0 +1,47 @@
+name: Governance Migration Static Tests
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/governance-checks.yml"
+      - ".github/workflows/database-governance-checks.yml"
+      - ".github/workflows/post-deploy-governance.yml"
+      - ".github/workflows/post-deploy-governance-legacy.yml"
+      - ".github/workflows/vps-immutable-release.yml"
+      - ".github/workflows/governance-migration-tests.yml"
+      - "scripts/database-governance-checks.sh"
+      - "scripts/tests/test-database-governance-checks.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migration-tests:
+    name: "Migration | Governance script regression"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax
+        run: |
+          bash -n scripts/database-governance-checks.sh
+          bash -n scripts/tests/test-database-governance-checks.sh
+      - name: Database governance pass/fail fixtures
+        run: bash scripts/tests/test-database-governance-checks.sh
+      - name: Verify no old executable checkout or nested workflow references
+        run: |
+          set -euo pipefail
+          for f in .github/workflows/{governance-checks,database-governance-checks,post-deploy-governance,post-deploy-governance-legacy,vps-immutable-release}.yml; do
+            if grep -Eq 'uses: retailpulses/rp-governance-kit/|repository: retailpulses/rp-governance-kit' "$f"; then
+              echo "::error file=$f::Old kit executable reference still present"
+              exit 1
+            fi
+          done
+      - name: Validate YAML structure
+        run: |
+          ruby -ryaml -e '
+            Dir[".github/workflows/{governance-checks,database-governance-checks,post-deploy-governance,post-deploy-governance-legacy,vps-immutable-release}.yml"].each do |f|
+              d = YAML.load_file(f)
+              abort "missing jobs in #{f}" unless d.is_a?(Hash) && d["jobs"].is_a?(Hash)
+            end
+          '
