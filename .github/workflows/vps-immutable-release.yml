@@ -121,7 +121,7 @@ jobs:
   closeout:
     needs: release
     if: always() && needs.release.result == 'success'
-    uses: retailpulses/.github/.github/workflows/post-deploy-governance.yml@main
+    uses: retailpulses/.github/.github/workflows/post-deploy-governance.yml@a2c7908d20097f334602b5aefa86c2c73daa14a7
     with:
       environment: ${{ inputs.environment }}
       deployed_target: ${{ needs.release.outputs.deployed_target }}
