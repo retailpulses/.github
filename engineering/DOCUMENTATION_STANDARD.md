@@ -170,3 +170,40 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 **Implemented、Tests Passed、Workflow Verified、Deployed、Runtime Business Verified 是不同维度的事实，而非五个串行审批关卡。** CI PASS、Mock PASS、HTTP 200、页面可打开或 PR Merged 均不自动证明 Workflow/Runtime Business Verified。对关键业务场景缺少真实验收证据时明确标 **Not Verified / Blocked**，不能宣称完整验收。允许按风险并行开发、分阶段部署与降级，但须披露尚未验证的业务能力。
 
 Agent 在既有 PR/Issue closeout 中给出 Requirement/Test ID、执行结果、环境、SHA、证据链接与未覆盖风险；无需为每个 Test Case 新建 Issue、测试管理平台、独立审批或平行追踪矩阵。参见 §6、§7、§9、§15。
+
+## 17. Data Model documentation & lifecycle (Pilot Patch; Issue #42)
+
+**目标是可发现、足够实施和可验证的数据契约，不是强制创建 `DATA_MODEL.md`、ERD 或新增审批。** 数据模型跨多个权威层；仅在相关风险适用时记录细节，引用已有代码 Schema/DDL，避免复制第二份可编辑权威。
+
+| 关注点 | 唯一责任与默认位置 |
+| --- | --- |
+| **Product Design (To-Be)** | 定义业务实体的业务含义、用户可见的数据行为和规则、保留/删除等产品决定及验收意图；不复制表结构。 |
+| **Architecture (To-Be)** | 定义逻辑实体/关系、系统边界、canonical owner 与 writer、read model/projection、数据流、生命周期与跨系统同步、源数据与派生数据的界线；必要时内嵌简洁 ERD；可沿用既有 `docs/01_ARCHITECTURE.md`。 |
+| **TRD / Contracts（或现有技术说明）** | 对影响正确性的字段、类型、必填/默认、主外键/唯一性、约束、计算和状态不变量、幂等键、冲突/一致性、保留与删除执行机制、迁移兼容/回滚及验证场景给出足够精确的契约。代码/DDL/机器可读 Schema 已是权威时，链接其具体位置/版本，只补其无法说明的业务语义及验证条件。 |
+| **Executable schema / migrations** | 具体数据库 DDL、模型声明与迁移的实施来源；仓库存在或测试通过不等于目标 Runtime 已执行迁移。 |
+| **Current State / evidence** | 记录当前实际 schema、应用版本、已应用迁移、运行环境、数据覆盖、保留/删除行为与 drift；缺现场证据记 `UNKNOWN`，不能用设计反证现实。 |
+| **Foundational References** | 仅跨产品稳定的数据定义或外部规范索引；产品独有的表、映射和业务语义仍属于其 Owner 仓库。 |
+
+### 17.1 Minimum data-model contract（按适用性核对）
+
+在有持久化、跨组件交换、财务金额或敏感数据时，Engineering Agent 应确认下列内容是否可由现有文档、源码或契约**唯一定位**：
+
+1. **Entities & relationships：** 关键实体及含义、实体间关系/基数、身份/主键、生命周期（创建→更新→终止/归档/删除）。只有关系复杂时才需要图；一个表的脚本不强制 ERD。
+2. **Source and authority：** 数据来源、canonical ownership、允许写入的组件、observed/desired/derived data、复制与同步规则、时间窗口/新鲜度。
+3. **Integrity & semantics：** 影响业务行为的字段定义、NULL/缺省语义、唯一/引用约束、金额与状态不变量、幂等/去重、并发冲突及一致性或 reconciliation。
+4. **Governed lifecycle：** 何时采集/保存、保留时限和删除/匿名化（含子表、缓存、备份）、谁能触发、失败/重试/恢复；涉及个人/儿童/敏感数据时，**存储行为与 Product Design 的用户承诺必须一致**。
+5. **Schema evolution & verification：** 迁移的前置条件、兼容/回填、可恢复性、执行责任和数据正确性测试；区分预期 Schema 与已部署 Schema，保留版本和可脱敏的验证证据。
+
+只对适用的关键项标注 `Specified / Verified / Open / N/A`（使用既有 §15 状态），记录 Owner 和证据链接；`Verified` 必须说明**验证了什么、在哪里、何时**。Critical Open：导致数据来源/归属错误、财务错误、不可恢复迁移、未授权留存或产品承诺失真的未知事实，应在 Design Baseline Approval 前核实或由 Sponsor 明确批准安全降级；不阻止无依赖模块并行工作。
+
+### 17.2 Placement / triggers / agent preflight
+
+- **L1/轻量 L2：** 可在现有 README、Design 的简短 Architecture 段或技术说明中说明关系、持久化和隐私机制，并链接实际 Schema；无需新文件、表格或图。
+- **复杂 L2/L3：** 在现有 Architecture 保留逻辑所有权/实体关系概览，精确字段和迁移在既有 TRD/Contracts 或可定位的 schema/migrations；只有阅读难度或 Owner 分离要求时才提升独立 `DATA_MODEL.md`。README / DOC_INDEX 要指向权威，而非复制内容。
+- **变更触发：** 新实体、核心字段/关系/数据来源、持久化行为、PII/retention/deletion、Schema migration、同步/去重语义或对外数据合同变化，在同一 PR 更新受影响的权威或说明 N/A，并复核现有测试。不要定期重写无变化的模型。
+- **Before design baseline：** 从适用的 Design → Architecture/technical note → Contract/Schema 找到数据主人、生命周期、关键假设及风险；重大未核实事实归类 Technical Fact vs Sponsor Decision（§12）。
+- **Before implementation：** 对照当前源码/迁移、实际调用方数据源与必要运行证据，验证既有实体、写入点、迁移版本和故障恢复；为变更补充有明确输入/输出的正常、异常、删除及重算测试（§15–16）。若发现冲突按 §15.3 归类并向正确 Owner 升级，禁止以代码自动覆盖 Design。
+
+**Regression illustration（非产品改造任务）：** 小型 SQLite 对话 POC 的 README 如声称“结束不留数据”，而源码实际写入 `sessions/turns/events`，Agent 必须列出 `Product privacy promise ↔ actual persistence` drift，并确认删除、保留、备份和孩子使用前的安全条件；不要求先写完整 ERD。跨平台 Monthly P&L 必须在 Schema/Contract 上区分来源事件与导出聚合、店铺/月份/订单粒度、唯一键及去重/迁移回滚，不允许以一个成功查询断言四店对账通过。相关产品 Issue：[store-ops#132](https://github.com/retailpulses/store-ops/issues/132)；家庭 POC 示意：[Yuzu PR #41](https://github.com/jimyyl/inbox/pull/41)。
+
+**Scope and compatibility:** This patch clarifies §§2, 7, 12, 14–16; it does not override their role/approval policy, mandate physical file naming, introduce a new governance platform, or authorize runtime, data or credentials changes. Design remains Draft until explicitly approved.
