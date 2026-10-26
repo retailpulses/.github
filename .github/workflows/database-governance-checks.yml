@@ -1,0 +1,75 @@
+name: Database Governance Checks
+
+on:
+  workflow_call:
+    inputs:
+      governance_ref:
+        description: "retailpulses/.github implementation commit SHA (pin to caller workflow release)"
+        required: false
+        type: string
+        default: main
+
+jobs:
+  blocking:
+    name: "BLOCKING | Database Governance"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Checkout pinned governance implementation
+        uses: actions/checkout@v4
+        with:
+          repository: retailpulses/.github
+          ref: ${{ inputs.governance_ref }}
+          path: .rp-central-governance
+      - name: Run all blocking database governance checks
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body || '' }}
+        run: bash .rp-central-governance/scripts/database-governance-checks.sh blocking
+
+  production-gate:
+    name: "PRODUCTION_GATE | Database Governance"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Checkout pinned governance implementation
+        uses: actions/checkout@v4
+        with:
+          repository: retailpulses/.github
+          ref: ${{ inputs.governance_ref }}
+          path: .rp-central-governance
+      - name: Run production-gate database governance checks
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body || '' }}
+        run: bash .rp-central-governance/scripts/database-governance-checks.sh production-gate
+
+  advisory:
+    name: "ADVISORY | Database Governance"
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Checkout pinned governance implementation
+        uses: actions/checkout@v4
+        with:
+          repository: retailpulses/.github
+          ref: ${{ inputs.governance_ref }}
+          path: .rp-central-governance
+      - name: Run advisory database governance checks
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body || '' }}
+        run: bash .rp-central-governance/scripts/database-governance-checks.sh advisory
