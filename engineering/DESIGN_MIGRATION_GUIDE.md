@@ -90,3 +90,14 @@ Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分�
 5. **Progressive promotion**：小项目允许把简短 Architecture/POC 结论写在 DESIGN 内；复杂度提升后将技术细节提升到 [Architecture Template](templates/ARCHITECTURE.md)、TRD、ADR 或 experiments。保留 DESIGN 的核心约束、决策和引用，不产生平行权威。
 
 迁移 PR 还应说明：哪些 POC 结果影响了目标设计、哪些技术栈/部署仍属假设、哪些运行状态有证据，以及是否需要独立的 ADR/Current State。完整方法以 [Engineering Principles](ENGINEERING_PRINCIPLES.md) 为组织级入口；原始研究案例继续留在 inbox。
+
+## Data Model reconciliation (Issue #42 Pilot patch)
+
+迁移设计时，在既有 Inventory → Reconcile → Validate 流程内检查数据模型，不增加独立审批或必需的 `DATA_MODEL.md`：
+
+1. **Discover**：寻找旧数据字典、ERD、DDL/ORM、migrations、同步/保留/删除说明，辨认各自 Owner 和版本；记录文档所声称的设计状态与代码/Runtime 证据。
+2. **Separate authority**：业务实体意义与用户可见数据承诺 → Product Design；逻辑实体/关系、source of truth、读写责任和数据流 → Architecture；精确字段/约束/幂等/迁移/删除机制 → TRD、现有技术说明或可执行 schema（以链接引用）；已应用迁移和真实数据状态 → Current State。
+3. **Reconcile lifecycle**：至少检查关键实体及关系、来源/派生、身份与唯一键、数据保留/删除（含备份/缓存）、迁移兼容和恢复；对不适用项标 N/A，对未核实项标 Open/UNKNOWN。历史文档若声称“不持久化”而代码包含持久化写入，必须显式列出 drift，不得静默采用较新说法。
+4. **Validate and hand off**：在原有 source→destination 对照中列出数据模型语义的归位、关键缺口及技术证据；按 [Documentation Standard §17](DOCUMENTATION_STANDARD.md#17-data-model-documentation--lifecycle-pilot-patch-issue-42) 与 §15–16 核实阻断项；产品保留期限等业务决定由 Sponsor 确认，工程事实由 Agent 主动调查。
+
+**Proportionality：** 单库小工具可以只保留简洁的 Architecture/技术段及指向 DDL 的引用；跨系统和关键财务产品需满足可验证的数据契约。不要为遵循迁移规范重写所有 Schema 或复制一份新的字段字典。参考：[Issue #42](https://github.com/retailpulses/.github/issues/42)。
