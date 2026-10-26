@@ -15,7 +15,9 @@
 ## Engineering standards & templates
 
 - [Engineering navigation](engineering/README.md)：现行文件、Pilot/Proposed 文件及迁移中内容的状态说明。
-- [Engineering Registry Product Design](design.md)：产品目标、能力、工作流、边界与当前状态（v0.1 Draft）。
+- [Engineering Registry Product Design](design.md)：产品目标、能力、工作流与业务边界（Draft）。
+- [Engineering Registry Architecture](ARCHITECTURE.md)：逻辑数据模型、数据权威、数据流和故障边界（Draft）。
+- [Engineering Registry Current State](CURRENT_STATE.md)：有日期的历史审计证据（不是实时运行状态）。
 - [Documentation Standard](engineering/DOCUMENTATION_STANDARD.md)：Pilot；不是全组织强制切换。
 - [Design Migration Guide](engineering/DESIGN_MIGRATION_GUIDE.md)：Pilot 迁移流程。
 - [Product Design template](engineering/templates/PRODUCT_DESIGN.md)：轻量参考模板。
