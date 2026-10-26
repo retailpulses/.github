@@ -5,7 +5,8 @@
 **Design Owner：** `retailpulses/.github` · Engineering
 **范围：** 组织级工程资产发现、轻量标准索引、基础设施 / Runtime 目录、治理指引和迁移权威对齐。
 **规范：** [Documentation Standard](engineering/DOCUMENTATION_STANDARD.md)（当前 Pilot）· [Product Design Template](engineering/templates/PRODUCT_DESIGN.md) · [Design Migration Guide](engineering/DESIGN_MIGRATION_GUIDE.md)
-**Current State：** 本文第 7 节记录 2026-10-25 的审计基线；持续状态以 Registry、Issue / PR 和平台证据为准。
+**Architecture：** [ARCHITECTURE.md](ARCHITECTURE.md)（目标所有权、数据关系和故障边界）  
+**Current State：** [CURRENT_STATE.md](CURRENT_STATE.md)（2026-10-25 历史证据快照；非实时状态）
 
 ## 1. Product Overview
 
@@ -27,7 +28,7 @@ Retailpulses 的 Engineer、AI Agent、Product Owner 及基础设施维护者需
 
 ## 2. Capability Map
 
-Capability ID 在组织级 Design / Issue 追踪中保持稳定；名称或目录调整不回收 ID。Current State 以 2026-10-25 的 main `c48d27e3cd1831e614956235c86103aa57a105ef`、QW-01 工作分支、可见 Issues / PRs 和现存路径为基线，可能随合并改变。
+Capability ID 在组织级 Design / Issue 追踪中保持稳定；名称或目录调整不回收 ID。此处只定义 To-Be 能力和验收意图；现状与历史验证证据见 [Current State](CURRENT_STATE.md)。
 
 ### ERG-001 — Engineering Asset Registry
 
@@ -195,21 +196,14 @@ Retailpulses Organization Profile
 - **Agent 定位：** 先读目标 repo 的 `AGENTS.md` / README 与本 Design，再按 ERG ID 找对应 Registry 和 Owner 文档，最后沿 Requirement / Reference ID、Issue / PR、必要运行证据核实事实。
 - **Agent 加载边界：** `.github/AGENTS.md` 是指导文件的 Source of Truth，但实际自动加载由具体 Agent 产品、repo/workspace 配置决定。GitHub 的组织默认 Community Health 文件有单独支持清单；其机制不等同于把 `AGENTS.md` 自动注入每个仓库或每个 Agent。
 
-## 7. Current State & Gaps
+## 7. Current State / Evidence Boundary
 
-**审计基线：** `main` merge commit `c48d27e3cd1831e614956235c86103aa57a105ef`（PR #29）；现工作分支从该 main 创建，`design.md` 尚待本 Follow-up PR 合并。并行 PR #23 在本节撰写时仍为开放状态。此快照不代表永久状态；每次重要变更由对应 Issue / PR 和平台 read-back 更新证据。
+当前设计状态为 **Draft**；本产品的组织级索引与规范属于以仓库文件为主的文档产品，并非运行中的独立服务。实际文件、规范采用状态与平台现场状态必须分别核实。
 
-| Area | Current evidence / state | Gap / target |
-|---|---|---|
-| Organization navigation / repository directory | **Implemented:** PR #29 的根 README 与 `profile/README.md` 已合并，Organization Overview 已核实渲染；`registry/repositories.yaml` 存在且声明粗粒度快照。 | Design 入口合并后加入根 README；仓库 Owner / 职责仍按 Registry 的 UNKNOWN 标注逐项核实。 |
-| Standards / templates | **Pilot:** `DOCUMENTATION_STANDARD.md`、`DESIGN_MIGRATION_GUIDE.md` 和 Product Design 模板已在 main；不等于全组织强制采用。 | #16 Pilot review 未完成；#22 的方法迁入内容当时位于开放 PR #23，合并前不算已实现。 |
-| Infrastructure / runtime | **Implemented / In Progress:** 有 infrastructure 目录、Mac mini Runtime inventory 与 snapshot；#14/#15 跟踪现场 Inventory / Workspace mapping。 | Cloudflare / VPS / database platform facts、Workspace ↔ Release ↔ Runtime 映射与现场证据有待各 Issue 核实。 |
-| Foundational API References | **Pilot:** `references/README.md` 和三个产品域资料存在；PR #18 已合并。 | #19 的跨仓库 census、MacBook 本地资料、字典字段证据及旧副本处置仍未全部完成。 |
-| Governance | **Implemented current boundary:** Registry README 指向当前 `rp-governance-kit` Owner。 | #11 尚未完成工具/Workflow 消费者兼容验证或 authority cutover；ERG-005 不能表述为已迁入。 |
-| Agent guidance | **Implemented file:** `.github/AGENTS.md` 已修订 credential boundary；但 main 的文件头仍将其描述为所有仓库的默认行为。 | GitHub 默认 Community Health 机制不分发 AGENTS；不同 Agent 的加载覆盖仍 Unknown。main 的 `docs/adoption-guide.md` 旧文亦声称它会自动继承；本 Follow-up PR 同步澄清两个入口，后续仍需按 Agent runtime 单独核实。 |
-| Asset migration | **In Progress:** Issue #25 有矩阵及本轮 QW-01 writeback；迁移状态由各现有 Issue / PR 维护。 | inbox 完整 census、部分来源路径、Owner 和权威切换尚待核对；本文不复制这些逐项动态记录。 |
-
-状态词含义：**Implemented** 表示对应文件/导航已在基线 main 中；**Pilot** 表示可试用但采用评估未完；**In Progress** 以实际存在的开放 PR、工作产物或验证任务为据；**Planned** 表示仍待启动/定义；**Unknown** 表示证据不足。它们描述设计基线，不覆盖 GitHub Issue / PR 实时状态。
+- 历史源码/Issue 审计基线（2026-10-25）及当时的未验证事项：**[CURRENT_STATE.md](CURRENT_STATE.md)**。这是历史快照，不将当时开放的 PR 视为当前仍开放。
+- 系统职责与索引数据关系的 To-Be 模型：**[ARCHITECTURE.md](ARCHITECTURE.md)**。具体 Registry Schema 的可执行权威仍由各 Owner 仓库保留。
+- 真实资产/Runtime 核对：使用 [Infrastructure Registry](infrastructure/README.md)、[Repository Registry](registry/README.md)、[Foundational References](references/README.md) 及对应运行平台的时间戳证据；索引存在不证明实时健康。
+- 执行与迁移进度：对应 GitHub Issues/PRs；见第 9 节引用，不复制动态 Backlog。
 
 ## 8. Decisions & Open Questions
 
