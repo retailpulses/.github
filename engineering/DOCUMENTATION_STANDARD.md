@@ -3,6 +3,8 @@
 Status: Pilot — merged for trial adoption; subject to pilot findings
 Owner: retailpulses/.github
 Governance: https://github.com/retailpulses/.github/issues/16
+Change review: https://github.com/retailpulses/.github/issues/42 (Data Model / completeness Pilot)
+Change notes: [Engineering Registry revision notes](README.md#documentation-standard-revision-notes)
 Language: 简体中文为主；保留产品、代码和日本业务的原生术语。
 
 ## 1. Purpose
