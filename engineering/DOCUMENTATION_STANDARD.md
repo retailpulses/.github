@@ -139,3 +139,34 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 - 相关 PR 在既有 closeout 中关联 Requirement ID、变更的契约、自动化/真实 E2E 验收证据与仍未验证的依赖。优先原位 Patch，不复制新的 TRD 或建立平行检查账本。
 
 **案例依据**：[inbox#451](https://github.com/retailpulses/inbox/issues/451)（Inquiry Credential/Integration late discovery）、[inbox#455](https://github.com/retailpulses/inbox/issues/455)（Cloud→VPS Relay 路径待验证）、[inbox#257](https://github.com/retailpulses/inbox/issues/257)（业务结果不能由绿色 CI 代替）、[store-ops#132](https://github.com/retailpulses/store-ops/issues/132)（Monthly P&L 技术合同与数据/迁移完整性）。
+
+## 16. Test Catalog & Agent-driven Acceptance (Pilot)
+
+**原则：Agent-first, Product Owner-governed, Evidence-driven Testing。** Agent 默认负责识别、维护、执行测试及收集证据；Product Owner 决定业务正确性和必要的业务取舍。测试用例是可复用的产品资产，不是 Sprint 完成后即废弃的执行日志。测试设计应在关键功能编码前明确预期结果，但不强制所有测试代码先于实现。
+
+### 16.1 Authority, placement and proportionality
+
+| Artifact | Authority / 内容 | 默认位置 |
+|---|---|---|
+| Product Design | 业务规则、Workflow、Acceptance Criteria（**What is correct**） | 现有 `design.md` / `DESIGN.md` |
+| TRD / Contracts | 数据/API/权限/异常契约及技术测试条件（**What must be verified technically**） | 现有 TRD/Contracts |
+| Test Catalog | 稳定的 Test ID、可复现的场景/步骤、输入、预期业务结果及关联（**How to verify**）；不得重新定义业务规则 | 复杂产品优先产品现有 `tests/test-catalog.md`，或既有 `docs/testing/`；由 README/DOC_INDEX 链接 |
+| Executable Tests | Unit、Integration/Contract、Workflow/UI E2E 测试及 Fixtures | 现有代码测试目录，避免为遵守规范迁移目录 |
+| Test Evidence | 实际执行环境、时间、版本 SHA、通过/失败/未执行及脱敏证据 | CI、PR、Issue 或测试报告链接；Current State 仅记录已核实的运行事实 |
+
+- **L1/小改动**：可将关键场景写在 Issue、TRD 或测试代码，不强制 Catalog；**持续迭代、跨系统或高风险产品**建议维护轻量 Catalog，尤其涉及金额、状态流转、外部消息、生产写入或核心 UI Workflow。
+- Catalog 最小字段：`Test ID`（稳定、不回收）、`Requirement ID`、场景/风险、前置条件与输入、执行步骤/方式、**明确预期结果**、测试层级、自动化/证据链接（可标 Pending）。可按 Workflow 组织；不复制 Design 全文、自动化代码或每次运行日志。
+- 一条 Requirement 可关联多条 Test；一个 Test 可覆盖多个 Requirement。测试代码变动可保留稳定 Test ID；废弃用例标 Superseded/Retired，不静默删除有用的历史关联。
+
+### 16.2 Agent execution and coverage
+
+1. **Before coding**：Agent 先读取 Design、TRD、已有测试及当前代码；为受影响的关键 Workflow 明确 Happy Path、边界、异常/恢复、幂等及数据正确性场景，补充缺失用例。对不适用的层级说明原因，不做机械覆盖率门槛。
+2. **During implementation**：优先将确定性逻辑落实为 Unit/Calculation Tests；跨模块/API/数据库使用 Integration/Contract Tests；关键用户旅程使用 Workflow/UI E2E（例如真实 Portal 的输入→保存→刷新→结果）。尽可能复用既有 Fixtures 和测试工具。
+3. **Before closeout**：对本次变更执行适用测试，报告 Passed / Failed / Blocked / Not Run、环境与代码/部署 SHA。适用时从实际目标 Runtime 做受控 Business Acceptance；外部写入/真实消息只在已有授权与安全控制下执行，不为测试产生不必要的生产副作用。
+4. **After defects**：修复实际缺陷时更新 Catalog，并尽可能新增可重复的 Regression Test；变更业务语义须先回到 Design/Sponsor，不得由测试用例暗中决定。
+
+### 16.3 Completion is evidence-based, not a new approval pipeline
+
+**Implemented、Tests Passed、Workflow Verified、Deployed、Runtime Business Verified 是不同维度的事实，而非五个串行审批关卡。** CI PASS、Mock PASS、HTTP 200、页面可打开或 PR Merged 均不自动证明 Workflow/Runtime Business Verified。对关键业务场景缺少真实验收证据时明确标 **Not Verified / Blocked**，不能宣称完整验收。允许按风险并行开发、分阶段部署与降级，但须披露尚未验证的业务能力。
+
+Agent 在既有 PR/Issue closeout 中给出 Requirement/Test ID、执行结果、环境、SHA、证据链接与未覆盖风险；无需为每个 Test Case 新建 Issue、测试管理平台、独立审批或平行追踪矩阵。参见 §6、§7、§9、§15。

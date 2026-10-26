@@ -25,7 +25,8 @@ Describe operator/user journey, system response, exceptions and recovery. Keep p
 - Expected behavior:
 - Business rules:
 - Edge cases / non-goals:
-- Acceptance intent:
+- Acceptance intent (observable business outcome):
+- Test Case IDs / Test Catalog link (when applicable):
 - Technical contract / ADR references:
 
 ## 5. Shared Business Rules
