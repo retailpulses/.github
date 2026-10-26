@@ -19,6 +19,9 @@ Related TRD / ADR / Foundational References:
 - Component responsibilities and boundaries:
 - Canonical data owner vs desired state vs observed external state:
 - Read/write authority, projections and synchronization:
+- **Logical data model (when applicable):** key domain entities, meaning, relationships/cardinality, identifiers and lifecycle; use a compact ERD only when it aids understanding:
+- **Data authority:** canonical owner/writer vs read-only projections, source/derived facts, freshness and reconciliation:
+- **Privacy and retention boundaries:** persisted data, purpose, delete/anonymize authority and backup/cache implications (link Product Design decision):
 
 ## 3. Technology stack and decisions
 | Layer | Candidate / chosen stack | Why / alternatives | Status & evidence | ADR |
@@ -42,7 +45,7 @@ Use existing internal capabilities or mature solutions before inventing new infr
 
 ## 5. Integration and technical contracts
 - External API / internal service references (IDs + verified scope):
-- Data contract and failure semantics:
+- Data contract and failure semantics (link exact field/constraint/migration contract or executable schema; do not duplicate it here):
 - Freshness / time validity and reconciliation:
 
 ## 6. Reliability, security and observability
@@ -59,6 +62,7 @@ Use existing internal capabilities or mature solutions before inventing new infr
 - POC evidence (hypothesis → result → limitations → design impact):
 - Blocking facts before baseline approval:
 - Current implementation/deployment evidence: <link; do not infer from code>
+- Data model readiness (Specified / Verified / Open / N/A): key entity ownership, integrity, deletion/retention, migration/rollback and source-runtime drift; link evidence.
 - ADRs / unresolved product decisions:
 
 ## 8. References
