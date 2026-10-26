@@ -41,7 +41,9 @@
 ## 相关入口
 
 - [组织级 Registry 首页](../README.md)
-- [Engineering Registry Product Design](../design.md)（v0.1 Draft）
+- [Engineering Registry Product Design](../design.md)（Draft；长期目标）
+- [Engineering Registry Architecture](../ARCHITECTURE.md)（Draft；逻辑 Data Model / Source of Truth）
+- [Engineering Registry Current State](../CURRENT_STATE.md)（2026-10-25 历史证据快照）
 - [Documentation Standard](DOCUMENTATION_STANDARD.md)
 - [Design Migration Guide](DESIGN_MIGRATION_GUIDE.md)
 - [Product Design template](templates/PRODUCT_DESIGN.md)
