@@ -4,6 +4,17 @@
 >
 > 目标优先级：**任务完成率与正确性 > 工作流可理解性 > 一致性与可维护性 > 装饰性美观**。不增加独立审批门槛。
 
+## 配套验收规范（Agent-driven UX Testing）
+
+**正式配套 Draft**：[PORTAL_UX_TEST_CATALOG.md](PORTAL_UX_TEST_CATALOG.md)。本文件定义产品体验的 **WHAT / WHY**，Test Catalog 定义 Agent 在浏览器中如何 **PLAN → EXPLORE → EXECUTE → VERIFY → FIX → RE-TEST**、如何记录证据以及如何判定 PASS/FAIL/NOT RUN/BLOCKED。
+
+- **UI MVP 验收三部分**：Functional Verification + Visual Verification + End-to-End Operator Workflow Verification；均应有与业务风险相称的执行证据。
+- **实际浏览器**：截图、DOM/Accessibility Tree、真实点击/滚动/刷新/重试；不能用代码审查、HTTP 200 或截图单独替代操作员任务验收。
+- **业务结果**：需区分 submit/queued/verified/published，必要时核对 Job、持久化和外部 Seller readback。
+- **Agent 工具**：Codex、Claude、Playwright 或人工均可；不强制统一框架/浏览器代理。自动修复测试不得删除关键断言、放宽产品要求或绕过必要 Gate。
+- **成本与权限**：按风险选择案例，优先主路径和高风险异常路径；真实发布等外部副作用需明确授权；不新增审批流程。
+- **试点**：New Product Listing [store-ops#139](https://github.com/retailpulses/store-ops/issues/139) 的任务闭环、已存在 Listing、图片/类目 Gate 和视觉可用性；本次仅定义测试计划，未执行真实浏览器验收。
+
 ## 0. 定位：产品级 MVP，而不是 POC UI 修补清单
 
 **Sponsor 方向（2026-10-27）**：将内部 UI 质量从 POC-level 提升至商业产品可持续运营的 MVP 水平。目标是**降低完成真实业务任务的总摩擦**，而非追求视觉精致。历史代码和旧 Baseline 是问题证据与可复用资产，**不是质量上限**。该标准是组织级 [Engineering Principles](ENGINEERING_PRINCIPLES.md)、[Documentation Standard](DOCUMENTATION_STANDARD.md)、[Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md) 在产品体验层面的落实，Canonical Owner 为 `retailpulses/.github`。
