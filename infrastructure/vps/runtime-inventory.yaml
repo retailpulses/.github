@@ -1,0 +1,509 @@
+schema_version: 1
+host:
+  id: vps-160-251-141-110
+  ipv4: 160.251.141.110
+  hostname: vm-b54d4b85-fa
+  operating_system: Ubuntu 24.04.3 LTS
+  architecture: x86_64
+  virtualization: KVM
+  timezone: Asia/Tokyo
+  provider: UNKNOWN
+  product_ownership: UNKNOWN
+  production_role: UNKNOWN
+  ssh:
+    port: 22
+    user: root
+    authentication: SSH public key
+    key_fingerprint: SHA256:N9bxCbhWloJH/srgrJGMR/uvo6RaFz/8Po2Mk0/7x3s
+    operator_local_alias: vps
+    private_key_location: "operator Mac mini ~/.ssh/vps_access; never stored in this repository"
+
+observed_at: "2026-10-26T11:57:47+09:00"
+timezone: Asia/Tokyo
+status_note: >-
+  Read-only observation only. Current runtime statuses, last one-shot exit results,
+  routes, and listener/firewall evidence are time-bounded; see
+  runtime-inventory-snapshot.md. A successful systemd exit is not application or
+  business acceptance. Unknown product/source/owner/dependency fields remain UNKNOWN.
+
+firewall:
+  manager: ufw
+  observed_status: active
+  inbound_allow_rules:
+    - tcp/22
+    - tcp/80
+    - tcp/443
+    - tcp/8443
+    - tcp/9876
+    - udp/8443
+    - tcp/9443
+  note: "Observed IPv4 and IPv6 allow rules. At snapshot time, no TCP listener was observed on 8443 or 9876."
+
+runtimes:
+  - runtime_id: nginx
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: VPS reverse proxy and static portal routes
+    repository: UNKNOWN
+    deployment_ref: host-installed package; version UNKNOWN
+    git_commit: UNKNOWN
+    package_origin: Ubuntu package
+    execution_mode: systemd service
+    unit: nginx.service
+    entrypoint: /usr/sbin/nginx
+    listen: ["0.0.0.0:80/tcp", "0.0.0.0:443/tcp", "0.0.0.0:8080/tcp"]
+    observed_status: active_running
+    state_reference: "systemd nginx.service; Nginx route configuration under /etc/nginx"
+    last_success_at: UNKNOWN
+
+  - runtime_id: sshd
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: VPS administration access
+    repository: UNKNOWN
+    deployment_ref: host-installed OpenSSH package; version UNKNOWN
+    git_commit: UNKNOWN
+    entrypoint: UNKNOWN
+    package_origin: Ubuntu OpenSSH package
+    execution_mode: systemd service
+    unit: ssh.service
+    listen: ["0.0.0.0:22/tcp", "[::]:22/tcp"]
+    observed_status: active_running
+    state_reference: "systemd ssh.service; authenticated root public-key login verified"
+    last_success_at: UNKNOWN
+
+  - runtime_id: fail2ban
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Host security service
+    repository: UNKNOWN
+    deployment_ref: host-installed package; version UNKNOWN
+    git_commit: UNKNOWN
+    entrypoint: UNKNOWN
+    package_origin: Ubuntu package
+    execution_mode: systemd service
+    unit: fail2ban.service
+    observed_status: active_running
+    state_reference: systemd fail2ban.service
+    last_success_at: UNKNOWN
+    notes: "Jail configuration and ban state were not inspected."
+
+  - runtime_id: tailscaled
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Host overlay networking
+    repository: UNKNOWN
+    deployment_ref: host-installed Tailscale client; version UNKNOWN
+    git_commit: UNKNOWN
+    entrypoint: UNKNOWN
+    package_origin: Tailscale client package
+    execution_mode: systemd service
+    unit: tailscaled.service
+    observed_status: active_running
+    state_reference: "systemd tailscaled.service; tailnet listener observed"
+    last_success_at: UNKNOWN
+    notes: "Tailnet routes, account ownership, and peer inventory were not inspected."
+
+  - runtime_id: ntpsec
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Host time synchronization
+    repository: UNKNOWN
+    deployment_ref: host-installed package; version UNKNOWN
+    git_commit: UNKNOWN
+    entrypoint: UNKNOWN
+    package_origin: Ubuntu package
+    execution_mode: systemd service
+    unit: ntpsec.service
+    listen: ["UDP/123 on wildcard and host interfaces"]
+    observed_status: active_running
+    state_reference: systemd ntpsec.service
+    last_success_at: UNKNOWN
+
+  - runtime_id: cron-daemon
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Host cron scheduler
+    repository: UNKNOWN
+    deployment_ref: host-installed package; version UNKNOWN
+    git_commit: UNKNOWN
+    entrypoint: UNKNOWN
+    package_origin: Ubuntu package
+    execution_mode: systemd service
+    unit: cron.service
+    observed_status: active_running
+    state_reference: systemd cron.service
+    last_success_at: UNKNOWN
+
+  - runtime_id: catalogsync-root-cron
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: CatalogSync Mercari, Amazon, and Rakuten scheduled scripts
+    repository: https://github.com/retailpulses/CatalogSync
+    checkout_path: /opt/catalogsync/current
+    deployment_ref: a8e59f024f8c-20261021115222
+    git_commit: a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4
+    entrypoint: "Multiple scripts under /opt/catalogsync/current/scripts"
+    execution_mode: root crontab
+    schedule:
+      - "*/10 * * * * — Mercari Shop1, Shop2, Shop3, Shop4 Supabase full scripts"
+      - "*/10 * * * * — Amazon and Rakuten run_live scripts"
+      - "7 8-20 * * * — Mercari run_auto_open script"
+    observed_status: configured_last_success_unknown
+    state_reference: "root crontab; script-specific log/result locations not inspected"
+    last_success_at: UNKNOWN
+    dependencies: ["host-local environment files; values not inspected", "external data endpoints UNKNOWN"]
+
+  - runtime_id: acme-renewal-cron
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: ACME certificate renewal
+    repository: UNKNOWN
+    deployment_ref: host-local installation; version UNKNOWN
+    git_commit: UNKNOWN
+    entrypoint: /root/.acme.sh/acme.sh
+    execution_mode: root crontab
+    schedule: "49 5,11,17,23 * * *"
+    observed_status: configured_last_success_unknown
+    state_reference: root crontab
+    last_success_at: UNKNOWN
+
+  - runtime_id: cloudflared-rp
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Cloudflare Tunnel service (unit description references rp-order-mgmt-relay)
+    repository: UNKNOWN
+    deployment_ref: /usr/local/bin/cloudflared; version UNKNOWN
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: cloudflared-rp.service
+    entrypoint: /usr/local/bin/cloudflared
+    listen: ["127.0.0.1:20241/tcp; listener purpose UNKNOWN"]
+    observed_status: active_running
+    state_reference: "systemd cloudflared-rp.service; ingress/config not inspected"
+    last_success_at: UNKNOWN
+    dependencies: ["Cloudflare account/tunnel; exact identity and ingress UNKNOWN"]
+
+  - runtime_id: mercari-relay-tunnel
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Mercari relay quick tunnel
+    repository: UNKNOWN
+    deployment_ref: /usr/local/bin/cloudflared; version UNKNOWN
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: mercari-relay-tunnel.service
+    entrypoint: /usr/local/bin/cloudflared
+    listen: ["127.0.0.1:20242/tcp; listener purpose UNKNOWN"]
+    observed_status: active_running
+    state_reference: "systemd mercari-relay-tunnel.service; tunnel destination UNKNOWN"
+    last_success_at: UNKNOWN
+
+  - runtime_id: rp-order-mgmt-tunnel
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: OrderMgmt relay quick tunnel
+    repository: UNKNOWN
+    deployment_ref: /usr/local/bin/cloudflared; version UNKNOWN
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: rp-order-mgmt-tunnel.service
+    entrypoint: /usr/local/bin/cloudflared
+    listen: ["127.0.0.1:20244/tcp; listener purpose UNKNOWN"]
+    observed_status: active_running
+    state_reference: "systemd rp-order-mgmt-tunnel.service; tunnel destination UNKNOWN"
+    last_success_at: UNKNOWN
+
+  - runtime_id: boutique-listing-relay
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Boutique Listing Mercari relay
+    repository: UNKNOWN
+    checkout_path: /opt/boutique-listing-relay/current
+    deployment_ref: releases/20260608-212918
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: boutique-listing-relay.service
+    entrypoint: /opt/boutique-listing-relay/current/server.mjs
+    listen: ["127.0.0.1:8789/tcp"]
+    observed_status: active_running
+    state_reference: "systemd boutique-listing-relay.service; environment file configured, values not inspected"
+    last_success_at: UNKNOWN
+
+  - runtime_id: giga-catalog-sync-relay
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Giga CatalogSync marketplace relay
+    repository: UNKNOWN
+    checkout_path: /opt/giga-catalog-sync/relay
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: giga-catalog-sync-relay.service
+    entrypoint: /opt/giga-catalog-sync/relay/server.mjs
+    listen: ["127.0.0.1:8788/tcp"]
+    observed_status: active_running
+    state_reference: "systemd giga-catalog-sync-relay.service; environment file configured, values not inspected"
+    last_success_at: UNKNOWN
+
+  - runtime_id: mercari-proxy
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Mercari GraphQL HTTP proxy
+    repository: UNKNOWN
+    checkout_path: /root/mercari-proxy
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: mercari-proxy.service
+    entrypoint: /root/mercari-proxy/server.py
+    listen: ["127.0.0.1:9000/tcp"]
+    observed_status: active_running
+    state_reference: systemd mercari-proxy.service
+    last_success_at: UNKNOWN
+
+  - runtime_id: ops-portal-gateway
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Ops Portal canonical path gateway
+    repository: UNKNOWN
+    checkout_path: /opt/ops-portal-gateway/current/gateway
+    deployment_ref: releases/8bf0de3901da0dccb7731e5704db2902d66bc006
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: ops-portal-gateway.service
+    entrypoint: /opt/ops-portal-gateway/current/gateway/server.mjs
+    listen: ["127.0.0.1:8090/tcp"]
+    observed_status: active_running
+    state_reference: "systemd ops-portal-gateway.service; environment file configured, values not inspected"
+    last_success_at: UNKNOWN
+
+  - runtime_id: portal-acceptance-relay
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Homesbliss Portal acceptance relay
+    repository: UNKNOWN
+    checkout_path: /opt/portal-acceptance-relay/current
+    deployment_ref: releases/2f8b9c60afca1d43402a73d8c53a344565c1d256
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: portal-acceptance-relay.service
+    entrypoint: /opt/portal-acceptance-relay/current/server.mjs
+    listen: ["127.0.0.1:3010/tcp"]
+    observed_status: active_running
+    state_reference: "systemd portal-acceptance-relay.service; environment file configured, values not inspected"
+    last_success_at: UNKNOWN
+
+  - runtime_id: rp-order-mgmt-api
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: OrderMgmt Portal API
+    repository: UNKNOWN
+    checkout_path: /opt/order-mgmt/current
+    deployment_ref: releases/8bf0de3901da0dccb7731e5704db2902d66bc006
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: rp-order-mgmt-api.service
+    entrypoint: /opt/order-mgmt/current/portal-api/src/server.mjs
+    listen: ["*:8790/tcp; Nginx routes /api/ and /order/api/ here"]
+    observed_status: active_running
+    state_reference: "systemd rp-order-mgmt-api.service; environment file configured, values not inspected"
+    last_success_at: UNKNOWN
+    notes: "OrderMgmt source checkout exists separately at /opt/OrderMgmt; deployed release identifier did not resolve to a Git commit. Repository remains UNKNOWN."
+
+  - runtime_id: rp-order-mgmt-relay
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: OrderMgmt Mercari relay
+    repository: https://github.com/retailpulses/OrderMgmt
+    checkout_path: /opt/OrderMgmt
+    git_commit: e7be3c3d9c5372166e53b40c375efe640762e652
+    execution_mode: systemd service
+    unit: rp-order-mgmt-relay.service
+    entrypoint: /opt/OrderMgmt/relay/server.mjs
+    listen: ["127.0.0.1:8787/tcp"]
+    observed_status: active_running
+    state_reference: "systemd rp-order-mgmt-relay.service; clean detached checkout observed"
+    last_success_at: UNKNOWN
+    notes: "The separate /opt/order-mgmt-relay/current release symlink was not the service working directory at observation time."
+
+  - runtime_id: rp-timesale
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: RP Time Sale Tool Server
+    repository: UNKNOWN
+    checkout_path: /opt/mercari-relay
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: rp-timesale.service
+    entrypoint: /opt/mercari-relay/server.py
+    listen: ["127.0.0.1:9001/tcp"]
+    observed_status: active_running
+    state_reference: "systemd rp-timesale.service; environment file configured, values not inspected"
+    last_success_at: UNKNOWN
+
+  - runtime_id: ticket-share-viewer
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: ConoHa Ticket Share Viewer (service description)
+    repository: UNKNOWN
+    checkout_path: /opt/ticket-share-viewer
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: ticket-share-viewer.service
+    entrypoint: /opt/ticket-share-viewer/dist/index.js
+    listen: ["127.0.0.1:3000/tcp"]
+    observed_status: active_running
+    state_reference: "systemd ticket-share-viewer.service; Nginx seller-share route"
+    last_success_at: UNKNOWN
+
+  - runtime_id: rp-network
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Homebliss Personal Network (systemd unit description)
+    repository: UNKNOWN
+    deployment_ref: host-installed sing-box; version UNKNOWN
+    git_commit: UNKNOWN
+    execution_mode: systemd service
+    unit: rp-network.service
+    entrypoint: /usr/bin/sing-box
+    listen: ["*:8443/udp", "*:9443/tcp"]
+    observed_status: active_running
+    state_reference: "systemd rp-network.service; UFW allows UDP/8443 and TCP/9443"
+    last_success_at: UNKNOWN
+    notes: "Configuration and network/account ownership were not inspected."
+
+  - runtime_id: catalogsync-runner
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: GigaB2B to Supabase CatalogSync runner
+    repository: https://github.com/retailpulses/CatalogSync
+    checkout_path: /opt/catalogsync/current
+    deployment_ref: releases/a8e59f024f8c-20261021115222
+    git_commit: a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4
+    execution_mode: systemd timer and oneshot service
+    timer: catalogsync.timer
+    unit: catalogsync.service
+    entrypoint: /opt/catalogsync/current/scripts/gigab2b/run-catalogsync.sh
+    schedule: "OnBootSec=2min; repeat 10min after service becomes inactive"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd catalogsync.timer/service; last observed exit status 0 at 2026-10-26T11:56:48+09:00"
+    last_success_at: "2026-10-26T11:56:48+09:00"
+    dependencies: ["external GigaB2B and Supabase endpoints; endpoint/account health not inspected"]
+
+  - runtime_id: giga-mercari-pipeline
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: GigaB2B to Mercari listing pipeline
+    repository: https://github.com/retailpulses/CatalogSync
+    checkout_path: /opt/catalogsync/current
+    deployment_ref: releases/a8e59f024f8c-20261021115222
+    git_commit: a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4
+    execution_mode: systemd timer and oneshot service
+    timer: giga-mercari-pipeline.timer
+    unit: giga-mercari-pipeline.service
+    entrypoint: /opt/catalogsync/current/scripts/mercari/run_giga_mercari_pipeline.sh
+    schedule: "OnBootSec=5min; hourly 08:00-20:00 Asia/Tokyo"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd giga-mercari-pipeline.timer/service; last observed exit status 0 at 2026-10-26T11:03:26+09:00"
+    last_success_at: "2026-10-26T11:03:26+09:00"
+
+  - runtime_id: catalogsync-shop4-health
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: CatalogSync Shop4 business health watch
+    repository: https://github.com/retailpulses/CatalogSync
+    checkout_path: /opt/catalogsync/current
+    git_commit: a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4
+    execution_mode: systemd timer and oneshot service
+    timer: catalogsync-shop4-health.timer
+    unit: catalogsync-shop4-health.service
+    entrypoint: /opt/catalogsync/current/scripts/mercari/shop4_health_watch.sh
+    schedule: "Every five minutes at minute 0, Asia/Tokyo"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd catalogsync-shop4-health.timer/service; exit status 0 at 2026-10-26T11:55:16+09:00"
+    last_success_at: "2026-10-26T11:55:16+09:00"
+
+  - runtime_id: catalogsync-amazon-health
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: CatalogSync Amazon business health watch
+    repository: https://github.com/retailpulses/CatalogSync
+    checkout_path: /opt/catalogsync/current
+    git_commit: a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4
+    execution_mode: systemd timer and oneshot service
+    timer: catalogsync-amazon-health.timer
+    unit: catalogsync-amazon-health.service
+    entrypoint: /opt/catalogsync/current/scripts/amazon/amazon_health_watch.sh
+    schedule: "Every five minutes at minute 2, Asia/Tokyo"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd catalogsync-amazon-health.timer/service; exit status 0 at 2026-10-26T11:57:05+09:00"
+    last_success_at: "2026-10-26T11:57:05+09:00"
+
+  - runtime_id: order-health-recovery
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: OrderMgmt production health and bounded recovery
+    repository: UNKNOWN
+    checkout_path: /opt/order-mgmt-orchestrator/current
+    deployment_ref: releases/bd0d1dc2d81826e4c6231988eab784f1224317bf
+    git_commit: UNKNOWN
+    execution_mode: systemd timer and oneshot service
+    timer: order-health-recovery.timer
+    unit: order-health-recovery.service
+    entrypoint: /opt/order-mgmt-orchestrator/current/scripts/production-health-recovery.mjs
+    schedule: "Every five minutes at minute 3, Asia/Tokyo"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd order-health-recovery.timer/service; exit status 0 at 2026-10-26T11:53:23+09:00"
+    last_success_at: "2026-10-26T11:53:23+09:00"
+    notes: "No recovery action was initiated by this inventory task; job behavior was not evaluated."
+
+  - runtime_id: order-mgmt-orchestrator
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: "OrderMgmt canonical orchestrator (unit description: shadow by default)"
+    repository: UNKNOWN
+    checkout_path: /opt/order-mgmt-orchestrator/current
+    deployment_ref: releases/bd0d1dc2d81826e4c6231988eab784f1224317bf
+    git_commit: UNKNOWN
+    execution_mode: systemd timer and oneshot service
+    timer: order-mgmt-orchestrator.timer
+    unit: order-mgmt-orchestrator.service
+    entrypoint: /opt/order-mgmt-orchestrator/current/src/orchestrator.mjs
+    schedule: "Hourly at minute 1, Asia/Tokyo"
+    observed_status: timer_active_service_failed
+    last_result: "exit-code; ExecMainStatus=1"
+    last_run_at: "2026-10-26T11:02:18+09:00"
+    last_success_at: UNKNOWN
+    state_reference: "systemd order-mgmt-orchestrator.timer/service; failure cause not inspected"
+
+  - runtime_id: order-mgmt-sales-brief
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Multi-Platform Sales Brief
+    repository: UNKNOWN
+    checkout_path: /opt/order-mgmt-orchestrator/current
+    deployment_ref: releases/bd0d1dc2d81826e4c6231988eab784f1224317bf
+    git_commit: UNKNOWN
+    execution_mode: systemd timer and oneshot service
+    timer: order-mgmt-sales-brief.timer
+    unit: order-mgmt-sales-brief.service
+    entrypoint: /opt/order-mgmt-orchestrator/current/scripts/sales-brief-report.mjs
+    schedule: "08:00, 11:00, 14:00, 17:00, 20:00, 22:00 Asia/Tokyo"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd order-mgmt-sales-brief.timer/service; exit status 0 at 2026-10-26T11:00:24+09:00"
+    last_success_at: "2026-10-26T11:00:24+09:00"
+
+  - runtime_id: vps-health-watch
+    observed_at: "2026-10-26T11:57:47+09:00"
+    product: Retailpulses VPS disk health watch
+    repository: UNKNOWN
+    deployment_ref: /usr/local/sbin/vps-health-watch; installed artifact version UNKNOWN
+    git_commit: UNKNOWN
+    execution_mode: systemd timer and oneshot service
+    timer: vps-health-watch.timer
+    unit: vps-health-watch.service
+    entrypoint: /usr/local/sbin/vps-health-watch
+    schedule: "Daily 09:00 Asia/Tokyo"
+    observed_status: timer_active_last_service_success
+    state_reference: "systemd vps-health-watch.timer/service; exit status 0 at 2026-10-26T09:00:16+09:00"
+    last_success_at: "2026-10-26T09:00:16+09:00"
+    notes: "Environment file configured; values and alert destination were not inspected."
+
+disabled_units:
+  - catalogsync-health.timer
+  - pipeline-auto-approve-orders.timer
+  - pipeline-build-giga-shipments.timer
+  - pipeline-build-rakuten-shipments.timer
+  - pipeline-close-rakuten-orders.timer
+  - pipeline-close-shop-orders.timer
+  - pipeline-confirm-rakuten-orders.timer
+  - pipeline-pull-giga-tracking.timer
+  - pipeline-pull-rakuten-orders.timer
+  - pipeline-pull-shop-orders.timer
+  - pipeline-push-orders.timer
+  - pipeline-push-rakuten-orders.timer
+  - pipeline-reconcile-cancellations.timer
+  - pipeline-reconcile-end-to-end.timer
+  - pipeline-send-payment-reminders.timer
+  - pipeline-sync-mercari-messages.timer
+  - pipeline-sync-rakuten-tracking.timer
+
+unverified_scope:
+  - "Provider/account ownership and formal production classification."
+  - "Cloudflare Tunnel IDs, ingress hostnames, and destinations; tunnel configs were not read."
+  - "Repository mapping and deployed Git commit for release bundles except verified CatalogSync and the live /opt/OrderMgmt relay checkout."
+  - "Business owners, external database/API endpoints, backup/restore, and application-level health or data correctness."
+  - "Root cron last-success evidence and individual script side effects."
+  - "Reason for order-mgmt-orchestrator failure and identity/purpose of four failed transient run-* units."
+  - "The Nginx mercari-relay upstream points to 127.0.0.1:8443/tcp, where no TCP listener was observed; TCP/8443 and TCP/9876 are allowed by UFW but had no listener at snapshot time."
