@@ -9,7 +9,7 @@ Status: **Pilot** · Owner: Engineering · Updated: 2026-10-27
 | REF-GIGA-OPENAPI-2 | [GigaB2B Open API 2.0](giga/open-api-2.0.md) | 2.0 required; contract partly verified | CatalogSync, commerce-lab, store-ops |
 | REF-GIGA-CAPABILITY | [GigaB2B Access Code & Runtime Inventory](giga/capability-inventory.md) | Code-evidence only; runtimes not fully audited | CatalogSync, commerce-ops, commerce-lab, tool-services |
 | REF-GIGA-DATA | [GigaB2B Business Dictionary & Field Mapping](giga/data-dictionary-mapping.md) | Partially verified; live API ↔ DB lineage open | Monthly P&L, Orders, NPL, catalog consumers |
-| REF-MERCARI-INQUIRY | [Mercari Shops Inquiry](mercari/inquiry-api.md) | Partial / evidence-linked | commerce-ops Inquiry, Customer Operations |
+| REF-MERCARI-CAPABILITY | [Mercari Access Inventory](mercari/capability-inventory.md) | Code discovered; runtime unverified | commerce-ops, store-ops, CatalogSync |\n| REF-MERCARI-DATA | [Mercari Dictionary & Mapping](mercari/data-dictionary-mapping.md) | Partial | Inquiry, Orders, NPL, Time Sale |\n| REF-RAKUTEN-CAPABILITY | [Rakuten Access Inventory](rakuten/capability-inventory.md) | Code discovered; runtime unverified | commerce-lab, commerce-ops, store-ops |\n| REF-RAKUTEN-DATA | [Rakuten Dictionary & Mapping](rakuten/data-dictionary-mapping.md) | Partial | Orders, Promotion, SEO |\n| REF-MERCARI-INQUIRY | [Mercari Shops Inquiry](mercari/inquiry-api.md) | Partial / evidence-linked | commerce-ops Inquiry, Customer Operations |
 | REF-RAKUTEN-RMS | [Rakuten RMS API](rakuten/rms-api.md) | Mixed; by capability | commerce-ops, commerce-lab, CatalogSync, RPagentOS |
 
 ## 管理规则
