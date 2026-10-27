@@ -18,7 +18,7 @@
 
 **初步判断**：多个 UI 各自定义基础 CSS、按钮、表格、状态和操作布局；现有局部响应式处理不能保证所有页面可用。用户反馈的按钮文字挤成竖排属于待复现缺陷，**不是已经由代码证实的特定根因**。工作流上更需要标准化任务入口、下一步操作、失败恢复和验证结果，而非视觉重设计。需在实际浏览器中验证后建立按页面的 PASS/FAIL 证据。
 
-## 2. MVP Mandatory Baseline（新建或实质修改工作流时适用）
+## 2. MVP UX Default Baseline（新建或实质修改工作流时优先采用）
 
 ### UX-01 任务入口和下一步
 每个操作页应在首屏清楚回答：当前对象/范围是什么、当前状态是什么、最重要的下一步是什么。工作流以用户任务命名，不以技术子系统命名。每个关键操作必须有成功、失败、部分完成、未知结果的处理路径；不得把所有异常都导向人工确认。
@@ -96,11 +96,19 @@
 | [inbox system design/development-principles.md](https://github.com/retailpulses/inbox/blob/main/system%20design/development-principles.md) | 先用户目标和工作流、明确成功证据、优先成熟实现、失败恢复、按比例设计；该文档标为 Historical/Source Reference | 作为历史来源，组织级权威仍在 `.github/engineering/ENGINEERING_PRINCIPLES.md` |
 | [inbox #345](https://github.com/retailpulses/inbox/issues/345) / [#346](https://github.com/retailpulses/inbox/issues/346) | 标准应明确 Default/适用条件/例外/证据；调研结论回写 owning Issue | 规范以 DEFAULT 为主，不泛化为强制审批；外部研究不是业务权威 |
 
-### 7.1 现有前端技术标准的权威冲突
+### 7.1 技术架构对齐与 Sponsor 决策（2026-10-27）
 
-[inbox/docs/11_FRONTEND_STANDARDS.md](https://github.com/retailpulses/inbox/blob/main/docs/11_FRONTEND_STANDARDS.md) 目前明确写 **React + Vite + TypeScript 是内部 Admin UI 默认技术栈**，其他栈需在 Issue/PR 中说明例外。其方向是技术栈标准化；本规范讨论的是**跨技术栈的交互结果**。两者不应被混淆。
+**决定 D-UI-01：React + Vite + TypeScript 是新建或较大改造的内部 Admin UI 的 DEFAULT（推荐），不是 MANDATORY（强制）。**
 
-**本 Draft 不废止、不擅自修改该现有技术标准。** 需要工程 Owner 决定它与 `.github` 当前工程原则及 StoreOps Python-rendered UI 的适用范围、例外和规范迁移关系。不得为了通过本 UX 标准强迫现有本地页面迁移 React，也不得把本 Draft 当作豁免现有技术规范的正式批准。
+- 与 [Engineering Principles](ENGINEERING_PRINCIPLES.md) 和 [Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md) 一致：先明确业务工作流和验收，再选择现有成熟技术；按产品规模、已有代码和维护成本作决定。
+- 现有 Python-rendered、Worker HTML 等页面可继续低摩擦维护；新建简单内网工具也可采用更轻的实现。**不要求迁移 React，不要求例外审批**；重大技术取舍仅在对应产品 Issue/PR 中简述理由。
+- 不强制 Commerce OPS 与 Mac mini StoreOps 共享 Shell、组件库或 Runtime。UX 行为/跨平台 QA 适用于各种技术栈。
+- [inbox/docs/11_FRONTEND_STANDARDS.md](https://github.com/retailpulses/inbox/blob/main/docs/11_FRONTEND_STANDARDS.md) 是此前技术栈默认建议的历史来源，其中“不同技术栈必须申请例外”的旧表述由**本次 Sponsor 决策取代**；待本 Draft 合并后，`.github` 的组织级规范为唯一当前权威，旧文件只保留历史引用或导航。
+- 本规范属于 DEFAULT / Reference Guideline；其中避免不可达关键操作、误报业务成功等是具体功能正确性验收，不应被“推荐”二字理解为允许交付无法操作的页面。
+
+**决定 D-UI-02：Canonical Destination = `retailpulses/.github`。** 组织级 UX、前端栈建议、跨平台 PC QA、轻量检查清单在本仓库统一维护。产品仓库仅维护自己的 Product Design、业务工作流、实现及具体 Bug；`inbox/system design/` 的历史案例保留来源链接，不维护竞争性的规范副本。
+
+**Harvest / Closeout 边界**：原始标准化规划 [inbox#331](https://github.com/retailpulses/inbox/issues/331) 和 [inbox#414](https://github.com/retailpulses/inbox/issues/414) 的知识和规范所有权迁入 [.github#41](https://github.com/retailpulses/.github/issues/41)。关闭它们代表规划归档与工作迁移，**不代表**其全部浏览器测试、Shared UI Kit 或产品缺陷已经完成；未完成验收继续由 #41 与各产品 Issue 跟踪。
 
 ### 7.2 以案例驱动的下一轮核验
 
