@@ -74,3 +74,38 @@
 
 ## 6. Draft 验收与升级条件
 当前仅为源码抽样与外部参考形成的 **v0.1 Draft**，不是已批准规范，也不宣称生产 UI 已通过验证。下一步需在 Mac mini 真实 Portal 选择 2–3 个工作流做浏览器核验，记录问题截图、修复前后、任务成功率/失败恢复、最少必要的布局断言。确认后再决定是否升级为 v0.2 Reference Guideline。
+
+
+## 7. 历史 Issue 与 System Design 对账（2026-10-27 补充）
+
+本规范不是从零创立；以下已有设计/工程资产必须被视为来源，并按其适用范围和最新决策引用，不重复建立权威。
+
+| 来源 | 已有规则/证据 | 本规范处理方式 |
+|---|---|---|
+| [inbox #331](https://github.com/retailpulses/inbox/issues/331) | 已提出 Internal UI Engineering Standards、Operator-first 信息层级、状态/证据/配置/操作、共享原语候选、Agent 指导；明确不是品牌美化项目 | **原有 UI 标准化 Sprint**，本 Draft 是其规范文本候选；不新建竞争性 UI Kit 项目。共享组件仍须有复用证据 |
+| [inbox #414](https://github.com/retailpulses/inbox/issues/414) | Windows 滚轮问题触发 PC 跨平台标准；1280×720、1366×768、大屏；100%/125% 缩放；Windows Chrome/Edge、macOS Chrome/Safari；滚轮/触控板/键盘 | 作为跨平台 QA 的**现有专项设计**。本 Draft 的 1024px、320 CSS px/400% Zoom 是补充的 Reflow 检查，不能取代实际 PC 矩阵 |
+| [commerce-lab #142](https://github.com/retailpulses/commerce-lab/issues/142) | Windows 下长日文 Description 可用键盘阅读，但鼠标滚轮不能正常滚动 | 已观察到的操作缺陷；根因尚未验证。加入嵌套滚动/焦点/输入方式的验收 |
+| [commerce-lab #151](https://github.com/retailpulses/commerce-lab/issues/151) | Canonical Copy Review 编辑区需要更大的可用空间（右侧工作区宽度） | 内容编辑/审核工作区需按任务分配宽度，不以视觉均分代替可操作性 |
+| [commerce-ops #293](https://github.com/retailpulses/commerce-ops/issues/293) | Queue → Filters → Ranking → Results；队列优先、过滤器不能隐式隐藏待办、服务端排序、URL 可恢复 | **工作台模式的重要既有业务契约**，不可将队列伪装成默认过滤器；注意后续评论：Inquiry 已允许 Expected Value 排序，Ticket/Orders 仍按其各自决策 |
+| [commerce-ops #321](https://github.com/retailpulses/commerce-ops/issues/321) / [#370](https://github.com/retailpulses/commerce-ops/issues/370) | 可分享业务实体 Deep Link、歧义 fail-closed、顶层导航一致 | 作为交互行为参考，不要求 StoreOps 与 Commerce OPS 共享 Shell |
+| [commerce-ops #165](https://github.com/retailpulses/commerce-ops/issues/165) | Needs Reply 是独立操作义务，不等于 Ticket 生命周期状态；SLA 为派生维度 | 不得混淆业务状态、操作义务和紧急程度 |
+| [store-ops #115](https://github.com/retailpulses/store-ops/issues/115) | Time Sale CSV 选择、生成文件在刷新后恢复、JST 默认时间、失败不能显示全成功、同一 Job 回读 | 作为状态反馈/恢复能力的具体验收案例 |
+| [store-ops #139](https://github.com/retailpulses/store-ops/issues/139) | Variant-centric 多阶段上架工作台、持续准备、人工发布、状态与真实回执 | 作为 UX-07 的端到端流程试点；不要把各阶段技术门槛等同于业务必需 Gate |
+| [store-ops #185](https://github.com/retailpulses/store-ops/issues/185) | Sponsor 明确要求从产品整体工作流评审，而非逐条 UI 补丁；PR #187 为 docs-only Holistic UX 草案 | 评审 Monthly P&L 时应先检查工作区与任务流，再修复单个控件 |
+| [inbox system design/README](https://github.com/retailpulses/inbox/blob/main/system%20design/README.md) | Issue → Real Case → Architecture Questions → Concepts → Design Artifact 的知识提炼方法；系统设计提问包括状态、失败、恢复、验证 | 将真实案例与规范关联，避免把 Issue 证据复制为另一个平行 SSOT |
+| [inbox system design/development-principles.md](https://github.com/retailpulses/inbox/blob/main/system%20design/development-principles.md) | 先用户目标和工作流、明确成功证据、优先成熟实现、失败恢复、按比例设计；该文档标为 Historical/Source Reference | 作为历史来源，组织级权威仍在 `.github/engineering/ENGINEERING_PRINCIPLES.md` |
+| [inbox #345](https://github.com/retailpulses/inbox/issues/345) / [#346](https://github.com/retailpulses/inbox/issues/346) | 标准应明确 Default/适用条件/例外/证据；调研结论回写 owning Issue | 规范以 DEFAULT 为主，不泛化为强制审批；外部研究不是业务权威 |
+
+### 7.1 现有前端技术标准的权威冲突
+
+[inbox/docs/11_FRONTEND_STANDARDS.md](https://github.com/retailpulses/inbox/blob/main/docs/11_FRONTEND_STANDARDS.md) 目前明确写 **React + Vite + TypeScript 是内部 Admin UI 默认技术栈**，其他栈需在 Issue/PR 中说明例外。其方向是技术栈标准化；本规范讨论的是**跨技术栈的交互结果**。两者不应被混淆。
+
+**本 Draft 不废止、不擅自修改该现有技术标准。** 需要工程 Owner 决定它与 `.github` 当前工程原则及 StoreOps Python-rendered UI 的适用范围、例外和规范迁移关系。不得为了通过本 UX 标准强迫现有本地页面迁移 React，也不得把本 Draft 当作豁免现有技术规范的正式批准。
+
+### 7.2 以案例驱动的下一轮核验
+
+- **P0 可用性**：Windows 滚轮/嵌套滚动（#142）、按钮被挤压竖排（Sponsor 报告，尚未定位页面）、长日文文本、编辑区有效宽度（#151）。按 #414 的 OS/浏览器/视口/缩放矩阵记录。
+- **P0 工作流**：NPL 六步流程中当前步骤、可执行操作、失败恢复和发布 readback（#139）；Time Sale 生成、刷新恢复和结果一致性（#115）。
+- **P1 工作台**：Monthly P&L 四工作区与成本反馈（#185）；Commerce OPS 队列默认/过滤/排序（#293）及 Needs Reply 与生命周期正交（#165）。
+
+此处为**历史 Issue 与文档对账**，不是这些验收已通过的证明。历史 Issue 的开放/完成状态也不等于当前生产状态；真实浏览器检查仍标记 NOT RUN。
