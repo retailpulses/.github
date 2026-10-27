@@ -1,8 +1,58 @@
-# Retailpulses 内部运营 Portal UX 与工作流规范 v0.1（Draft）
+# Retailpulses Product-grade Operator Experience Standard v0.2（Draft）
 
-> 状态：Draft / Reference Guideline；Owner：Engineering Registry；关联 [#41](https://github.com/retailpulses/.github/issues/41)。2026-10-27。适用于 Commerce OPS、Mac mini StoreOps 及后续内部操作台。**不要求共享运行时、前端框架、Portal Shell 或组件库。**
+> 状态：Draft / Product-grade MVP Quality Guideline；Owner：Engineering Registry；关联 [#41](https://github.com/retailpulses/.github/issues/41)。2026-10-27。适用于 Commerce OPS、Mac mini StoreOps 及后续内部操作台。**不要求共享运行时、前端框架、Portal Shell 或组件库。**
 >
 > 目标优先级：**任务完成率与正确性 > 工作流可理解性 > 一致性与可维护性 > 装饰性美观**。不增加独立审批门槛。
+
+## 0. 定位：产品级 MVP，而不是 POC UI 修补清单
+
+**Sponsor 方向（2026-10-27）**：将内部 UI 质量从 POC-level 提升至商业产品可持续运营的 MVP 水平。目标是**降低完成真实业务任务的总摩擦**，而非追求视觉精致。历史代码和旧 Baseline 是问题证据与可复用资产，**不是质量上限**。该标准是组织级 [Engineering Principles](ENGINEERING_PRINCIPLES.md)、[Documentation Standard](DOCUMENTATION_STANDARD.md)、[Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md) 在产品体验层面的落实，Canonical Owner 为 `retailpulses/.github`。
+
+### 0.1 POC → MVP → 后续成熟度
+
+| 维度 | POC（验证假设） | MVP（必须可持续操作） | 后续增强（按价值投入） |
+|---|---|---|---|
+| 用户任务 | 证明关键技术可行，可用脚本或演示 | 明确目标用户、主任务、入口、完成定义，真实操作员能独立完成主路径 | 更高效率、个性化 |
+| 流程 | Happy path 可以接受 | 成功、失败、部分完成、未知结果及恢复路径可理解 | 复杂编排/批量自动化 |
+| 数据与状态 | 允许明确标识的 Mock | 关键动作接真实数据和可信回读；不把排队/草稿当成功 | 预测与优化 |
+| 交互 | 临时控件可接受 | 按钮、表单、队列、长文本、滚动、键盘、布局基本可用；不阻断主任务 | 视觉精修、动效 |
+| 工程支撑 | 隔离实验即可 | 最小持久化、错误处理、幂等/重试、诊断、权限/事实边界按风险实现 | 大规模扩展 |
+
+**MVP 不等于功能齐全，也不等于页面好看；MVP = 少量明确功能，但核心业务工作流可真实完成、可解释、可恢复、可验证。** 不允许将“代码已合并”“API 通过”“UI 已显示”替代 Operator Acceptance。
+
+### 0.2 Friction Budget：审查端到端任务，而非只看前端
+
+对每个 P0 工作流，Product Design 应说明：操作者目标 → 输入/事实 → 主要操作 → 系统自动处理 → 状态/反馈 → 失败恢复 → 最终回读。Review 时主动识别：
+
+- **无意义 Gate**：没有明确业务风险、合规或数据正确性依据的审批、人工确认、重复校验、状态对齐。
+- **重复劳动**：重复输入、复制粘贴、跨页面寻找对象、刷新后丢失上下文、反复重试。
+- **不透明系统行为**：隐藏 Job、无法判断是否已提交/完成、异常只给 ValueError、过时或不可信数据。
+- **技术约束外溢**：内部模型、版本/身份关联、数据库缺字段等实现细节被转嫁为操作员障碍。
+
+每项 Gate 必须有**明确触发条件、业务理由、负责方和可操作的解除/恢复方式**；若不能解释其必要性，默认考虑删除或改为非阻断提示。不得以减少摩擦为由绕过真实的外部发布、财务或数据正确性边界。
+
+### 0.3 与 Engineering Standards 的双向连接
+
+- **Product Design**（按 Documentation Standard）：写目标用户、Capabilities、E2E Workflows、业务规则、异常路径与 UX Acceptance；不是仅有 UI 页面清单。
+- **Architecture/TRD**：承担支撑交互的状态模型、持久化、Job/Queue、事实来源、错误契约、幂等/回读；不能让 UI 以猜测代替后端能力。
+- **Current State**：记录已实现与已验证的实际运行行为，不把 POC 或 Demo 误报为 MVP。
+- **Issue/PR**：每个新增/实质变更的主工作流有轻量 Operator Acceptance 证据：任务完成、错误恢复、长文本/布局、实际浏览器操作，标 PASS/FAIL/NOT RUN；**不新增独立审批流程**。
+- **Engineering Principles**：落实用户目标优先、比例架构、独立验证、失败恢复、复用成熟方案与证据驱动；若 UX 不达标的根因在后端，修复应落到正确产品/技术层，而非仅修改 CSS。
+
+### 0.4 质量投入原则
+
+**MVP Must-have**：主任务可完成、核心状态可信、错误可恢复、关键操作可达、基础兼容性、可观测验证。**Recommended**：可复用的轻量交互模式、常用快捷操作、合理的默认值。**Optional**：动画、视觉品牌统一、组件库抽象、全面重构、昂贵自动化测试平台。优先修复高频、高影响、高错误成本的摩擦；仅在两个以上真实场景有收益时提炼共享组件。React + Vite + TypeScript 仍是推荐而非强制。
+
+### 0.5 建议的 MVP Operator Acceptance（每条关键工作流）
+
+1. 操作者能从明确入口找到任务和正确业务对象，不需要知道内部 UUID/代码结构。
+2. 操作前知道将改变什么；操作后能区分执行中、成功、失败和未知；不会误报成功。
+3. 正常路径无需无业务依据的人工 Gate 或重复输入；遇错有可执行的恢复路径。
+4. 实际数据和业务状态可回读；刷新、重试和返回不会无故丢失任务上下文。
+5. 在主要操作员设备/浏览器上，按钮、表单、滚动、长文本与主要操作区可用。
+6. 证据标明 PASS/FAIL/NOT RUN；关键失败不能以“已有单元测试”替代浏览器/业务验收。
+
+**本节是目标质量标准；既有 UI 并未因此被宣称达到 MVP。** 对老页面采用按风险/使用频次分批改善，不要求一次性重做。
 
 ## 1. 调研依据与现状（代码级抽样，非浏览器验收）
 
