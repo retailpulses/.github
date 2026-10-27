@@ -178,3 +178,44 @@
 - **P1 工作台**：Monthly P&L 四工作区与成本反馈（#185）；Commerce OPS 队列默认/过滤/排序（#293）及 Needs Reply 与生命周期正交（#165）。
 
 此处为**历史 Issue 与文档对账**，不是这些验收已通过的证明。历史 Issue 的开放/完成状态也不等于当前生产状态；真实浏览器检查仍标记 NOT RUN。
+
+## 8. Operator Intent Capability Map（跨 Commerce OPS / Mac mini 的治理候选）
+
+本节基于 2026-10-27 的跨产品 Intent Audit；它定义**运营者想完成什么**，不是强制六个菜单、六套数据库或统一组件。Mac mini 已做页面级只读抽样；Commerce OPS Orders / Inquiry 生产页面受 Cloudflare Access 限制，Tickets 仅见未登录外壳，因此后者主要是代码/Design 证据（E0），**不代表生产 UX 已通过验收**。
+
+| ID | Operator Intent | 操作者要回答的问题 | 最小 UI 契约（仅适用产品） | 对应既有测试 |
+|---|---|---|---|---|
+| OI-01 | Work Queue & Prioritization | 哪些业务对象需要我处理、为什么、先做哪个？ | 可识别对象、触发原因、优先级/时效、当前责任、下一动作；完成后退出活动待办，保留历史 | T05/T07/T11/T18/T19 |
+| OI-02 | Job Control & Observability | Agent/Scheduler 正在执行什么、是否健康、何时重试？ | 运行状态、最近执行/成功时间、失败原因、依赖/阻塞、数据新鲜度；可观察不等于必须允许人工强制执行 | T10/T12/T15/T19 |
+| OI-03 | Review & Decision | 需要我判断什么，依据与差异是什么？ | 候选/当前事实、来源、关键差异、业务后果、清楚的接受/拒绝/暂缓动作 | T06/T13/T16/T17/T20 |
+| OI-04 | Action & Execution | 我发起的发送/发布/履约动作发生了什么？ | 操作范围、确认边界、提交反馈、异步状态、防重复；不能把已提交称为已完成 | T08/T09/T10/T12/T20 |
+| OI-05 | Exception & Recovery | 出错或结果未知时怎样安全继续？ | 业务原因、受影响对象、负责方、可执行恢复方式；未知外部写入先查证再决定重试 | T13/T14/T15/T16/T17 |
+| OI-06 | Outcome & Reconciliation | 外部业务结果真的完成了吗？ | 权威回读/证据、时间、来源、部分完成/未知的区别、历史追溯与队列退出条件 | T09/T11/T12/T19 |
+
+**跨域控制维度**：Policy & Scheduling（策略、运行范围、调度、阈值、人工控制）按产品需要贯穿 OI-01/02/04；不是所有产品必须建设独立 Settings 页。信息架构、数据表达、Copy Hygiene、视觉/可访问性也是跨域质量，不另造能力域。
+
+### 8.1 Work Queue 与 Job Queue 不得混淆
+
+- **Work Queue** 是按业务责任形成的人工待办：新客户消息、成本未匹配、需审阅的文案等。业务问题解决才退出活动队列；一个业务对象可关联多个 Job。
+- **Job Queue** 是后台自动执行账本：请求、排队、运行、重试、成功/失败。Job 成功不必然等于业务完成；外部状态未知也不必然等于 Job 失败。
+- UI 应能从业务对象追溯关联 Job/事件，但不强制把两套状态机合并。不能因为 Ticket 曾关闭就忽略新的未回复消息；不能因为发布 Job 成功就声称 Seller 已核实上架。
+
+### 8.2 跨产品证据与边界
+
+| 产品 | 可观察/设计中的 Intent | 证据与限制 |
+|---|---|---|
+| Mac mini Mercari StoreOps / NPL | Work Queue、后台处理、人工审核、Seller readback | 2026-10-27 Chromium 只读页面抽样；未证明完整 E2E |
+| Mac mini Monthly P&L / RMA | 成本复核、候选队列、人工确认、证据与关闭 | 2026-10-27 Chromium 只读页面抽样；未执行写操作 |
+| Mac mini Time Sale / Stock Monitor | Campaign 生成、运行观察、规则与人工处理 | 2026-10-27 Chromium 只读页面抽样 |
+| Commerce OPS Orders | Pipeline health、DAG/ownership、backlog、freshness、生命周期对账 | [控制面代码](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/src/lib/portal/control-plane.mjs)、[Sync Job Inventory](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/docs/SYNC_JOB_INVENTORY.md)；部分设计注明 branch-only，不推断已部署 |
+| Commerce OPS Tickets | 消息驱动待办、人工处理、证据、重开与幂等恢复 | [Current State](https://github.com/retailpulses/commerce-ops/blob/main/apps/tickets/docs/00_CURRENT_STATE.md)、[历史 message-first 设计](https://github.com/retailpulses/commerce-ops/blob/main/apps/tickets/docs/canonical_message_first_architecture.md)；后者为 Draft，不作为已实现事实 |
+| Commerce OPS Inquiry | 咨询审核/发送、平台回读、Follow-up 队列、补漏与重试 | [目标架构](https://github.com/retailpulses/commerce-ops/blob/main/apps/inquiry/docs/01_ARCHITECTURE.md)、[Follow-up 实现](https://github.com/retailpulses/commerce-ops/blob/main/apps/inquiry/apps/dashboard/functions/_lib/follow-ups.ts)；目标设计不等于已部署 |
+
+### 8.3 产品设计与 Agent 验收的最小使用方法
+
+1. Product Design 的 Capability/Workflow 指明涉及哪些 OI（可以只选 1–2 项），写明业务对象、完成语义、自动化/人工边界。
+2. 对每项涉及的 OI，从上表挑选最相关的现有 UX-T 测试，不新增平行测试清单或通用审批。
+3. 对 Work Queue 检查真实待办进入、优先级、人工处理与退出；对 Job Queue 检查执行、阻塞、重试、可观测性；对 Outcome 检查权威回读。分别标 PASS/FAIL/NOT RUN/BLOCKED。
+4. 高风险外部副作用需单独授权；无登录/无回读时不得用静态代码或 HTTP 200 宣称 E3/E4 通过。
+
+**非目标**：统一前端技术栈、强制六个页面、建设跨产品共享 Job 平台、一次性重做历史 UI、对所有产品施加全部能力。
