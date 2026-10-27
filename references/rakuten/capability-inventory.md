@@ -17,6 +17,6 @@ Status: CODE DISCOVERED / Runtime UNKNOWN · Reviewed: 2026-10-27 · [Issue #53]
 | SFTP / CSV | [commerce-lab SFTP](https://github.com/retailpulses/commerce-lab/blob/main/services/rakuten/docs/SFTP-RETRIEVAL.md) | File ingestion, not REST API | DOCUMENTED |
 | Listing historical integration | [boutique-listing client](https://github.com/retailpulses/boutique-listing/blob/main/src/platforms/rakuten/client.js) | Legacy/POC status requires Owner verification | CODE DISCOVERED |
 
-**Credentials:** [central registry](../../infrastructure/credentials/README.md); RMS ESA `serviceSecret`/`licenseKey` and browser sessions have different lifecycle. No credentials stored. Official version/field and error details: [RMS Reference](rms-api.md). Current deployment SHA, scheduler, credentials permissions, tests and live response remain UNKNOWN.
+**External GitHub references:** [RMS MCP and earlier Promotion/SEO OSS candidates](external-github-references.md).\n\n**Credentials:** [central registry](../../infrastructure/credentials/README.md); RMS ESA `serviceSecret`/`licenseKey` and browser sessions have different lifecycle. No credentials stored. Official version/field and error details: [RMS Reference](rms-api.md). Current deployment SHA, scheduler, credentials permissions, tests and live response remain UNKNOWN.
 
 **Follow-up:** verify 2–3 read-only consumer paths (item snapshot, order status, promotion/coupon metadata), link source→adapter→DB→consumer and capture owner-approved sanitized evidence. No live promotion issuance or order mutation during discovery.
