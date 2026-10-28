@@ -38,6 +38,10 @@
 
 此处记录**标准的关键变更摘要**，执行与讨论仍以 Issue/PR 为准；细节及历史差异由 Git history 保存，不建立平行变更台账。
 
+## 工程实践研究（Informative）
+
+- [Nursingroom 测试实践研究与可复用经验（2026-10-29）](research/nursingroom-testing-practices-2026-10-29.md)：外部项目 Golden Journey、Seed、Scenario/Evidence 和测试资产生命周期的来源审查。**仅供参考，不是新规范或实施决定**；测试权威仍为现有 Documentation Standard §16 与 Operator UX Test Catalog。
+
 ## 相关入口
 
 - [组织级 Registry 首页](../README.md)
