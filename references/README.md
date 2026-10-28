@@ -12,6 +12,8 @@ Status: **Pilot** · Owner: Engineering · Updated: 2026-10-27
 | REF-MERCARI-INQUIRY | [Mercari Shops Inquiry](mercari/inquiry-api.md) | Partial / evidence-linked | commerce-ops Inquiry, Customer Operations |
 | REF-RAKUTEN-RMS | [Rakuten RMS API](rakuten/rms-api.md) | Mixed; by capability | commerce-ops, commerce-lab, CatalogSync, RPagentOS |
 
+| REF-WECOM-CAPABILITY | [WeCom Shared Capability Registry](wecom/capability-registry.md) | Reference / POC pending; external customer group API not yet tested | Seller Coordination, Orders, Inquiry, IT Ops |
+
 ## 管理规则
 
 1. 每份 Reference 标注来源、版本、核实范围、日期、Owner、消费者和未知事实。**文档中出现字段 ≠ 已在生产核实该字段的语义。**
