@@ -101,3 +101,72 @@ Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分�
 4. **Validate and hand off**：在原有 source→destination 对照中列出数据模型语义的归位、关键缺口及技术证据；按 [Documentation Standard §17](DOCUMENTATION_STANDARD.md#17-data-model-documentation--lifecycle-pilot-patch-issue-42) 与 §15–16 核实阻断项；产品保留期限等业务决定由 Sponsor 确认，工程事实由 Agent 主动调查。
 
 **Proportionality：** 单库小工具可以只保留简洁的 Architecture/技术段及指向 DDL 的引用；跨系统和关键财务产品需满足可验证的数据契约。不要为遵循迁移规范重写所有 Schema 或复制一份新的字段字典。参考：[Issue #42](https://github.com/retailpulses/.github/issues/42)。
+
+## Brownfield Design Pack reconstruction and scattered-doc harvest (2026-10-29 clarification)
+
+**适用场景**：已有运行代码、历史 Sprint/POC、散落 Design/TRD/SOP/测试材料的持续迭代产品。此节补充上文的既有 Workflow，**不创建第二套 Design Authority 或必填文件树**。本节属于 Pilot Guidance；既有 [Documentation Standard](DOCUMENTATION_STANDARD.md) §§2–9、15–17 仍为权威。
+
+### 1. Reconstruct intent and reconcile actual behavior separately
+
+- **Design Reconstruction (To-Be)**：从获批准的 Product Decision、历史 Design、Issue/PR 和仍有效业务规则恢复目标产品行为。代码中已有的实现不能自动成为批准设计。
+- **Current State Reconciliation (As-Is)**：核对代码入口、依赖、Schema/migrations、Test Catalog/实际执行、CI、目标部署及可获取的 Runtime SHA/服务证据。无法直接验证的事实标 **UNKNOWN / Not Verified**；不将代码存在、Mock PASS、HTTP 200 误称 Runtime Business Verified。
+- 对不一致处建立 **As-Is vs To-Be Gap**，注明证据、业务影响、Owner 和所需 Sponsor 决策；不得以“最新文件”或“当前代码”静默裁决。
+
+### 2. Source inventory and harvest disposition
+
+发现范围包括产品目录及上层 README/AGENTS、Design/Architecture/TRD/Current State/ADR、SOP、POC、Sketch、Test Plan、Test Catalog、fixtures、Issue/PR、相关共享 Registry。每份材料至少记录 **Source path/link、主题、原状态/日期（若可核实）、候选 Authority、Disposition、目标/保留位置、冲突或 UNKNOWN**。Source → Destination 映射可以放在 PR/Issue，不要求永久建立新文件。
+
+| Source type | Harvest disposition |
+| --- | --- |
+| 历史 Product/Sprint Design | 将仍有效的 Operator Workflow、Capability、Requirement、业务规则合入当前 Product Design；保留原来源 |
+| 旧 TRD/实施计划 | 仍有效的技术契约归 TRD/Contracts；执行进度与历史方案留 Issue/PR |
+| Architecture/部署叙述 | 目标架构归 Architecture；经核实的运行事实归 Current State；重大取舍保留 ADR |
+| POC/Research | 提炼已核实结论、局限及 Design impact；原实验留 Issue/归档，不自动升级为 Approved |
+| Test Plan/逃逸缺陷 | 稳定测试定义归 Test Catalog；可执行代码及 CI/Runtime 证据保持各自 Owner |
+| SOP/Operator Guide | 实际操作指引独立保留并从 README 导航，不与 Product Design 争夺业务权威 |
+| 共享 API/Business Dictionary | 引用组织级 Foundational Reference / Business Authority；产品特定映射仍由产品 Owner 管理 |
+| 重复/过时文档 | 核对来源、未解决问题与下游引用后标 Superseded/Retired；不删除唯一历史证据 |
+
+### 3. Target Design Pack (logical roles, not fixed filenames)
+
+- **README/DOC_INDEX**：单一阅读入口，列出权威、状态和历史材料。
+- **Product Design**：Product Overview → Capability Map → End-to-End Operator Workflow → Requirement ID/Business Rules → Decisions/Open Questions。
+- **Architecture**：组件、Owner、Source of Truth、数据流、集成、目标部署和故障/恢复边界。
+- **TRD/Contracts**：适用的 API/字段映射、状态转换、数据契约、异常/幂等/迁移和可验证条件。
+- **Current State**：实际代码、运行入口、部署环境/SHA、CI 与 Runtime 证据、已知差异。
+- **Test Catalog**：Requirement/Workflow → Test ID → Expected Result；Test Report/CI 仅记录执行事实，不能取代 Catalog。
+
+按 Standard §7 的 **L1/L2/L3** 适度合并物理文件；不强制新增 `docs/`、`tests/` 或 `frontend/backend` 目录，也不要求每个 Requirement 单独 TRD。
+
+### 4. Brownfield execution and acceptance
+
+1. **Inventory (read-only)**：列出全部候选资料、相关 GitHub Issue/PR、代码/测试/运行入口和当前导航。
+2. **Reconcile**：逐条区分 Approved / Proposed / Superseded / Implemented / Deployed / Runtime Verified / UNKNOWN；建立冲突和差异表。
+3. **Harvest**：逐条映射 Source → Authority/Target；保留关键公式、边界、状态、错误恢复、外部依赖及历史决策来源。
+4. **Rebuild**：优先修订已有 Design Pack，保留稳定 Requirement ID；以 Current State 记录真实实现，不把未验证项写成已验收。
+5. **Review / Consolidate**：docs-only PR 记录 source mapping、As-Is/To-Be gaps、决策待定、未验证项、历史链接及导航变更；Sponsor Review 后才更新权威与处理旧入口。
+
+**验收（按适用性裁剪）**：
+- Product Owner 无需阅读源码即可理解产品目标、能力、核心工作流及业务规则；
+- Agent 能从 Requirement ID 找到适用的 Contract、Test ID 和实现入口；
+- Architecture 能定位组件、数据 Owner、关键集成与运行边界；
+- Current State 中的已部署/已验证主张均有对应 SHA、环境及独立证据，缺失时标 UNKNOWN；
+- 历史有效规则、决策、未解决问题都有可追溯去向，重复文档不再构成平行权威；
+- README/AGENTS 导航、链接和旧入口的 Superseded 状态经过检查。
+
+**试点建议**：NPL 验证历史 Design/Meta/发布流程收敛；Monthly P&L 验证数据契约与运行事实；Customer Operations Agent 验证 Test Catalog/Current State。它们是待执行验证案例，不能因本 Guide 合并而宣称产品重建已完成。
+
+
+### 5. Legacy documentation retirement acceptance — Operator & Agent safety
+
+**Design Pack reconstruction is NOT complete merely because fresh files exist.** Before declaring a product docs migration accepted, the PR must show that legacy material cannot plausibly be mistaken for current operational instructions or current Design Authority.
+
+1. **Active-entrypoint audit**：检查产品 README、AGENTS、DOC_INDEX、仓库根导航、相关 SOP/Runbook 入口及主要交叉链接；每个入口指向唯一的当前权威。Operator 的日常操作入口与 Agent 的设计/代码入口分别可辨认。
+2. **Legacy disposition audit**：对 Inventory 中每份旧文件明确 **Keep (current) / Harvested + Superseded / Historical Archive / Remove**，附目标 Authority 与原来源。没有完成 Harvest 的文件不得直接删除；存在未决业务冲突的文件不得假装已解决。
+3. **Visible retirement**：仍可被导航、搜索或 Agent 检索到的旧文件，若包含过时行为、API、部署/端口、命令或状态，必须在**文件顶部**明确 `SUPERSEDED / HISTORICAL — NOT CURRENT OPERATING OR DESIGN INSTRUCTIONS`，并给出当前权威链接。单纯移动至 `archive/`、改文件名或在新 README 中声明不足以消除误导风险。
+4. **Link and instruction audit**：检查从 README/AGENTS、当前 Design/TRD、脚本注释、Runbook 和关键 Issue 入口指向旧文件的链接；更新可控活跃入口，保留不可改历史 Issue/PR 的上下文。特别核对旧命令、URL/port、部署拓扑、认证方式和旧 API 版本是否仍被作为当前操作步骤引用。
+5. **Independent reader check**：以 Operator 与新接手 Agent 两个视角分别从 README/AGENTS 开始，验证能在不依赖作者口头解释的情况下找到当前 Product Design、Current State、有效 SOP、测试入口和 Open Questions；记录发现的歧义及修复。
+6. **Closeout evidence**：PR 中给出旧文件 disposition 列表、已修改的活跃入口、仍保留的历史材料及理由、未解决冲突、链接检查结果和两个 reader check 结果。未执行的检查标 NOT RUN，不得声称“Legacy Docs Cleaned”。
+
+**完成判定**：新权威可发现 + 活跃入口无误导 + 旧材料明显退役 + 有效知识无损 + 未决冲突可见。若无法完成某项，PR 明确列为 Outstanding，并不得将 Legacy Cleanup 标记完成。此规则是现有 Harvest PR 的验收补充，不创建额外审批阶段或独立清理平台。
+
