@@ -33,3 +33,11 @@ Variant 保留 Standard/Effective 成本事实和来源；Listing 结合 Shop、
 
 ## Acceptance / Tests（尚未执行）
 卖家包邮、买家付运费、运费佣金差异、促销/券、JPY 边界舍入、成本缺失/过期、Standard vs Effective 不同、履约费重复计费、全店 Listing 聚合；验证不变量和违反底线的拒绝/标记行为。实现与生产数据验证另行立项。
+
+## Mercari 10% Commission & Shipping Resolution (review amendment)
+- Mercari Shops 的通常销售手续费按 **10%** 作为当前 Mercari policy rate；买家另付运费时，官方明确**包含运费的销售额**亦计收 10%。实际交易手续费、优惠承担和政策生效日期仍应按平台订单/结算复核。官方：[送料別（購入者負担）の設定方法](https://support.mercari-shops.com/hc/ja/articles/38335694650137-%E9%80%81%E6%96%99%E5%88%A5-%E8%B3%BC%E5%85%A5%E8%80%85%E8%B2%A0%E6%8B%85-%E3%81%AE%E8%A8%AD%E5%AE%9A%E6%96%B9%E6%B3%95)。
+- **送料ID (CSV) ≠ shippingConfiguration.id (GraphQL)**。官方 API 指出后台配置的送料ID 对应 `ShippingConfiguration.displayId`；创建/更新商品时使用 `ShippingConfiguration.id`。[Mercari API FAQ](https://api.mercari-shops.com/docs/index.html)。代码已处理区别：[StoreOps migration 003](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/local_offer/migrations/003_offer_identity_authority.sql)。
+- 解析链：`Shop + CSV 送料ID → ShippingConfiguration.displayId → ShippingConfiguration.id → 区域/都道府県运费表 → destination shipping amount`。配置 ID 是引用，不是 JPY 数值；同一 ID 可随目的地有不同运费。无法解析目的地时可显示 worst-case 评估值，但不可冒充订单实际运费。
+- 官方送料模板支持全国一律、地区、都道府県三种规则，且订单数量、最高运费和运费折扣另有计算设置：[Shipping Setup](https://support.mercari-shops.com/hc/ja/articles/38335694650137-%E9%80%81%E6%96%99%E5%88%A5-%E8%B3%BC%E5%85%A5%E8%80%85%E8%B2%A0%E6%8B%85-%E3%81%AE%E8%A8%AD%E5%AE%9A%E6%96%B9%E6%B3%95)、[Shipping Calculation](https://support.mercari-shops.com/hc/ja/articles/62060756312601-%E9%80%81%E6%96%99%E3%81%AE%E8%A8%88%E7%AE%97%E6%96%B9%E6%B3%95)。
+- **成本去重**：Giga Unit Fulfillment Fee 是 Standard TCOGS 的成本输入；买家支付运费是收入；配送商实际运费是成本。三者不能按字段名直接互相抵消。需记录 fee coverage，未包含的额外成本才加 E。订单实付配送费与买家收取运费可能不同。
+- 验收：seller-paid / buyer-paid、不同目的地、同商品多件、运费折扣、CSV displayId/API id 误用、过期/缺失模板、10% fee、JPY 舍入、TCOGS 去重。
