@@ -156,3 +156,17 @@ Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分�
 
 **试点建议**：NPL 验证历史 Design/Meta/发布流程收敛；Monthly P&L 验证数据契约与运行事实；Customer Operations Agent 验证 Test Catalog/Current State。它们是待执行验证案例，不能因本 Guide 合并而宣称产品重建已完成。
 
+
+### 5. Legacy documentation retirement acceptance — Operator & Agent safety
+
+**Design Pack reconstruction is NOT complete merely because fresh files exist.** Before declaring a product docs migration accepted, the PR must show that legacy material cannot plausibly be mistaken for current operational instructions or current Design Authority.
+
+1. **Active-entrypoint audit**：检查产品 README、AGENTS、DOC_INDEX、仓库根导航、相关 SOP/Runbook 入口及主要交叉链接；每个入口指向唯一的当前权威。Operator 的日常操作入口与 Agent 的设计/代码入口分别可辨认。
+2. **Legacy disposition audit**：对 Inventory 中每份旧文件明确 **Keep (current) / Harvested + Superseded / Historical Archive / Remove**，附目标 Authority 与原来源。没有完成 Harvest 的文件不得直接删除；存在未决业务冲突的文件不得假装已解决。
+3. **Visible retirement**：仍可被导航、搜索或 Agent 检索到的旧文件，若包含过时行为、API、部署/端口、命令或状态，必须在**文件顶部**明确 `SUPERSEDED / HISTORICAL — NOT CURRENT OPERATING OR DESIGN INSTRUCTIONS`，并给出当前权威链接。单纯移动至 `archive/`、改文件名或在新 README 中声明不足以消除误导风险。
+4. **Link and instruction audit**：检查从 README/AGENTS、当前 Design/TRD、脚本注释、Runbook 和关键 Issue 入口指向旧文件的链接；更新可控活跃入口，保留不可改历史 Issue/PR 的上下文。特别核对旧命令、URL/port、部署拓扑、认证方式和旧 API 版本是否仍被作为当前操作步骤引用。
+5. **Independent reader check**：以 Operator 与新接手 Agent 两个视角分别从 README/AGENTS 开始，验证能在不依赖作者口头解释的情况下找到当前 Product Design、Current State、有效 SOP、测试入口和 Open Questions；记录发现的歧义及修复。
+6. **Closeout evidence**：PR 中给出旧文件 disposition 列表、已修改的活跃入口、仍保留的历史材料及理由、未解决冲突、链接检查结果和两个 reader check 结果。未执行的检查标 NOT RUN，不得声称“Legacy Docs Cleaned”。
+
+**完成判定**：新权威可发现 + 活跃入口无误导 + 旧材料明显退役 + 有效知识无损 + 未决冲突可见。若无法完成某项，PR 明确列为 Outstanding，并不得将 Legacy Cleanup 标记完成。此规则是现有 Harvest PR 的验收补充，不创建额外审批阶段或独立清理平台。
+
