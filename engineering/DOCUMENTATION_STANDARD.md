@@ -55,6 +55,8 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 ## 9. Documentation reconciliation
 产品行为、架构、数据所有权、关键接口或已验证运行状态变化时，在同一 PR 中更新相应权威文档，或明确说明为何无需更新。Patch 不强制新增文档。PR closeout 应写明：相关 Requirement ID、变更的权威文件、测试/运行证据、未解决差异。部署状态必须有独立运行证据。
 
+**交付证据链（按风险适用）**：在既有 PR/Issue closeout 中可定位变更 PR/Commit SHA、目标部署环境、实际运行版本/SHA、适用的 Smoke/业务验证与尚未验证的部分。Code SHA 与 Runtime SHA 不同须分别标注；CI PASS、页面 HTTP 200、只读 Smoke 不能被写成已验证生产写入或完整业务结果。不要求每个 PR 部署或执行外部写入测试。
+
 ## 10. Adoption and acceptance
 先在 Monthly P&L（需求/计算契约）和 New Products to Listing（历史追加收敛）双试点，不一次性改造全组织。验收：Owner 不看代码能理解能力/流程/规则；Agent 能从 Requirement ID 找到契约；原有有效业务语义无损；历史证据可追溯；没有新建平行任务账本。试点验证完成并完成必要修订后，再将本规范标记为 Approved。
 
@@ -166,6 +168,18 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 2. **During implementation**：优先将确定性逻辑落实为 Unit/Calculation Tests；跨模块/API/数据库使用 Integration/Contract Tests；关键用户旅程使用 Workflow/UI E2E（例如真实 Portal 的输入→保存→刷新→结果）。尽可能复用既有 Fixtures 和测试工具。
 3. **Before closeout**：对本次变更执行适用测试，报告 Passed / Failed / Blocked / Not Run、环境与代码/部署 SHA。适用时从实际目标 Runtime 做受控 Business Acceptance；外部写入/真实消息只在已有授权与安全控制下执行，不为测试产生不必要的生产副作用。
 4. **After defects**：修复实际缺陷时更新 Catalog，并尽可能新增可重复的 Regression Test；变更业务语义须先回到 Design/Sponsor，不得由测试用例暗中决定。
+
+### 16.2A Test reliability, discovery and evidence fidelity (Pilot clarification)
+
+以下是现有测试职责的**可执行澄清**，不是新测试平台、通用门禁或统一目录要求：
+
+- **Test ownership / discovery**：持续迭代产品的关键测试应可定位维护 Owner、实际运行入口及 CI 发现范围。区分 Test Exists、Collected、Executed、Passed、Skipped、Not Run；若 `make verify` 与 CI 覆盖不同，说明差异，不能用绿色 CI 推断未收集测试已通过。
+- **Mock / fixture fidelity**：记录影响结论的真实/替身边界及已知差异。替身可以隔离外部服务，但不能无说明地绕过正在验收的关键业务约束；对高风险规则优先用真实本地 Contract、脱敏真实形态样本、独立状态 readback 或适用的只读 Runtime 验证。Fixture 与生产数据形态不一致时标记覆盖限制。
+- **Test Catalog vs execution evidence**：Catalog 记录稳定测试定义、预期结果及关联；Test Report/CI/Issue 记录某次执行事实（SHA、环境、Test ID/范围、真实/Mock 边界、PASS/FAIL/BLOCKED/SKIP/NOT RUN、证据链接）。Report 可由 GitHub Actions 和简短 PR/Issue closeout 承载，不强制新增报告目录或重复保存日志。
+- **Workflow / independent assertions**：关键 Operator Workflow 的验证应覆盖适用的保存、刷新、下游契约与失败恢复，且对业务状态变化尽可能使用独立 DB/API/Publisher readback。UI 点击、截图、HTTP 200 和 Agent 自述成功不能单独证明持久化或外部业务结果。
+- **Escaped defect feedback**：真实缺陷回溯最早可检测层、测试为何逃逸（未发现、未执行、fixture 失真、mock 绕过、断言不足或 runtime 差异），优先收敛为最小可重复回归；未复现的风险显式保留。Agent 探索性发现与确定性回归的证据分别记录。
+
+**证据案例与待验证限制**：[StoreOps #236](https://github.com/retailpulses/store-ops/issues/236)（测试逃逸与 Mock Fidelity）、[#241](https://github.com/retailpulses/store-ops/issues/241)（隔离 Golden Journey 通过但 Codex CLI Browser 自身未验证）、[StoreOps #206](https://github.com/retailpulses/store-ops/issues/206)（测试发现范围/Ownership 审计）。[组织级 Gap Matrix](research/engineering-lifecycle-integrity-gap-matrix-2026-10-29.md) 记录 Covered/Partial、证据与 Pilot 责任。
 
 ### 16.3 Completion is evidence-based, not a new approval pipeline
 
