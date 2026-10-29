@@ -5,9 +5,11 @@
 
 | ID / Domain | Canonical draft | 边界与消费者 |
 |---|---|---|
-| BUS-PROD-001–004 | [Product Model](product-model.md) | SPU1 / Product Family / Variant / Listing；Product Center、NPL |
+| BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU1 / Product Family / Variant / Listing；Mercari/Rakuten platform identity；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
-| BUS-MKT-001–002 | [Marketplace Model](marketplace-model.md) | Shop / Listing / Category ID；Mercari / Rakuten adapters |
+| BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
+
+| BUS-COPY-001–006 | [Title Copy Standards](title-copy-standards.md) | 日本电商标题的事实准确、信息优先级、搜索意图与审查证据 |
 
 ## 权威边界
 - **内部业务定义**：本目录记录跨仓库共识、适用范围、版本和未决事项；业务 Owner 审核后方可标 Approved。
