@@ -27,6 +27,12 @@ Status: **Curated reuse decisions / PR review** · Owner: Engineering Registry �
 - **IMG-005及平台技术契约：平台profile、衍生交付与完整bytes预检**：原图登记、public_url/source_url回退或首1KB签名探测均不满足完整交付契约；尚无已证明接通的推荐实现。交付政策按business IMG-005：超10MB压缩、默认1600×1600、上传R2生成新URL；本registry只引用该政策，不把目标能力登记为已实现资产。[#254](https://github.com/retailpulses/store-ops/issues/254)
 - **通用Open API client / 同步 / 下单脚本**：此前只完成代码发现，未完成候选比较，不能授予canonical实现地位。发现记录已移至PR #67；继续在[#53](https://github.com/retailpulses/.github/issues/53)比较后按职责选入。此处不否定各产品现有运行，只是不为未经比较的代码背书。
 
+## 媒体设计依据
+
+[CatalogSync Product Media Asset Design](https://github.com/retailpulses/CatalogSync/blob/a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4/docs/architecture/PRODUCT_MEDIA_ASSET_DESIGN.md)是本次harvest确认的既有媒体领域设计：产品资产与发布placement分开、SPU共享/Variant适用关系、原图保留、1600方形发布衍生图及R2。引用该权威设计，不另造媒体模型；目标设计与可执行优选资产分开。
+
+CatalogSync本轮源码比较没有证明存在可直接复用的压缩→R2完整实现；文档指向的Boutique Listing对象存储/Canvas资产尚待直接核验，不作为已验证代码列项。颜色翻译、原文去重与API客户端的比较结论在PR #67；没有据文件存在新增赢家。
+
 ## 验证与更新
 
 - 固定比较基线：旧Reset源883d996eec56bb5ed5e8366fd9a1d8a10018e139；局部离线行为核实Lab dd4cdad2d28300433cae488431ca2fa874de4400；NPL 658eff7f31cc0d50f2351a6dde8d9ee5935deab2。证据见[调查PR #255](https://github.com/retailpulses/store-ops/pull/255)及PR #67。没有完整模型、Live API、图片写入或生产发布验收；不声明当前部署状态。

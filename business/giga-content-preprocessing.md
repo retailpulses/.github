@@ -29,7 +29,7 @@
 
 ### BUS-GIGA-IMG-002 — 图片适用性以Variant为准
 
-同一原图可以复用于多个Variant，但必须有通用图或对应Variant的适用依据；SPU同族或名称相近不能证明颜色/规格相符。Operator选图、排除和顺序代表商品展示决定；技术修复或生成交付图不得自行改变这些决定，不引入第二轮业务审批。
+**商品媒体归产品域，Listing仅记录发布位置；SPU共用图片保持一份资产，Variant通过适用关系引用。** 同一原图可以复用于多个Variant，但必须有通用图或对应Variant的适用依据；SPU同族或名称相近不能证明颜色/规格相符。Operator选图、排除和顺序代表商品展示决定；技术修复或生成交付图不得自行改变这些决定，不引入第二轮业务审批。
 
 ### BUS-GIGA-IMG-005 — 大图形成可用交付图，保留原图
 
@@ -38,6 +38,8 @@
 原图保留，压缩产物仍对应同一商品/Variant，不能改变颜色、文字事实或擅自裁掉商品信息。发布使用处理后的交付URL；不能因来源已经登记到Canonical就继续提交超限原URL。图片选择与顺序保持Operator决定。
 
 “10MB”执行时的精确字节定义、非正方形的保比例排版、较小原图是否放大、输出格式与压缩质量属于Owner TRD参数，须明确后验证；不得在实现中默默拉伸/裁切。R2 bucket、URL访问及处理脚本属于实现契约，不在business维护部署清单。实现缺口继续由[Store OPS #254](https://github.com/retailpulses/store-ops/issues/254)跟踪。
+
+媒体语义及交付设计沿用[CatalogSync Product Media Asset Design](https://github.com/retailpulses/CatalogSync/blob/a8e59f024f8ccbfe9fd962f45f5e564ae1dbcff4/docs/architecture/PRODUCT_MEDIA_ASSET_DESIGN.md)：1600×1600用于发布衍生图，原始/master不强制缩为该尺寸；不要求将全部Giga来源图立即镜像到R2。该文档是设计依据，不能作为转换服务已上线的证明。
 
 ## 标题、SEO与文档边界
 
