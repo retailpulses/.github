@@ -7,7 +7,7 @@ Status: **Pilot** · Owner: Engineering · Updated: 2026-10-30
 | ID | Reference | 状态 | 证据与主要消费者 |
 |---|---|---|---|
 | REF-GIGA-OPENAPI-2 | [GigaB2B Open API 2.0](giga/open-api-2.0.md) | 2.0 required; contract partly verified | CatalogSync, commerce-lab, store-ops |
-| REF-GIGA-CAPABILITY | [GigaB2B Canonical Capability Registry](giga/capability-registry.md) | 仅推荐经过比较的优选能力；历史/候选在PR，未覆盖能力明确；非Runtime认证 | Giga商品属性与图片交付规则；commerce-lab / NPL；[共享业务规则](../business/giga-content-preprocessing.md) |
+| REF-GIGA-CAPABILITY | [GigaB2B Canonical Capability Registry](giga/capability-registry.md) | 仅推荐经过比较的优选能力；历史/候选在PR，未覆盖能力明确；非Runtime认证 | Giga商品属性与图片交付规则；commerce-lab / NPL；[共享业务规则](../business/marketplace-model.md#product-content-rules) |
 | REF-GIGA-DATA | [GigaB2B Business Dictionary & Field Mapping](giga/data-dictionary-mapping.md) | Partially verified; live API ↔ DB lineage open | Monthly P&L, Orders, NPL, catalog consumers |
 | REF-MERCARI-INQUIRY | [Mercari Shops Inquiry](mercari/inquiry-api.md) | Partial / evidence-linked | commerce-ops Inquiry, Customer Operations |
 | REF-RAKUTEN-RMS | [Rakuten RMS API](rakuten/rms-api.md) | Mixed; by capability | commerce-ops, commerce-lab, CatalogSync, RPagentOS |

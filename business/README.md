@@ -7,7 +7,7 @@
 |---|---|---|
 | BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU1 / Product Family / Variant / Listing；Mercari/Rakuten platform identity；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
-| BUS-GIGA-COPY-004/005/006 · BUS-GIGA-IMG-002/005 | [Giga商品内容规则](giga-content-preprocessing.md) | 属性归一、日文含义、尺寸语义、Variant图片适用性与大图交付；[优选实现](../references/giga/capability-registry.md#giga-content-preprocessing-assets) |
+| BUS-GIGA-COPY-004/005/006 · BUS-GIGA-IMG-002/005 | [Giga商品内容规则](marketplace-model.md#product-content-rules) | 属性归一、日文含义、尺寸语义、Variant图片适用性与大图交付；[优选实现](../references/giga/capability-registry.md#giga-content-preprocessing-assets) |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
 
 
