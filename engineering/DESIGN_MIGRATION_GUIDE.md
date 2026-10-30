@@ -182,4 +182,7 @@ Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分�
 4. **Prevent competing authority**：适用时在旧研究顶部加 `RESEARCH / NOT PRODUCT AUTHORITY` 与正式 Design/Issue 链接；在 Design 决策处反链原报告具体章节和批准证据。Design 尚未建立时标 `Not yet promoted`，不得伪造权威入口。
 5. **Review**：仅将已有批准且仍有效的决定提升到 Design；开放问题留 Open。标准只修补已证实的措辞缺口；产品改动单独由产品 Owner 发起，不因组织治理评审顺带实施。
 
+
+**Required Design reference**：Harvest 完成的必要条件是目标 Canonical Design 的 `References / Research Sources`（或已有等效章节）显式列出源 Analysis 的 **repository + full path + clickable GitHub URL + evidence date + supported decision/requirement**，优先附章节与固定 commit permalink；不能仅在 Issue/PR 或 Analysis 里留链接。原 Analysis 顶部反链目标 Design，并作为历史证据保留（不构成并行设计权威）。目标 Design 尚不存在时记 `Not yet promoted`，Harvest 仍未完成。
+
 **Learning 案例提醒**：2026-10-30 的 [题库可用性分析](https://github.com/jimyyl/learning/blob/main/analysis/explanatory-question-bank-readiness-2026-10-30.md) 顶部明确标研究状态，§11 记录 Explorer 优先的产品方向，同时把 ET01–ET08、SQLite 切换、技术栈和正式 MVP 设计边界留作候选/未批准。不能引用整份 Analysis 作为 Approved Design；详见 [#68 评审](https://github.com/retailpulses/.github/issues/68)。
