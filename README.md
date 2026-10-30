@@ -32,6 +32,10 @@
 
 [Repository Registry](registry/README.md) · [machine-readable repository list](registry/repositories.yaml)。该清单是粗粒度组织索引，不代替各仓库自己的职责、架构或运行说明。
 
+## Shared business definitions
+
+[Canonical Business Registry](business/README.md)：Draft / Sponsor Review；包含Pricing、Product/Marketplace Identity及[Giga文案/图片预处理](business/giga-content-preprocessing.md)。共享业务规则在business维护，对应代码/脚本及核实状态见[GigaB2B Capability Registry](references/giga/capability-inventory.md#giga-content-preprocessing-assets)；文档存在不代表实现或部署完成。
+
 ## Foundational references
 
 [Foundational Reference Registry](references/README.md) 当前为 Pilot，含 GigaB2B、Mercari Inquiry 与 Rakuten RMS 的来源和核实状态。它是内部发现入口，不取代供应商官方资料；全组织资料盘点与补全由 [#19](https://github.com/retailpulses/.github/issues/19) 跟踪。

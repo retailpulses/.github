@@ -1,5 +1,5 @@
 # Canonical Business Definitions Registry（Pilot）
-状态：**Draft / Sponsor Review** · Owner：Retailpulses Business / Product Owners（待确认） · 日期：2026-10-29
+状态：**Draft / Sponsor Review** · Owner：Retailpulses Business / Product Owners（待确认） · 日期：2026-10-30
 
 本目录为跨产品业务语义和计算契约的统一发现与评审入口。**Draft 不代表已批准、已部署或已通过运行验证。** 不建立运行时数据库、第二套业务规则引擎或独立审批平台。
 
@@ -7,11 +7,13 @@
 |---|---|---|
 | BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU1 / Product Family / Variant / Listing；Mercari/Rakuten platform identity；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
+| BUS-GIGA-COPY-001–008 / BUS-GIGA-IMG-001–006 | [Giga Content Preprocessing](giga-content-preprocessing.md) | 文案事实保全/解析/去重/日文化/单位与方向；Canonical原图/元数据/衍生交付；[实现资产](../references/giga/capability-inventory.md#giga-content-preprocessing-assets) |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
 
 
 ## 范围边界
-- Title Copy 的写作质量、SEO、Prompt、审查 UI 和发布工作流属于 Product Content / Canonical Copy 产品设计，不属于本 Registry 的跨产品核心业务定义；仅当出现需统一的业务概念（例如 Claim Provenance、Dimension Semantics）时，再评审是否登记独立 BUS 定义。
+- Title Copy 的创作风格、SEO排序/预算、Prompt、审查UI和发布工作流仍由产品Design维护。本Registry本轮新增跨产品Giga内容预处理Draft：来源保全、规范化事实、日文映射/去重/单位方向和Canonical图片交付不变量；不把产品完整设计移到组织目录。
+- 上述Giga共享业务规则定义在business；代码/脚本、Owner、测试及核实版本定义在[REF-GIGA-CAPABILITY](../references/giga/capability-inventory.md#giga-content-preprocessing-assets)，两处互相引用，不维护两套规则。
 
 ## 权威边界
 - **内部业务定义**：本目录记录跨仓库共识、适用范围、版本和未决事项；业务 Owner 审核后方可标 Approved。

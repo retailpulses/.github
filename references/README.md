@@ -1,13 +1,13 @@
 # Engineering Foundational References
 
-Status: **Pilot** · Owner: Engineering · Updated: 2026-10-27
+Status: **Pilot** · Owner: Engineering · Updated: 2026-10-30
 
 跨仓库、跨产品共用的外部 API / 平台契约的发现入口。**这里的 Reference 是经来源标注的内部整理资料，不取代供应商官方文档。** 实现代码、内部 API schema 和运行证据保留在各自 Owner 仓库。
 
 | ID | Reference | 状态 | 证据与主要消费者 |
 |---|---|---|---|
 | REF-GIGA-OPENAPI-2 | [GigaB2B Open API 2.0](giga/open-api-2.0.md) | 2.0 required; contract partly verified | CatalogSync, commerce-lab, store-ops |
-| REF-GIGA-CAPABILITY | [GigaB2B Access Code & Runtime Inventory](giga/capability-inventory.md) | Code-evidence only; runtimes not fully audited | CatalogSync, commerce-ops, commerce-lab, tool-services |
+| REF-GIGA-CAPABILITY | [GigaB2B Access Code & Runtime Inventory](giga/capability-inventory.md) | 按资产核实；含2026-10-30内容预处理harvest及已知缺口，非全量Runtime认证 | CatalogSync, commerce-ops, commerce-lab, tool-services, NPL；[共享业务规则](../business/giga-content-preprocessing.md) |
 | REF-GIGA-DATA | [GigaB2B Business Dictionary & Field Mapping](giga/data-dictionary-mapping.md) | Partially verified; live API ↔ DB lineage open | Monthly P&L, Orders, NPL, catalog consumers |
 | REF-MERCARI-INQUIRY | [Mercari Shops Inquiry](mercari/inquiry-api.md) | Partial / evidence-linked | commerce-ops Inquiry, Customer Operations |
 | REF-RAKUTEN-RMS | [Rakuten RMS API](rakuten/rms-api.md) | Mixed; by capability | commerce-ops, commerce-lab, CatalogSync, RPagentOS |
