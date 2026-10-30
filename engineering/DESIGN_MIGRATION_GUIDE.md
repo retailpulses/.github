@@ -170,3 +170,19 @@ Agent 执行提示：默认把 UI Sketch 作为 Product Design 的组成部分�
 
 **完成判定**：新权威可发现 + 活跃入口无误导 + 旧材料明显退役 + 有效知识无损 + 未决冲突可见。若无法完成某项，PR 明确列为 Outstanding，并不得将 Legacy Cleanup 标记完成。此规则是现有 Harvest PR 的验收补充，不创建额外审批阶段或独立清理平台。
 
+
+
+## Pre-design Analysis / Decision Harvest（Issue #68 补充）
+
+此流程沿用既有 **Inventory → Extract → Reconcile → Draft → Review**，只对有实质产品影响的研究进行轻量收敛，不新建 Research Standard、Decision Registry、目录或审批 Gate。
+
+1. **Verify source**：核实 Analysis 的路径、分支、版本、证据日期和实际章节。无法访问时标 BLOCKED，不凭标题猜内容。
+2. **Extract with status**：逐项标为 Finding（注明证据与时效）、Recommendation（作者建议）、Approved Decision（附可定位 Sponsor 批准依据）、Rejected、Deferred、Open；若批准来源未找到写 `UNKNOWN / needs Sponsor confirmation`，不得由文件合并、Agent 语言或研究报告题目推断批准。
+3. **Map authority**：业务价值、Workflow、MVP 范围 → Product Design；组件/数据 Owner/目标部署 → Architecture；重大难逆转选择 → ADR；API/Schema/验证契约 → TRD；待决/执行 → Issue；调查数据、被拒方案与实验局限 → 原 Analysis（保留原始来源）。无需额外永久矩阵；使用当前 Issue/PR 的 source → status → destination 表即可。
+4. **Prevent competing authority**：适用时在旧研究顶部加 `RESEARCH / NOT PRODUCT AUTHORITY` 与正式 Design/Issue 链接；在 Design 决策处反链原报告具体章节和批准证据。Design 尚未建立时标 `Not yet promoted`，不得伪造权威入口。
+5. **Review**：仅将已有批准且仍有效的决定提升到 Design；开放问题留 Open。标准只修补已证实的措辞缺口；产品改动单独由产品 Owner 发起，不因组织治理评审顺带实施。
+
+
+**Required Design reference**：Harvest 完成的必要条件是目标 Canonical Design 的 `References / Research Sources`（或已有等效章节）显式列出源 Analysis 的 **repository + full path + clickable GitHub URL + evidence date + supported decision/requirement**，优先附章节与固定 commit permalink；不能仅在 Issue/PR 或 Analysis 里留链接。原 Analysis 顶部反链目标 Design，并作为历史证据保留（不构成并行设计权威）。目标 Design 尚不存在时记 `Not yet promoted`，Harvest 仍未完成。
+
+**Learning 案例提醒**：2026-10-30 的 [题库可用性分析](https://github.com/jimyyl/learning/blob/main/analysis/explanatory-question-bank-readiness-2026-10-30.md) 顶部明确标研究状态，§11 记录 Explorer 优先的产品方向，同时把 ET01–ET08、SQLite 切换、技术栈和正式 MVP 设计边界留作候选/未批准。不能引用整份 Analysis 作为 Approved Design；详见 [#68 评审](https://github.com/retailpulses/.github/issues/68)。
