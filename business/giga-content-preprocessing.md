@@ -129,7 +129,7 @@ SPU通用图只有明确适用证据才可供某Variant使用，不能按名称�
 
 ## 5. 实施状态、Owner与引用方式
 
-- 共享业务定义归本文；代码消费入口、调用依赖、Tests与Verified/Partial/Open状态见 [REF-GIGA-CAPABILITY](../references/giga/capability-inventory.md#giga-content-preprocessing-assets)。本文不另维护可变的部署/任务计数。
+- 共享业务定义归本文；经过比较的推荐复用入口、适用范围与未覆盖能力见 [REF-GIGA-CAPABILITY](../references/giga/capability-inventory.md#giga-content-preprocessing-assets)。本文不另维护可变的部署/任务计数。Registry只保留优选能力；历史实现与比较过程在变更PR，不能把发现清单视为canonical。
 - 消费产品在现有Design说明应用哪些BUS规则；TRD给适配、调用与一致性细节；Test Catalog用上述业务输入形成正确结果断言；Current State据实际源码/Runtime列未实现项。引用不等于已经迁入，不能仅写“使用Reset”。
 - 原Reset配置/source SHA可作为harvest基线，不将旧local-model/Gateway、已撤回评分/ACCEPTED gate或旧scheduler复活为新依赖。旧译词/去重也不是对所有领域都完美，未知与有意差异需明确。
 - 定位/执行实现前先读registry里的Owner代码；本PR不创建shared package、复制运行代码、迁移DB、生成模型候选、触发图片修复或写Seller。

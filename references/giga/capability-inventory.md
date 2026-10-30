@@ -1,70 +1,35 @@
-# REF-GIGA-CAPABILITY — GigaB2B Capability Registry
+# REF-GIGA-CAPABILITY — GigaB2B Canonical Capability Registry
 
-Status: **Code-evidence inventory / Runtime UNKNOWN where not independently verified** · Owner: Engineering Registry (index only) · Assessed: 2026-10-27 · [Issue #53](https://github.com/retailpulses/.github/issues/53)
+Status: **Curated reuse decisions / PR review** · Owner: Engineering Registry · Reviewed: 2026-10-30 · [Scope #53](https://github.com/retailpulses/.github/issues/53)
 
-本页按资产登记代码与有范围的验证证据，不承诺所有Runtime已部署。每项Owner指**维护代码的仓库**，不是已核实的个人负责人。下方API访问资产沿用2026-10-27代码盘点；内容预处理资产补充2026-10-30核实结果，未完成全量Mac mini / VPS / Cloudflare现场盘点。外部 Open API 2.0 契约见 [REF-GIGA-OPENAPI-2](open-api-2.0.md)。
+本页是推荐复用入口，只登记经过比较、有明确适用范围的优选能力；不是发现清单、历史索引或Runtime认证。“推荐”限于表中函数/职责，不代表整个模块优选、所有业务规则已实现或可以直接执行生产任务。同一职责只保留一个推荐来源；互补职责分开，不能登记为两个竞争实现让消费者自行猜测。
 
-| Owner repo / evidence | Code capability / endpoints | Intended runtime, input/output | Test / safeguards | Verification |
-|---|---|---|---|---|
-| [CatalogSync](https://github.com/retailpulses/CatalogSync/blob/main/scripts/gigab2b/lib/giga-openapi-v2.mjs) | Open API 2.0 signer; inventory quantity/v2; product price/v1 | Node client, credential env, API reads | [signature/contract tests](https://github.com/retailpulses/CatalogSync/blob/main/scripts/gigab2b/tests/openapi-v2.test.mjs); 200-SKU cap | **CODE OBSERVED**, tests NOT RUN |
-| [CatalogSync client](https://github.com/retailpulses/CatalogSync/blob/main/scripts/gigab2b/lib/giga-client.mjs) | Inventory/price normalization; price, discountedPrice, exclusivePrice | SKU → normalized read rows | HTTP error handling, response guard; [contract test](https://github.com/retailpulses/CatalogSync/blob/main/scripts/gigab2b/tests/giga-client-v2-contract.test.mjs) | CODE OBSERVED; live result UNKNOWN |
-| [CatalogSync sync runner](https://github.com/retailpulses/CatalogSync/blob/main/scripts/gigab2b/sync.mjs) | SKU read → Giga quantity/price → Supabase writes; `--dry-run` and explicit `--live` | Intended VPS; `product_variants.item_code` and supplier facts → Supabase | Batch/rate budgets, dead-letter canary; [sync tests](https://github.com/retailpulses/CatalogSync/blob/main/scripts/gigab2b/tests/sync.test.mjs) | CODE OBSERVED; VPS current runtime UNKNOWN |
-| [commerce-ops Orders](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/src/lib/giga-client.mjs) | Open API 2.0 signed `order/track-no/v1`, `order/dropShip-sync/v1` | Cloudflare Worker / Orders; tracking reads and external order writes | [config tests](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/test/giga-client-config.test.mjs), [write-safety](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/test/giga-client-write-safety.test.mjs). Non-idempotent retry safety differs by method | CODE OBSERVED; [historical job inventory](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/docs/SYNC_JOB_INVENTORY.md) is not current deployment proof |
-| [commerce-lab Canonical Lab](https://github.com/retailpulses/commerce-lab/blob/main/services/canonical-lab/src/giga_capture.py) | Signed catalog SKU listing/detail/price/inventory, capture ledger | Capture to `canonical_product.ingest_*` tables; runtime owner must confirm | 200-SKU cap, error capture; ledger/schema checks | CODE OBSERVED; current job UNKNOWN |
-| [commerce-lab probe](https://github.com/retailpulses/commerce-lab/blob/main/tools/catalog-coverage/giga_category_probe.py) | Signed category-related SKU probe | CLI experiment | No runtime verification | CODE OBSERVED / POC, not classified production |
-| [retailpulses-tool-services](https://github.com/retailpulses/retailpulses-tool-services/blob/main/shared/auth/giga_request.py) | General signed POST request helper for price/details/other API path | Python CLI, supplied JSON; no new service | Signing helper; caller-specific bounds need verification | CODE OBSERVED; deployment UNKNOWN |
-| [retailpulses-tool-services Baserow sync](https://github.com/retailpulses/retailpulses-tool-services/blob/main/packages/giga/baserow-sync/giga-baserow-sync/giga_baserow_sync.py) | Giga → Baserow integration | Historical tool / service location unknown | Tests and version not yet verified | DISCOVERED / UNKNOWN |
-| [RPagentOS internal catalog](https://github.com/retailpulses/RPagentOS/blob/main/src/api/internal-catalog.ts) | Downstream Giga saved/catalog-backfill import contract | Consumer API, `gigab2b_saved`, `gigab2b_catalog_backfill` | [import contract tests](https://github.com/retailpulses/RPagentOS/blob/main/src/api/internal-catalog-source-imports.test.ts) | CODE OBSERVED; **not Giga live API** |
-| [store-ops Monthly P&L](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py) | Purchase cost allocation and RMA price comparison | Local SQLite + purchase/import feeds | [RMA standard-price tests](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/tests/test_rma_standard_price.py) | CODE OBSERVED; **not a proven direct live API caller** |
-
-## Connectivity / credential and retirement
-
-- Secret metadata location: [Mac mini Credential Registry](../../infrastructure/credentials/README.md) and [access guide](../../infrastructure/credentials/ACCESS_GUIDE.md). **No secret values are recorded here.** CatalogSync `GIGA_CLIENT_ID`, `GIGA_CLIENT_SECRET`, `GIGA_OPENAPI_V2_BASE_URL`; commerce-ops `GIGA_CLIENT_ID`, `GIGA_CLIENT_SECRET`, `GIGA_API_BASE_URL`. Env presence/permission unverified.
-- Relevant architecture and runtime inventory: [Mac mini registry](../../infrastructure/mac-mini/README.md), [runtime inventory](../../infrastructure/mac-mini/runtime-inventory.yaml), [Orders inventory](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/docs/SYNC_JOB_INVENTORY.md).
-- Open API 1.0 retired; **do not reuse legacy OAuth/Bearer client or retired endpoint**: [retirement #24](https://github.com/retailpulses/gigacatlogsync/issues/24), [CatalogSync #210](https://github.com/retailpulses/CatalogSync/issues/210). Credentials security audit: [CatalogSync #245](https://github.com/retailpulses/CatalogSync/issues/245).
-- Before claiming ACTIVE: examine actual service/timer/Worker deployment and SHA, caller-side read-only connectivity, credential scope (metadata only), sanitized response and last successful run. Do not perform live order writes as a discovery test.
-
-## Reuse decision (preliminary)
-
-Reuse existing owner-managed client/CLI via **Direct Import** only when packaging/runtime permits, otherwise **Copy & Adapt** with contract tests or **Shared Contract** for response/field shape. Do not initiate new SDK / Gateway / shared DB. Comparative experiment and execution evidence remain **NOT RUN** under [#38](https://github.com/retailpulses/.github/issues/38). GitHub search may miss local/unindexed workspaces.
+业务规则唯一来源：[Giga内容预处理](../../business/giga-content-preprocessing.md)。API契约见[Open API 2.0](open-api-2.0.md)，字段映射见[Data Dictionary](data-dictionary-mapping.md)。不在registry复制译词表、业务规则或平台数值上限。比较理由、被替代实现与发现清单保留在[PR #67](https://github.com/retailpulses/.github/pull/67)，后续问题见[#66](https://github.com/retailpulses/.github/issues/66)。
 
 <a id="giga-content-preprocessing-assets"></a>
-## Giga 商品内容预处理资产（2026-10-30 harvest）
+## 推荐复用：Giga内容预处理
 
-**业务规则唯一入口：[Giga Product Content Preprocessing / BUS-GIGA-COPY-001–008、BUS-GIGA-IMG-001–006](../../business/giga-content-preprocessing.md)。** 本节仅登记实现资产、消费方式和证据；不复制第二份业务规则。Supplier字段仍见[REF-GIGA-DATA](data-dictionary-mapping.md)，各产品Design/TRD按BUS ID引用。
-
-### 固定基线与验证范围
-
-- **历史Reset harvest基线**：Lab `883d996eec56bb5ed5e8366fd9a1d8a10018e139`，为NPL #184当时固定源；本轮再次查Git确认下列译词/去重/标题辅助函数已在当时存在。
-- **本轮实际核实Lab依赖**：`dd4cdad2d28300433cae488431ca2fa874de4400`；NPL代码/Runtime `658eff7f31cc0d50f2351a6dde8d9ee5935deab2`，Mac mini/schema26。只描述2026-10-30调查快照，不宣称后续永远在线或所有消费者已兼容。
-- 当日证据：[Store OPS #255](https://github.com/retailpulses/store-ops/pull/255)及[.github #66](https://github.com/retailpulses/.github/issues/66)。Registry记录的函数“可发现/执行过”不等于已打包为跨产品稳定API。
-- 本节不改变上方2026-10-27其他API/Runtime资产的UNKNOWN状态；也不覆盖完整runtime registry。
-
-| Asset ID / Owner / 固定代码 | 入口与输入→输出 | 对应业务规则 / 消费建议 | 验证及当前差异 |
-| --- | --- | --- | --- |
-| GIGA-CONTENT-A01 · commerce-lab · [canonical_copy_preprocess.py](https://github.com/retailpulses/commerce-lab/blob/883d996eec56bb5ed5e8366fd9a1d8a10018e139/apps/mercari/local_offer/canonical_copy_preprocess.py) | build_source_pack(fact_rows, input_error_rules)：accepted事实→原文、narrative、features、specifications、清洗诊断；纯预处理 | COPY-001–008；优先Copy & Adapt最小纯函数与fixtures，或包边界明确后Direct Import；不能把fact_key覆盖优先/数组长度启发式当权威 | **基线代码核实；dd4离线局部行为已执行**。HTML/混合字段/来源冲突需消费者验证；旧pack本身未保留NPL全部多来源provenance，不可裸接后声称等价 |
-| GIGA-CONTENT-A02 · commerce-lab · [同一模块](https://github.com/retailpulses/commerce-lab/blob/883d996eec56bb5ed5e8366fd9a1d8a10018e139/apps/mercari/local_offer/canonical_copy_preprocess.py) | translate_value、SPEC_LABELS、dedupe_specs、direct_spec_enrichment；strip_layout_artifact、HTML/inline spec解析 | COPY-002–007；复用映射和边界fixture，不另建词表服务 | Natural/Indoor/Classic/Cute/Product Style已核实；旧Location标签未日文化。label/value精确去重不是完整语义/来源冲突解决器；消费方需保留证据并补缺项 |
-| GIGA-CONTENT-A03 · commerce-lab · [copy_builder_reset_poc.py](https://github.com/retailpulses/commerce-lab/blob/883d996eec56bb5ed5e8366fd9a1d8a10018e139/apps/mercari/local_offer/copy_builder_reset_poc.py) | build_reset_from_packet→sourceprep.build_source_pack；build_copy_plan、normalize_reset_title、build_shadow_title | COPY-001/003/008；作为Reset历史行为/样本入口，harvest纯逻辑，非推荐直接启动整套旧生成器 | **调用链代码核实**；旧provider/local inference、shop生成分叉/评分gate不应成为NPL依赖。新旧标题角色及策略以现有产品Design为准 |
-| GIGA-CONTENT-A04 · store-ops · [reset_pipeline.py](https://github.com/retailpulses/store-ops/blob/658eff7f31cc0d50f2351a6dde8d9ee5935deab2/apps/mercari/new-products-to-listing/meta_builder/reset_pipeline.py) | make_copy_plan→assemble_title/realize_plan→render_description；来源事实/产品策略→共享候选 | COPY-001–008；现有NPL产品内消费点；保持模型adapter与纯预处理分离 | **PARTIAL**：标题#248已harvest；规格颜色重复/日文映射#252仍有确定性缺口。策略有semantic_deduplication/specifications_policy字段不证明被读取；不能以“Reset-compatible”宣告全兼容 |
-| GIGA-CONTENT-A05 · commerce-lab · [canonical_image_origin.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/canonical_image_origin.py) | fetch_image_origin（由source worker在缺manifest时调用）；Variant/request→供应商来源取得/事实接续 | IMG-001；Canonical owner的回源边界，沿用Open API2和已有凭据，产品不复制API client/写主库 | **代码调用位置已查**；本轮未触发Giga Live API、未写Canonical；不能据文件存在宣称缺图恢复E2E已通过 |
-| GIGA-CONTENT-A06 · commerce-lab · [image_set_prepare_worker.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/image_set_prepare_worker.py) | manifest、ensure_request、run_request、inspect_source、unique_sources、upsert_asset_metadata；当前来源→hash/格式/像素/bytes、资产绑定、source_sort提案/repair | IMG-001/002/003；使用既有Canonical owner API/worker，不在NPL复制；调用可能写DB/派发任务，发现资产不等于执行授权 | **原图路径已核实**：登记master_source/external_reference；inspect_source的30MiB内存保护不是平台10MB上限。当前source_sort无缩图/交付上传；不可把它标平台交付能力 |
-| GIGA-CONTENT-A07 · commerce-lab · [source_sort_review.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/source_sort_review.py) | load_review/_load/fingerprint/validate_selection/accept：set+选择顺序→审查/Canonical保存回执 | IMG-002/003/006；Owner接口消费，区分读与accept写；保留CAS/幂等及Operator决定 | **PARTIAL / 已知缺陷#253**：_load取最新repair请求导致来源误报。选择/元数据单测不能替代repair→review→accept路径；不通过删历史repair或取消全部source校验修复 |
-| GIGA-CONTENT-A08 · store-ops · [commerce_lab.py](https://github.com/retailpulses/store-ops/blob/658eff7f31cc0d50f2351a6dde8d9ee5935deab2/apps/mercari/new-products-to-listing/commerce_lab.py)、[npl_backend.py](https://github.com/retailpulses/store-ops/blob/658eff7f31cc0d50f2351a6dde8d9ee5935deab2/apps/mercari/new-products-to-listing/npl_backend.py) | publication_facts、verify_image_urls：Canonical选中图/URL→发布证据 | IMG-004/005/006；消费者适配/最后技术核对，不是另一个Canonical图片处理Owner | **PARTIAL / #254**：public_url或source_url回退；前1KB签名probe不验总bytes；image_assets未携带bytes。20个样本均为Canonical原图外部引用，不是绕开Canonical重调Giga API |
-| GIGA-CONTENT-A09 · Canonical Images（Owner repo: commerce-lab） | 平台profile衍生交付；原图→合格派生资产+稳定URL+derivation+readback | IMG-004/005/006；已有NPL-17设计需求，具体可复用实现需Owner核实 | **OPEN / 未证明接通**。不在此虚构可运行转换命令、R2 bucket或已部署worker；source_sort、accepted和URL可读都不能替代此能力 |
-
-### Tests、脚本与可重复证据
-
-| Owner资产 | 用途 / 调用前提 | 核实范围 |
+| 能力 / 唯一推荐来源 | 选择依据及范围 | 消费方式与明确限制 |
 | --- | --- | --- |
-| [Lab test_copy_builder_current.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/tests/test_copy_builder_current.py)及[Reset tests](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/tests/test_copy_builder_reset_poc.py) | 旧事实准备/Reset行为样本；harvest时用同输入差分 | 本轮定位代码；没有重新运行整个旧模型/真实生成 |
-| [Lab test_source_sort_review.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/tests/test_source_sort_review.py)、[metadata-repair Postgres tests](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/tests/test_metadata_repair_postgres.py) | 图集/选择/metadata修复的既有测试；Postgres测试要求明确隔离测试DSN | 历史#266有范围通过；缺review_required repair→真实_load→accept回归，不能推断#253已覆盖 |
-| [NPL test_reset_pipeline.py](https://github.com/retailpulses/store-ops/blob/658eff7f31cc0d50f2351a6dde8d9ee5935deab2/apps/mercari/new-products-to-listing/test_reset_pipeline.py)、[test_publish.py](https://github.com/retailpulses/store-ops/blob/658eff7f31cc0d50f2351a6dde8d9ee5935deab2/apps/mercari/new-products-to-listing/test_publish.py) | 现有消费者契约/fixtures；产品Test Catalog维护正确行为 | 2026-10-30定向37/70 PASS，但#252/#254仍存在；测试绿色不证明本页BUS规则均已实现 |
-| [#255离线复现脚本（固定调查head）](https://github.com/retailpulses/store-ops/blob/fe8004e2ddb1a0234ded758b6151eb7349d5cdb0/apps/mercari/new-products-to-listing/docs/reviews/npl-252-254-reproduce.py) | 从store-ops repo执行：`python3 apps/mercari/new-products-to-listing/docs/reviews/npl-252-254-reproduce.py --lab /absolute/path/to/commerce-lab-at-dd4cdad2`；仅合成fixtures，无凭据/DB/网络 | 4项断言PASS是**确认当前坏行为存在**，不是修复验收；调查PR未合并，不能称稳定产品测试入口 |
+| **GIGA-CONTENT-A02：确定性译词与规格清洗** · commerce-lab · [canonical_copy_preprocess.py](https://github.com/retailpulses/commerce-lab/blob/883d996eec56bb5ed5e8366fd9a1d8a10018e139/apps/mercari/local_offer/canonical_copy_preprocess.py) | COPY-002/005；采用translate_value、SPEC_LABELS和布局清洗/规格解析中已验证行为。相同规格输入下，旧Reset可将Indoor、Classic,Cute日文化并生成单一颜色项；当前NPL会原样输出英文并产生重复颜色，不能作为该职责的推荐来源 | **Copy & Adapt最小纯函数及fixtures**到消费者既有预处理边界，保留固定源SHA；不直接采用整个build_source_pack。映射需按业务语义核对；旧Location标签未翻译，词表也有重复键，不能整表无审查复制。精确label/value去重仅作局部步骤，不能冒充跨来源语义去重 |
+| **GIGA-CONTENT-A04：来源可追溯的文案计划与当前标题组装** · store-ops · [reset_pipeline.py](https://github.com/retailpulses/store-ops/blob/658eff7f31cc0d50f2351a6dde8d9ee5935deab2/apps/mercari/new-products-to-listing/meta_builder/reset_pipeline.py) | COPY-001/003/008；采用source-addressable计划/覆盖记录和#248已harvest的标题流程；优于把旧pack的fact_key覆盖和数组长度启发式当作多来源权威。该选择不覆盖规格翻译/语义去重 | **沿用NPL产品内消费入口**；其他产品先适配自身事实契约，不直接导入其provider/运行时。把A02适配进确定性预处理，并保留所有支持来源。#252未修复，当前realize_plan/render_description的原样规格输出不属于优选行为；不启动旧整套Reset生成器 |
+| **GIGA-CONTENT-A05：缺来源时的Canonical回源边界** · commerce-lab · [canonical_image_origin.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/canonical_image_origin.py) | IMG-001；由Canonical owner取得供应商来源并接续事实，消费产品不复制Live API client或各写主库。选择的是已存在的owner边界；未做多实现性能比较，也未证明缺图恢复E2E | **通过既有Owner接口消费**；fetch_image_origin是代码定位入口，不是授权运行命令。沿用Open API 2.0契约；本轮未触发API或写库 |
+| **GIGA-CONTENT-A06：原图检查、内容去重与资产登记** · commerce-lab · [image_set_prepare_worker.py](https://github.com/retailpulses/commerce-lab/blob/dd4cdad2d28300433cae488431ca2fa874de4400/apps/mercari/local_offer/image_set_prepare_worker.py) | IMG-001/002；采用inspect_source、unique_sources、upsert_asset_metadata原图职责，维护hash、实际metadata和绑定；优于在发布消费者重复做来源登记。此为Owner复用选择，不代表所有worker行为已验收 | **通过Canonical owner消费**，不复制worker到NPL。只推荐原图检查/登记；排除#253涉及的repair来源基线关联和accept流程。master_source/external_reference不是平台衍生交付图；30MiB内存保护不是平台上限 |
 
-### 消费与核实约定
+以上四项是互补职责，不是四套完整预处理管线。A01/A03/A07/A08/A09不再作为推荐资产列项；旧ID不复用，其历史含义与退出理由见PR比较记录。
 
-1. 根据业务文件中的BUS ID找本节Asset ID，读取固定baseline和当前Owner实现，再在消费者现有TRD说明保留/适配/不适用及对应fixture；不以仓库路径或策略名替代兼容证明。
-2. A01/A02以Copy & Adapt/纯模块复用为起点，保留版本及来源证据；未评估包装前不宣称可安装共享package。A03不是要求复活旧provider；A05–A07是有DB/调度能力的Owner边界，不照搬到消费者。
-3. 再次运行真实图片request/repair/accept、批量候选重建或Seller操作前遵守现有操作范围；本次登记和文档PR不触发这些动作。凭据按上方现有access guide获取，不复制secret或生产数据。
-4. 新增平台profile按官方资料核实限制。当前Mercari API FAQ与管理画面/CSV限制不能混用；不要把第三方旧4MB或worker内存30MiB当发布规则。本registry不再维护一份可独立修改的数值上限。
-5. 未接通的交付能力、消费者适配与测试缺口继续在[#66](https://github.com/retailpulses/.github/issues/66)、[NPL harvest#203](https://github.com/retailpulses/store-ops/issues/203)、[#252](https://github.com/retailpulses/store-ops/issues/252)、[#253](https://github.com/retailpulses/store-ops/issues/253)、[#254](https://github.com/retailpulses/store-ops/issues/254)跟踪；不在registry新增第二套任务计数或部署状态表。
+## 尚无合格推荐的能力
+
+以下仅声明覆盖边界，不是候选资产列表；缺口在原Issue维护。
+
+- **COPY-004：完整语义去重与冲突保全**：旧Reset精确去重会丢失部分多来源信息；当前NPL来源追踪较好，但没有完成归一化后的语义去重。组合适配目标已确定，尚无满足全部要求的单一实现。[#252](https://github.com/retailpulses/store-ops/issues/252)
+- **IMG-003/006：metadata repair后来源基线与accept一致性**：当前source_sort_review存在“最新repair请求代替原始manifest”缺陷，不推荐照搬。[#253](https://github.com/retailpulses/store-ops/issues/253)
+- **IMG-004/005/006：平台profile、衍生交付与完整bytes预检**：原图登记、public_url/source_url回退或首1KB签名探测均不满足完整交付契约；尚无已证明接通的推荐实现。[#254](https://github.com/retailpulses/store-ops/issues/254)
+- **通用Open API client / 同步 / 下单脚本**：此前只完成代码发现，未完成候选比较，不能授予canonical实现地位。发现记录已移至PR #67；继续在[#53](https://github.com/retailpulses/.github/issues/53)比较后按职责选入。此处不否定各产品现有运行，只是不为未经比较的代码背书。
+
+## 验证与更新
+
+- 固定比较基线：旧Reset源883d996eec56bb5ed5e8366fd9a1d8a10018e139；局部离线行为核实Lab dd4cdad2d28300433cae488431ca2fa874de4400；NPL 658eff7f31cc0d50f2351a6dde8d9ee5935deab2。证据见[调查PR #255](https://github.com/retailpulses/store-ops/pull/255)及PR #67。没有完整模型、Live API、图片写入或生产发布验收；不声明当前部署状态。
+- 采用推荐能力时，在Owner现有测试中验证相同输入下的事实保真、日文化/去重、来源追踪和异常；图片另核对hash/绑定/顺序与幂等。37/70个现有测试通过及4项坏行为复现通过，都不能证明上述缺口已修复。
+- 新实现只有在同职责比较中证明更好，且不回退既有事实/来源/幂等行为，才替换本页推荐；**替换而非追加并列候选**。理由、比较输入输出、源SHA和测试结果保存在变更PR；本页仅更新胜出入口、适用范围和限制。无充分证据时保留覆盖缺口，不制造赢家。
+- 凭据只按[Credential Registry](../../infrastructure/credentials/README.md)和[Access Guide](../../infrastructure/credentials/ACCESS_GUIDE.md)查找。Runtime以[基础设施登记](../../infrastructure/mac-mini/README.md)为准，不在本页重复维护部署清单。Open API 1.0已退役，不选用旧OAuth/Bearer路径。
