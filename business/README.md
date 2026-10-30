@@ -7,13 +7,13 @@
 |---|---|---|
 | BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU1 / Product Family / Variant / Listing；Mercari/Rakuten platform identity；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
-| BUS-GIGA-COPY-001–008 / BUS-GIGA-IMG-001–006 | [Giga Content Preprocessing](giga-content-preprocessing.md) | 文案事实保全/解析/去重/日文化/单位与方向；Canonical原图/元数据/衍生交付；[实现资产](../references/giga/capability-inventory.md#giga-content-preprocessing-assets) |
+| BUS-GIGA-COPY-004/005/006 · BUS-GIGA-IMG-002/005 | [Giga商品内容规则](giga-content-preprocessing.md) | 属性归一、日文含义、尺寸语义、Variant图片适用性与大图交付；[优选实现](../references/giga/capability-registry.md#giga-content-preprocessing-assets) |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
 
 
 ## 范围边界
-- Title Copy 的创作风格、SEO排序/预算、Prompt、审查UI和发布工作流仍由产品Design维护。本Registry本轮新增跨产品Giga内容预处理Draft：来源保全、规范化事实、日文映射/去重/单位方向和Canonical图片交付不变量；不把产品完整设计移到组织目录。
-- 上述Giga共享业务规则定义在business；代码/脚本、Owner、测试及核实版本定义在[REF-GIGA-CAPABILITY](../references/giga/capability-inventory.md#giga-content-preprocessing-assets)，两处互相引用，不维护两套规则。
+- 标题创作、SEO、A/B实验、Prompt和审查/发布流程仍由产品Design维护；不另建Title Copy标准。本文仅登记明确的共享属性语义与图片交付政策，工程通则和故障细节留在Owner技术契约/Issue。
+- 上述Giga共享业务规则定义在business；代码/脚本、Owner、测试及核实版本定义在[REF-GIGA-CAPABILITY](../references/giga/capability-registry.md#giga-content-preprocessing-assets)，两处互相引用，不维护两套规则。
 
 ## 权威边界
 - **内部业务定义**：本目录记录跨仓库共识、适用范围、版本和未决事项；业务 Owner 审核后方可标 Approved。
