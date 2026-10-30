@@ -121,6 +121,9 @@ Readiness、Brainstorm、Feasibility、方案比较与 POC 的默认身份是**�
 
 **最小 Agent-safe 链接**：Analysis 顶部注明 `RESEARCH / NOT PRODUCT AUTHORITY`，标注其证据日期和当前 Design/Issue 入口（若尚不存在写 `Not yet promoted`）；在正式 Design 的相关决策/问题处反向链接 Analysis 的具体章节与批准依据。只有明确获 Sponsor 批准的部分才标 Approved；不能以整个研究文件整体提升批准状态。仅当容易造成误读且产品 Owner 同意时才补状态提示，不要求为所有旧研究批量改造。
 
+
+**Mandatory Source Reference（Harvest 验收）**：凡重要 Analysis 已被 Harvest 到 Canonical Product Design，**必须在该 Design 的 `References / Research Sources`（或既有等效章节）记录可直接打开的原始文档仓库、完整相对路径、GitHub 链接、研究日期及对应决策/Requirement；建议同时标明引用的章节和固定 commit/permalink**。仅在 Issue/PR 留链接、仅在 Analysis 反链 Design、或只写文件名均不算完成。Analysis 保留为历史研究证据而非当前设计权威；原文件顶部反链 Design，未建立 Design 则明确 `Not yet promoted`，不得宣称 Harvest 完成。
+
 参考核验案例：[Issue #68](https://github.com/retailpulses/.github/issues/68)；该 Issue 的研究映射为评审证据，不代替 Learning 产品仓库的设计决策。
 
 ## 15. Technical Contract Completeness & Drift Prevention (Pilot Patch)
