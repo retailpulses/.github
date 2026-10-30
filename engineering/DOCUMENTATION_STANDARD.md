@@ -95,6 +95,22 @@ L3（跨系统/关键业务）：L2 + 必要 TRD/Contracts + Current State + 重
 - 区分 Exploratory Sketch、Approved UI Specification 与 Implemented / Runtime Verified；批准草图不等于界面已上线。原型和截图不能取代真实运行证据。
 - 小产品不强制创建独立 UI Spec、Design System、Figma 文件或目录；优先减少碎片化和重复维护。
 
+### 13.1 Two-stage UI design pilot (2026-10-30)
+
+**Status: Pilot / Sponsor Review; not an organization-wide mandatory gate.** This supplements §13 and the existing Product Design authority, without creating a second product-design authority or requiring a particular framework.
+
+**Stage A — Wireframe (structure review).** Before implementing a new or materially redesigned core UI workflow, describe the screen map, information hierarchy, navigation, main actions and initial/default selection. Keep sketches editable and Git-reviewable: Markdown, Mermaid, or lightweight HTML are preferred over image-only artifacts. Link the relevant Workflow / Requirement IDs. Sponsor feedback focuses on what appears, where it appears and how the user proceeds.
+
+**Stage B — Interactive Prototype (behavior review).** For core or surprise-prone MVP UI workflows, provide a runnable, browser-accessible prototype before substantial UI implementation. It must demonstrate the primary path, initial state and defaults, navigation, meaningful loading/empty/error/success states, save/submit semantics and key recovery behavior. Use realistic but synthetic data; label mocked actions and unavailable backend behavior. Sponsor reviews actual clicks and gives feedback; update the same design baseline rather than accumulating competing versions.
+
+**Preferred handoff format.** Favor Git-native, code-backed HTML/CSS/JS or React prototypes when practical, not a mandatory Figma or framework dependency. Store small sketches alongside the relevant Workflow in `DESIGN.md`; promote larger runnable prototypes and state specifications to `docs/ui/` when justified. The Product Design remains authoritative for product behavior; prototype source is the approved interaction reference, not a replacement for business rules or backend contracts. Include how to run, the target viewport/device, Requirement IDs, reviewed commit SHA, status (Exploratory / Sponsor Review / Approved), and explicit gaps between prototype and real backend.
+
+**Agent implementation contract.** For each core screen/flow specify screen identity, initial/default state, user action, resulting transition, exceptional states and observable acceptance. Agents must read the approved design and prototype before coding, reuse the prototype where technically appropriate, and flag contradictions rather than silently choose between design and prototype. Do not infer an unreviewed behavior from screenshots.
+
+**Conformance verification.** In the implementing PR, compare the running UI against the approved prototype at representative viewport(s) and key states using actual browser interaction, screenshots and, where useful, Playwright assertions. Report PASS / FAIL / NOT RUN, material deviations and approved changes. A screenshot alone does not prove interaction correctness; prototype approval does not prove runtime correctness. Integrate evidence into existing Test Catalog / PR closeout rather than establishing a duplicate checklist or new approval workflow.
+
+**Proportionality / pilot exit.** A minor patch or low-risk UI may use an embedded wireframe and short interaction description without a runnable prototype. Run at least one real product pilot; assess whether Sponsor catches material UI/UX surprises before implementation, Agent handoff is faithful, and authoring/review cost is reasonable. Only after documenting findings should this pilot be proposed for general adoption.
+
 ## 14. Progressive design: concept, POC, architecture and deployment (P0)
 
 设计不是单向的阶段瀑布：**Concept / Draft Design ↔ targeted POC / Experiment → evidence-based refinement → Design Baseline → implementation → deployment → runtime verification**。后续变更可再次启动 POC。早期允许未完成的技术假设，但阻断核心行为的技术事实需在批准前验证或明确采用不依赖该事实的安全降级（见 §12）。
