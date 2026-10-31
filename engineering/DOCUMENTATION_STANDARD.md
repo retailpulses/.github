@@ -141,6 +141,62 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 
 **Proportionality**：小 Bug Fix/低风险 UI Patch 可在一个实现 PR 中同步修订 Design，无需单独 Design PR 或可运行原型；重大 New Feature、跨系统变更、复杂 Operator UI 推荐先 Review Design PR/Prototype，再启动大规模编码。上述为工作顺序与可追溯性约定，**不是六道强制 Gate**。
 
+### 14.2 Safe Experiment-to-Production — Last Known Good / Optional Sandbox（Pilot Design Baseline，2026-10-31）
+
+**Status: Design Finalized for Pilot / Implementation Pending / NOT organization-wide mandatory Policy.**
+- **Method Owner:** [Engineering #77](https://github.com/retailpulses/.github/issues/77)；**首个真实 Pilot:** [StoreOps Time Sale #260](https://github.com/retailpulses/store-ops/issues/260)。
+- 本节是 §14、§14.1 的**非强制 Pilot 执行设计**；遵守现有 [Worktree Development Flow](../docs/worktree-development-flow.md)（`main` 为生产代码源，Feature Branch 禁止生产部署）、Product Design / Test Catalog 和既有发布审批。**独立运行的非生产实验服务不等于从 Feature Branch 部署生产**。
+- 决定的是工程方法/安全边界，**不表示** StoreOps 已有可用 Sandbox、验证过 Rollback、完成生产迁移，或已批准生产发布。Pilot 证据回来后再决定正式纳入组织 Policy。
+
+**业务目标：保护 Last Known Good（LKG，最后一个已实测可用的应用版本）并降低从 Experiment 到 Production 的摩擦。** 优先确保可靠部署、可重复验证和可恢复旧版；Sandbox 是在需要体验或降低上线前不确定性时采用的**可选**工具，而不是工作流中心和强制关卡。**Near-zero Setup Cost + Near-zero Promotion Cost** 指尽量减少重复人工工作，不意味着免验证、免授权或建设通用平台。
+
+#### A. 按风险选择最小有效路径
+
+| 变更与风险 | 默认验证路径 | 加强项 |
+| --- | --- | --- |
+| 小 Bug、文案、低风险样式 | Branch → CI/PR → governed deploy → production smoke | 保留 LKG/可回退入口；无需强制 Sandbox |
+| 重要 UI / 业务算法改版、需要 Sponsor 真实试用 | Branch/Worktree + Interactive Prototype（如适用）→ **可运行的 Full Application/Feature Sandbox** → hands-on iterate → PR/CI → deploy | 实际后端/真实数据验收，记录两个 Runtime 的 SHA/URL；Sandbox 不必复制数据库 |
+| 独立算法/技术探索 | 轻量 Isolated Feature/POC + fixture/real read-only facts | 不伪称 Full Application E2E |
+| Schema、跨版本共库、高风险数据写入/外部动作 | 契约和兼容性分析 → 控制变更/备份恢复 → 真实集成验证 → governed deploy | 按需独立 Schema/DB、阶段发布/Flag；绝不因为“试验”默认放宽操作权限 |
+
+**两个正交选择：** ① Full Application/Isolated Feature/No Sandbox；② 共享真实数据库还是增强隔离。**实验代码 ≠ 实验业务数据**。仅在真实兼容/权限/不可逆风险证明必要时增强隔离，不默认独立 SQLite、整库复制、Docker、Capability Layer、Secrets 平台、统一 Sandbox CLI 或每 Branch 新 Credential。
+
+#### B. LKG 与 Deploy/Rollback 的最小执行契约
+
+**Release Candidate / LKG Readback（发布之前，由 Runtime Owner 从实际机器核对）：**
+- 正在服务的 **Commit SHA + Build/Artifact digest**（没有 Artifact 时记录可复现的构建/安装依赖版本、启动工作树）、Repo、工作目录、已安装 Runtime/Python 依赖、入口 URL、服务/LaunchAgent/Wrapper、实际 PID/Port、路由 Owner。
+- 有效配置的**引用位置与非敏感差异**（不导出 Secret）；SQLite/Postgres 实际数据库路径、Schema/Migration 版本、Writer/Reader、Scheduler/Queue、外部操作 Owner，确认代码与数据是否可兼容运行。
+- 上一个确实通过 Smoke 的 **LKG** 存在可恢复的 checkout/Artifact、配置和依赖；标明是否验证过恢复启动，不能仅因 Git 有 Commit 就声明 Rollback Ready。
+- 规定最小部署操作、执行 Owner、失败/回滚触发条件、旧版重启/恢复方式、健康/关键业务 Smoke、实际源码版本与数据库读写 Readback。不存在可靠恢复路径时标记 `ROLLBACK NOT VERIFIED` 并避免宣传可快速恢复。
+
+**Promotion & Recovery（沿用现有 GitHub 发布规则）：**
+1. 从 Sponsor 接受的实验结果冻结候选 Design/Requirements/测试与 Commit，核对 PR 依赖、CI、环境配置差异、数据迁移契约及 LKG 证据。Merge 后 SHA/Artifact 如发生变化，**重新验证最终发布候选**。
+2. 按现有 PR 审查/合并、正式 Production Deployment 授权、CI/CD 和 Smoke 执行；**不要直接把实验进程、Worktree 或实验 URL 切成生产服务**，也不从 Feature Branch 直接部署生产。
+3. 发布后读取**实际** Commit/Artifact、健康状态、StoreOps 页面、关键 Read/Write 路径、Runner/Scheduler 与外部副作用；区分 `CODE MERGED`、`PRODUCTION DEPLOYED`、`RUNTIME VERIFIED`、`BUSINESS VERIFIED`。
+4. 失败时停止推广；在目标数据库/依赖依然兼容时恢复 LKG **代码和服务**，否则按事先制定的前向修复路径处理。恢复后做相同的 Smoke/Readback，记录停机、未完成操作和待协调状态。**不要把回退代码等同于恢复数据**。
+
+**Code rollback ≠ State rollback ≠ External-action undo：** 已提交的真实业务记录、订单、消息、Seller 上传、价格变更等不能依靠旧版代码恢复而撤销。对共享 SQLite/Postgres **优先 Expand → Compatible dual-version operation → later Contract**；迁移前核实旧版 SQL/约束/唯一键/读写、Migration Owner、并发/WAL、SQLite Online Backup/完整性与可恢复性。业务持续运行之后，**禁止用旧 DB 快照整体覆盖已发生的合法业务数据**；Schema 回退若不可安全完成，保留向后兼容 Schema 并回退应用或采用前向修复。任何活动生产 DB 迁移必须单独遵守既有变更治理，不因设计最终确定自动获授权。
+
+#### C. Full Application Sandbox 的轻量运行边界
+
+- Git Branch/Worktree 隔离**代码**；独立 localhost 进程/端口/URL 与可查询 SHA 隔离**应用 Runtime**；生产进程、现有路由和服务保持不变。先实测端口/会话 Cookie/Origin/Token/路径冲突和旧版并行行为，不预设端口。
+- 默认复用 Mac mini、Local Supabase、真实 SQLite 和既有授权网络/Credential；Credentials 按**用途与权限**复用而非按分支复制。现有高权限凭据不能随意扩散，读取权限必须实际验证，正常有授权的写入不应被错误地限制为只读。
+- **StoreOps #260 特例已确认的业务语义：** 试验的是 UI + Segmented Time Sale 定价，不是数据库环境。两版本可共用 SQLite/Local Supabase；真实 Operator `Generate` 会持久化正常的 GENERATED、Job/Ledger/CSV，是合法业务记录，**不要求 sandbox/prod 数据标签或转正迁移**。What-if Preview 必须不写入。`GENERATED ≠ Seller ACTIVE`，不得凭实验自动执行 Seller 上传、价格/库存/订单/发货/客户消息写入或新 Scheduler。
+- 共库不是“完全隔离”：需要实际证明旧版 Portal 的 Latest Generated、Ledger `intent_sha256` 去重、Seller Batch 唯一键、Runner Pending/Quota、History/Download、锁和 Schema 都可兼容。若存在危险耦合，优先修最小契约/调用路径；不能安全处理时才考虑局部额外隔离。**无需假设 #260 需要新 Schema；确需 To-Be Migration 时先准备兼容方案与治理，再执行**。
+- 不必为了试点建立统一命令；`rp sandbox start store-ops --branch feature/260` 只是将来可能的 UX 示例，非现有命令或验收门槛。
+
+#### D. 证据、验收与 Agent Handoff
+
+**Local Runtime Agent 的最小有序行动（见 [StoreOps #260](https://github.com/retailpulses/store-ops/issues/260)）：**
+1. **Read-only inventory**：从 Mac mini 实测生产 URL/SHA/PID/Port/Launcher、真实配置权限与版本、SQLite+Local Supabase 的 Schema/状态、Runner/Job 入口、真实 LKG 和恢复能力；每项标 `VERIFIED / NOT VERIFIED / BLOCKED`。不得凭仓库文档或历史记录认定已部署。
+2. **Compatibility & recovery design**：先核实共享 DB 的旧版/新版语义、Generate 后 Runner/Portal 行为；判断是否需要 Migration。对需要的 Schema 变更准备向后兼容的 SQL、备份和恢复演练，**任何生产迁移仅在其独立授权与 preflight 通过后执行**。
+3. **Non-destructive LKG dry-run**：证明可找到旧版代码/构建及启动配置，在**不切换生产、不恢复覆盖活动 DB、不实际发送外部动作**的条件下演练恢复步骤；若不能证实恢复，明确阻断，不声称有一键 Rollback。
+4. **Pilot runtime & UX**：仅 #260 选择运行独立 Branch/Worktree 版本；真实 UI、分段定价、CSV、Preview→Generate→Download/History、Cancel 回归；Preview 不写入，Generate 是有意的真实业务写入，外部 Seller 自动动作禁用；保留旧版入口与 LKG。
+5. **Promotion readiness dry-run**：实际读取 PR/CI/变更 SHA、依赖、Schema/配置差异、Smoke/回退路径；由 Sponsor 对产品接受与生产上线**分别确认**，未获确认不 Merge/Deploy。
+6. **Harvest**：记录手工操作数/Setup 与恢复摩擦、真实 E2E/兼容性证据、Sponsor 的 UI 反馈、失败/回滚能力与未决风险。Pilot 完成后再提议将方法升级为组织正式 Policy，优先更新本节与 Worktree Flow，避免新增重复规范或平台。
+
+**状态准则：** `Design Finalized / Runtime Not Verified / Pilot Not Complete / Production Not Authorized` 可同时成立。验收以可重复的 Mac mini 运行证据为准，不因本文合并、CI PASS、运行 mock 或完整测试列表而自动变成业务已验证。
+
 ## 15. Technical Contract Completeness & Drift Prevention (Pilot Patch)
 
 目标：防止 TRD 技术契约不足导致 Coding Agent 自行假设、跨模块集成失败或验收漂移；不以文档长度、文件数量或新增审批为指标。保留 §2、§6、§7 的权威与比例原则。
