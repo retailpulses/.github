@@ -141,11 +141,11 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 
 **Proportionality**：小 Bug Fix/低风险 UI Patch 可在一个实现 PR 中同步修订 Design，无需单独 Design PR 或可运行原型；重大 New Feature、跨系统变更、复杂 Operator UI 推荐先 Review Design PR/Prototype，再启动大规模编码。上述为工作顺序与可追溯性约定，**不是六道强制 Gate**。
 
-### 14.2 Low-friction Experiment-to-Production — Optional Sandbox, Minimal Recovery（Pilot Design，2026-10-31）
+### 14.2 Low-friction Experiment-to-Production — Optional Sandbox & Last Good Version Registry（Pilot Design，2026-10-31）
 
 **Status: Sponsor-approved design direction / Pilot implementation pending; not an organization-wide mandatory gate.** [Engineering #77](https://github.com/retailpulses/.github/issues/77) 为方法论与证据入口，[StoreOps #260](https://github.com/retailpulses/store-ops/issues/260) 为首个功能 Pilot。现有 Product Design、§§14/14.1、[Worktree Development Flow](../docs/worktree-development-flow.md) 和受控生产发布规则仍有效。
 
-**优先级：低摩擦开发与迭代 → 真实功能体验 → 简单可靠的发布 → 最低限度恢复保障。** **不将 Rollback/LKG 建设为核心工程投资或所有发布的硬性 Gate。** Sandbox 是按需的非生产运行环境，不是强制步骤；不为本 Pilot 建设通用 Sandbox Platform、复杂回滚系统、Artifact Registry、自动部署切换器或统一 Recovery Orchestrator。
+**优先级：低摩擦开发与迭代 → 真实功能体验 → 简单可靠的发布 → 最低限度恢复保障。** **只保留简易 Last Good Version Registry；不将 Rollback 建设为核心工程投资或所有发布的硬性 Gate。** Sandbox 是按需的非生产运行环境，不是强制步骤；不为本 Pilot 建设通用 Sandbox Platform、复杂回滚系统、Artifact Registry、自动部署切换器或统一 Recovery Orchestrator。
 
 | 情境 | 最小工作流 |
 | --- | --- |
@@ -154,13 +154,15 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 | 技术 POC | 局部实验运行或 Fixture，清楚标注其不能证明完整 E2E |
 | 不兼容 Schema、外部不可逆写入、高价值数据变更 | 按实际风险补充兼容性检查、合理备份与恢复步骤；必要时加强隔离，不默认全量复制或通用平台 |
 
-**最低限度恢复保障（Not a Rollback Project）：** 正式发布时记录当前正在运行的应用 Commit/版本及原有启动方式；能利用现有 Git Checkout/Release/部署脚本恢复上一可用代码即可。保留必要的启动配置引用和一条简短的恢复说明；部署后检查主要页面/功能是否可用。**不要求**每次保存独立构建产物、额外 Artifact digest/Registry、做恢复启动演练、实现一键回滚、以 `ROLLBACK VERIFIED` 作为 PR/发布门槛。若现有方式无法恢复，可如实记录风险；只有发生明显业务影响或实际事故，再决定是否投入专门工程。
+**Last Good Version Registry（唯一轻量恢复要求，不是新平台）：** 复用现有 [Mac mini Runtime Registry](../infrastructure/mac-mini/runtime-inventory.yaml)；不创建第二个 Release/Recovery Registry。每个运行服务在**已部署且基本 Smoke 通过后**，可在其原有 Runtime 条目增加/更新最小 `last_good` 指针：`commit_sha`、`verified_at`（JST/带时区时间）及 `smoke_evidence`（Issue/Run/URL 引用）。现有 `launch_label`、`entrypoint`、`working_directory` 和 `launch_config` 等字段直接复用，不重复存储。**`git_commit` 或 GitHub main HEAD 不自动等于 last_good**；尚无现场验证证据时保持 `UNKNOWN`/空，不捏造版本。更新新版本前先保留旧的 Last Good；新版本 Smoke 成功才推进指针，失败则仍指向之前可用的版本。优先由当前 Runtime Owner/部署 Agent 顺带维护，**不设新服务、数据库、CI Gate、自动 Rollback 或 Registry 管理平台**。
+
+版本 Registry 只能帮助**定位旧代码**，并非恢复成功证明。若有故障，优先复用现有 Git Checkout/部署脚本与启动配置恢复旧版应用；兼容性不允许时采用最小前向修复。**不要求**每次额外生成 Artifact、维护复杂依赖快照或做回滚演练。发布成功时记录版本 + 简单 Smoke 即可；如无法确定可用版本，标记 `UNKNOWN`，由本地 Agent 调查，而不是因此建设回滚系统。
 
 **共享数据与 To-Be Schema：** 实验的是应用版本，不自动意味着业务数据必须隔离。#260 可让新旧应用共享现有 SQLite / Local Supabase；人工明确触发的 Generate 是真实持久化的 GENERATED/Job/History 业务记录，不加 Sandbox/Production 数据字段，也不需要数据转正。What-if Preview 无持久化副作用；没有授权不得自动 Seller 上传、修改订单/库存/价格、发送消息或启动额外 Scheduler。需要 Schema 调整时优先提前把共享业务库改为**向后兼容的 To-Be Schema**，但要先核实旧应用兼容性与正常 DB 备份，使用现有受控变更流程。**应用代码回退不能撤销已产生的合法业务记录**；绝不以旧库快照覆盖新业务数据。若变更破坏旧版兼容性，先解决兼容性再实施。
 
 **轻量 Sandbox 的实际边界：** 独立 Branch/Worktree、非生产进程/端口/URL、可见源码版本；继续复用 Mac mini、现有 DB、受控 Credential 与 Tailscale，**不得**替换正在运行的生产进程或把 Feature Branch 直接部署为 Production（Production `main` only）。检查旧版/新版对共享 Ledger、Runner、去重、Latest Job/下载和 SQLite 锁的兼容性；只在查出真实风险时增加隔离或小范围修复。不默认 Docker、Capability Layer、单独 Sandbox SQLite/Postgres Sink、新 Secret Manager 或通用 CLI。
 
-**Mac mini Agent Handoff / Pilot 验收（非额外审批流水线）：** 先核实实际生产 Runtime/版本/启动方式与数据库/Job 读写；复用既有部署和启动方式启动 #260 新版独立服务；测试真实 CSV 上传 → Segmented Pricing/Soft Cap → 只读 What-if → 明确 Generate → Download/History，覆盖既有 Cancel 回归；验证旧版仍正常、无未经授权外部动作。记录 Sponsor 反馈、手工 Setup 步骤、代码 SHA/URL、CI/Smoke、存在的兼容性风险，产品接受后再按现有规则决定合并和生产发布。**未在 Mac mini 实测时标为 NOT VERIFIED，不把静态文档/CI PASS 冒充运行验收。**
+**Mac mini Agent Handoff / Pilot 验收（非额外审批流水线）：** 先核实实际生产 Runtime/版本/启动方式与数据库/Job 读写，以及 Runtime Registry 内 Last Good 是否为已验证值（否则维持 UNKNOWN）；复用既有部署和启动方式启动 #260 新版独立服务；测试真实 CSV 上传 → Segmented Pricing/Soft Cap → 只读 What-if → 明确 Generate → Download/History，覆盖既有 Cancel 回归；验证旧版仍正常、无未经授权外部动作。记录 Sponsor 反馈、手工 Setup 步骤、代码 SHA/URL、CI/Smoke、存在的兼容性风险，产品接受后再按现有规则决定合并和生产发布。**未在 Mac mini 实测时标为 NOT VERIFIED，不把静态文档/CI PASS 冒充运行验收。**
 
 ## 15. Technical Contract Completeness & Drift Prevention (Pilot Patch)
 
