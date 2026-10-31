@@ -141,35 +141,32 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 
 **Proportionality**：小 Bug Fix/低风险 UI Patch 可在一个实现 PR 中同步修订 Design，无需单独 Design PR 或可运行原型；重大 New Feature、跨系统变更、复杂 Operator UI 推荐先 Review Design PR/Prototype，再启动大规模编码。上述为工作顺序与可追溯性约定，**不是六道强制 Gate**。
 
-### 14.2 Lightweight Functional Sandbox Pilot — 未合并 main 的真实功能试用（2026-10-31）
+### 14.2 Lightweight Experiment Runtime & Shared To-Be Data — Pilot（2026-10-31）
 
-**Status: Proposal / Pilot (Engineering [#77](https://github.com/retailpulses/.github/issues/77), StoreOps [#260](https://github.com/retailpulses/store-ops/issues/260)); not organization-wide policy or a new approval gate.** 此节是 §14/§14.1 的试点补充，不取代 Product Design、正式发布流程或 §13.1 交互原型。
+**Status: Proposal / Pilot, not an organization-wide mandatory gate.** 试点 Owner：[Engineering #77](https://github.com/retailpulses/.github/issues/77)；实际产品：[StoreOps #260](https://github.com/retailpulses/store-ops/issues/260)。本节补充 §14/§14.1，不代替 Product Design、Production Release Governance 或 UI Stage A/B。
 
-**核心原则：Near-zero Setup Cost；隔离副作用，而非默认隔离所有数据。** 重大新功能可以在独立 Git Branch/Worktree 中实现，并于合并 `main` 前在真实 Runtime 中让 Sponsor 操作、验证和迭代。可运行 ≠ Product Accepted ≠ Merged ≠ Production Deployed。已部署的生产服务、业务状态及外部动作必须保持原状。
+**North Star：Near-zero Setup Cost + Near-zero Promotion Cost。** 对大的 UI / 业务算法改版，可先在独立 Branch/Worktree 和可运行的非生产应用进程中操作真实功能，在 Sponsor 接受前不必 merge `main`。**Sandbox 不是数据环境的同义词**；按产品决定共享哪些真实数据库、运行哪些组件、哪些行为需要额外保护。
 
-**默认策略（依具体产品事实调整）：**
+**两种彼此独立的判断：**
+1. **功能范围**：Full Application（新旧版本并行，真实 UI + Backend）或 Isolated Feature（只验证局部能力）；低风险变更也可不启用 Sandbox。
+2. **数据与副作用**：优先复用现有 Canonical DB 和有权限的真实读写路径；仅在具体数据兼容性、未授权外部副作用、权限或破坏性迁移风险不能低成本解决时才升级隔离。不要以“实验代码”自动推导“实验数据”。
 
-| 资产 / 访问 | 轻量 Sandbox 默认 |
+| 关注对象 | Pilot 默认取向 |
 | --- | --- |
-| 应用代码与进程 | 独立 Worktree/非生产进程与端口；验证路由、Cookie/Session、临时文件和运行 SHA；不替换生产进程 |
-| 产品、SKU、成本、库存、历史订单等参考事实 | 在既有权限与隐私边界内共享**真正受限的只读**数据或可信快照，不默认复制整库 |
-| 实验操作/Generated/Job Ledger/Outputs | 仅写入独立轻量测试存储，必要时使用独立 schema 或实例；禁止回退到生产默认路径 |
-| Schema/Migration 实验 | 影响共享结构或写入契约时升级隔离；不得迁移生产库作为试验步骤 |
-| Scheduler / External API | 默认关闭自动任务和真实价格、库存、订单、消息、发货、Seller 上传等外部副作用；需要 Mock/Dry Run 时明确边界 |
-| Credential | **Configure Once, Reuse Across Sandboxes**：复用已有授权 Runtime Profile 与网络路径，按权限而非 Branch 授权；不得在 Git 内保存秘密、向实验环境暴露高权限 Service Role |
-| 基础设施 | 优先 Mac mini / Local Supabase / 原生数据库客户端；无须默认 Docker、整库复制、Capability Layer、通用 CLI 或新 Credential Platform |
+| Code / Runtime | 分支、Worktree、进程、端口和有效 SHA 独立；原有生产代码/进程/路由保持稳定 |
+| Canonical SQLite / Local Supabase | **按产品业务授权共享真实数据，包括合法 Generate 写入**；不默认复制数据库、建立独立 SQLite/Sink、增加 sandbox/prod 数据标签 |
+| What-if / Preview | 无持久化副作用、可重复对照；与明确的 Generate/Save 动作区分 |
+| Schema / Migration | 若新版确实需要，**可先把现有共享数据库迁至 To-Be Schema**；先核实旧版兼容性、并发读写、备份/恢复及实际迁移 Owner；优先 expand-first/backward-compatible migration，未经控制不可删除旧版所需列或改变旧版依赖的语义 |
+| Generated / Ledger / History | 真实业务结果可直接保留为正式历史，不做“实验结果转正”迁移；验证旧版查询、唯一键/去重、任务选择和 Runner 不误判 |
+| 外部副作用 | 禁止未经授权的 Seller 上传、消息发送、订单/库存/价格修改、后台 Scheduler；新功能运行不等于允许外部业务变更 |
+| Credential / Runtime Profile | Configure Once, Reuse；按读写权限与用途授权而非按 Branch 复制 Secret，不向无关进程扩散超权 Credential |
+| Infrastructure | 优先 Mac mini、现有 Local Supabase、网络与原生客户端；不强制 Docker、Capability Layer、整库复制、通用 CLI 或 Secrets Platform |
 
-只读必须有**数据库角色 / RLS / 受限 API / 等效可验证权限**，而非仅应用设置 `readOnly=true`、事务只读或隐藏按钮。读写混合连接必须分离；存在高权限共享凭据时，Sandbox 应在启动前 fail closed，不能为了便利沿用生产超权凭据。禁用外发也需在所有代码路径、Job/Queue 和实际网络/账号权限中验证。
+**安全与兼容底线：** `readOnly=true` 不能代替数据库权限；但对于被明确允许记录真实业务数据的 Generate，也不应把仅允许 SELECT 的凭据强加到写入链路。必须核实并区分实际 Reader / Authorized Writer、出站业务动作、Scheduler、Session/Token、旧版 UI/Runner 的状态选择以及并行访问 SQLite 的锁定、迁移及 WAL 行为。**共享数据不等于允许任何实验代码随意写库**。
 
-**实施顺序（不是固定六道审批关卡）：** 
-1. 先审查当前生产与 Branch 的 Runtime/数据库连接、Credential 来源及权限、写入/调度/外部调用、Worktree 与 Port/Session 冲突；事实不明标 UNKNOWN。
-2. 只构建**最小需要**的进程、配置注入和写入隔离；支持跨 Sandbox 复用一次配置。理想的 `rp sandbox start store-ops --branch feature/260` 只是目标体验，**不是现有命令，也非 Pilot 必需的新 CLI**。
-3. 验证真实浏览器 E2E、可重建/安全停止、生产前后不变、第二个 Sandbox 不要求重复人工配 Key；记录入口、Commit SHA、数据/写入目标、PASS/FAIL/BLOCKED/NOT RUN。
-4. 反馈 Harvest 回所属产品 Design / TRD / Test Catalog 与 Issue；Sponsor 决定接受、继续、暂停或放弃。仅接受后再由现有 PR/发布治理决定正式合并和生产部署。
+**推荐 Pilot 顺序**：当前 Runtime/有效 SHA/业务数据库与 Writer/Runner 只读审计 → 确认新旧版数据契约兼容（尤其唯一键、最新记录、去重与 Runner）→ 若需要先做有备份/可恢复路径且兼容的 To-Be Migration → 启动独立 Feature Branch Runtime → 真实 Browser Preview（只读）/受控 Generate（真实持久化）/Download → 对照旧版与外部动作无异常 → Sponsor 体验/迭代 → 合并与生产部署依既有授权和 CI/CD，最终 Runtime 验证。
 
-**比例原则：** 如实验仅需只读参考数据 + 本地 Generated CSV，可优先复用当前业务库的只读视图与独立 SQLite/输出目录；不能为了完整 E2E 而无差别地复制所有 Order/Inquiry/Ticket。若实验必须测试独立 Postgres 写入、迁移或读写一致性，应据实选择独立 schema/database/instance 并明确覆盖限制。任何降低 Setup Cost 的优化都不能削弱生产数据、外部动作及秘密的安全隔离。
-
-**Pilot 完成才评估推广：** 参考 [#77](https://github.com/retailpulses/.github/issues/77) 的复用成本、启动/停止与恢复、真实使用效果及零非预期生产副作用证据，必要时最小化修订本节和 [Worktree Development Flow](../docs/worktree-development-flow.md)，不提前建设通用 Sandbox Platform。
+**Promotion / Harvest：** 产品接受、PR 合并、生产部署与业务生效分别记录；真实业务数据保留在现有存储，**推广代码与发布产物，不是复制/迁移 Sandbox 数据**。若 To-Be Schema 已提前部署，Rollback 必须考虑旧版继续兼容以及 Schema 可能不能无损回退。记录 Setup 时间、需要的兼容性修复、业务反馈与发布 Readback；基于 #77/#260 试验再决定是否正式推广规范。
 
 ## 15. Technical Contract Completeness & Drift Prevention (Pilot Patch)
 
