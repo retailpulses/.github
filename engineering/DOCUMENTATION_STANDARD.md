@@ -128,6 +128,19 @@ POC 的最小记录为 **Hypothesis / Method / Result / Limitations / Design imp
 
 组织级配套入口：[Engineering Principles](ENGINEERING_PRINCIPLES.md)、[Architecture Review Guide](ARCHITECTURE_REVIEW_GUIDE.md)。文档以最小可理解集合起步，只有阅读、协作、复用或审计需求证明必要时才拆分；不得以模板创建文件数量作为完成标准。
 
+### 14.1 Existing-product Change Request → Design Baseline → Agent Sprint (Pilot clarification, 2026-10-31)
+
+**Scope**：持续迭代产品的 New Feature、Change Request 和重要 UI 改动；沿用 §§2–9、§13–16 的权威与证据规则。**不新增独立 Sprint Design Authority、固定审批阶段或必填文件树。**
+
+1. **Discover / discuss**：用现有 Issue 或 Analysis 记录 Operator Problem、As-Is、候选方案、影响范围、未验证事实与讨论。建议不等于批准；关键产品取舍保留 Sponsor Decision 来源。
+2. **Confirm decisions / update To-Be**：业务目标、Scope、Workflow、规则及可观察验收确定后，**在实质依赖性开发前**将有效决策合入现有 Product Design（Requirement ID）；按影响同步 Architecture、TRD/Contracts、Test Catalog。阻断核心业务正确性的未知事实需核实或明确批准安全降级。非阻断 Open Questions 可以保留。
+3. **UI change handling**：新核心 UI 或重大旧 UI 改造按 §13 / §13.1 Pilot 采用 Wireframe →（按风险）Interactive Prototype；明确 Existing → Target UI Diff、默认状态、操作、反馈、异常/恢复、视口和 Requirement ID。记录 Reviewed SHA、Exploratory / Sponsor Review / Approved 状态。原型中的 Mock、Fixture、Debug/验证文案不得混入 Operator UI。Prototype 是从属交互参考，Product Design 仍是业务行为权威。
+4. **Sprint handoff**：以**Implementation/Sprint Issue 为任务入口**，引用已确认的 Design Baseline（路径、章节/Requirement IDs、commit SHA）、Architecture、TRD、UI Spec/Prototype、Test IDs、Current State、组织标准。Issue 只写本次目标、In/Out Scope、Current → Target Delta、约束、依赖、验收、交付，不复制完整设计或变成第二套 Living Design。可采用 [Existing Product Change / Sprint Issue Template](../.github/ISSUE_TEMPLATE/existing-product-change.md)。
+5. **Agent execution**：Agent 先读 README/AGENTS 和上述权威，检查 As-Is vs To-Be、代码/测试/Runtime 事实及复用资产；冲突或新增业务取舍回报 Sponsor，不静默采用旧 Issue、未批准原型或当前代码作为新设计。工程细节按已批准契约实施。
+6. **PR reconciliation / verification**：产品行为、技术契约或 UI 发生实质变化时，同一 PR 同步权威文件或说明 N/A；按适用风险执行 Unit/Contract、浏览器 Functional + Visual + Operator Workflow，核对实际 UI 与批准 Prototype 的偏差，记录 PASS/FAIL/NOT RUN 和证据。Merged、Deployed、Runtime Verified、Business Verified 分开声明；运行事实仅在有证据后更新 Current State。
+
+**Proportionality**：小 Bug Fix/低风险 UI Patch 可在一个实现 PR 中同步修订 Design，无需单独 Design PR 或可运行原型；重大 New Feature、跨系统变更、复杂 Operator UI 推荐先 Review Design PR/Prototype，再启动大规模编码。上述为工作顺序与可追溯性约定，**不是六道强制 Gate**。
+
 ## 15. Technical Contract Completeness & Drift Prevention (Pilot Patch)
 
 目标：防止 TRD 技术契约不足导致 Coding Agent 自行假设、跨模块集成失败或验收漂移；不以文档长度、文件数量或新增审批为指标。保留 §2、§6、§7 的权威与比例原则。
