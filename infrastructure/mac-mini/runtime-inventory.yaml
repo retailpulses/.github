@@ -8,16 +8,22 @@ runtimes:
     product: StoreOPS Portal
     execution_mode: launchagent
     launch_label: com.retailpulses.mercari-local-ui
-    checkout_path: /Users/agent/work/store-ops-listing-runtime
-    entrypoint: "/Users/agent/Library/Application Support/Retailpulses/mercari-local-ui-launch.py"
-    working_directory: /Users/agent/work/commerce-lab-ui-runtime
+    checkout_path: /Users/agent/work/worktrees/npl-139-live-release-20261028
+    entrypoint: "/Users/agent/Library/Application Support/store-ops/npl-front-launch.py"
+    working_directory: /Users/agent/work/worktrees/npl-139-live-release-20261028
     listen: "127.0.0.1:8765"
     observed_routes:
       - path: /mercari/timesale
-        verification: HTTP 200 on 2026-10-25
+        verification: "2026-11-02: four Shop pages HTTP 200; existing history downloads independently match recorded SHA-256 (13 artifacts total). Read-only smoke; no Generate/Seller writes."
     launch_config: /Users/agent/Library/LaunchAgents/com.retailpulses.mercari-local-ui.plist
     git_commit: UNKNOWN
-    notes: "Launch chain uses store-ops-listing-runtime/apps/mercari/new-products-to-listing/mount_portal.py and STOREOPS_ROOT=/Users/agent/work/store-ops-timesale-runtime; interpreter is in commerce-lab/services/canonical-lab and working directory is commerce-lab-ui-runtime. That UI checkout has local modifications, so effective runtime commit is UNKNOWN. See workspaces.yaml."
+    last_good:
+      sha: 40004400ccb341bbaf418ce9accf679aab02f185
+      verified_at: "2026-11-02T02:29:40Z"
+      scope: "Time Sale provider only: /Users/agent/work/store-ops-runtime. Composite Portal SHA remains UNKNOWN."
+      evidence: "https://github.com/retailpulses/store-ops/issues/260#issuecomment-6567510616"
+      smoke: "Shop1-4 GET/history/download hash validation; read-only, not full Generate or Seller acceptance."
+    notes: "Observed PID 17590 started 2026-11-02 09:58:07 JST, after clean provider commit 4000440 at 09:58:02. npl-front-runtime.json selects store-ops-runtime as STOREOPS_ROOT; unchanged since 2026-10-28. Wrapper mounts customer-agent launcher plus commerce-lab-ui-runtime routing shim; no single composite SHA claimed. V2 uses a separate loopback process on 8875 in the existing codex/260-integration worktree; production 8765 was not switched."
   - id: mercari-operations-ui
     product: Mercari Operations
     execution_mode: launchagent
