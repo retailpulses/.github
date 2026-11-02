@@ -8,16 +8,22 @@ runtimes:
     product: StoreOPS Portal
     execution_mode: launchagent
     launch_label: com.retailpulses.mercari-local-ui
-    checkout_path: /Users/agent/work/store-ops-listing-runtime
-    entrypoint: "/Users/agent/Library/Application Support/Retailpulses/mercari-local-ui-launch.py"
-    working_directory: /Users/agent/work/commerce-lab-ui-runtime
+    checkout_path: /Users/agent/work/worktrees/npl-139-live-release-20261028
+    entrypoint: "/Users/agent/Library/Application Support/store-ops/npl-front-launch.py"
+    working_directory: /Users/agent/work/worktrees/npl-139-live-release-20261028
     listen: "127.0.0.1:8765"
     observed_routes:
       - path: /mercari/timesale
-        verification: HTTP 200 on 2026-10-25
+        verification: "2026-11-02: four Shop pages HTTP 200; real Preview/Generate/Download, CSV price/count parity, SQLite/PostgreSQL GENERATED, hashes, History and repeated binding PASS. No Seller writes."
     launch_config: /Users/agent/Library/LaunchAgents/com.retailpulses.mercari-local-ui.plist
     git_commit: UNKNOWN
-    notes: "Launch chain uses store-ops-listing-runtime/apps/mercari/new-products-to-listing/mount_portal.py and STOREOPS_ROOT=/Users/agent/work/store-ops-timesale-runtime; interpreter is in commerce-lab/services/canonical-lab and working directory is commerce-lab-ui-runtime. That UI checkout has local modifications, so effective runtime commit is UNKNOWN. See workspaces.yaml."
+    last_good:
+      sha: 3244017ca73695312096d71ce6fa2c580707e490
+      verified_at: "2026-11-02T03:47:00Z"
+      scope: "Time Sale provider only: /Users/agent/work/store-ops-runtime. Composite Portal SHA remains UNKNOWN."
+      evidence: "https://github.com/retailpulses/store-ops/issues/260#issuecomment-6568564052"
+      smoke: "Shop1-4 real Preview/Generate/Download/History/hash/retry PASS. All four production-generated SQLite actions report this provider SHA. No Seller upload/acceptance claim."
+    notes: "PR store-ops#268 squash merged and deployed to the existing clean store-ops-runtime provider. Existing LaunchAgent restarted; listener PID 25307 on 8765. Runtime JSON, launch config and routing hashes unchanged. Previous last_good 40004400ccb341bbaf418ce9accf679aab02f185 retained locally. Composite Portal SHA remains UNKNOWN. Production Shop4: 1165 Qualified, 1143 Failed, 1 separately reported sample; full four-Shop evidence in linked Sprint comment."
   - id: mercari-operations-ui
     product: Mercari Operations
     execution_mode: launchagent
