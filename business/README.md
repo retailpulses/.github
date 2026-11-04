@@ -7,6 +7,7 @@
 |---|---|---|
 | BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU1 / Product Family / Variant / Listing；Mercari/Rakuten platform identity；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
+| BUS-TRV-001 | [Suitcase Carry-on Eligibility](suitcase-carry-on-eligibility.md) | 航空公司/航班条件下的旅行箱尺寸判断与客户宣称；Product Center、Listing、Inquiry；Draft |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
 
 
