@@ -25,6 +25,29 @@ Avoid unqualified claims such as `機内持ち込み可能` based only on a gene
 
 Do not use package/carton dimensions, capacity (L), nominal S/M/L labels, or fabricated sentinel measurements as exterior baggage dimensions.
 
+## Verified deterministic size rules (2026-11-04)
+
+These rules are grounded in published ANA/JAL policies. They are **dimension-only** checks, not promises of boarding acceptance.
+
+| Rule ID | Applicability | Max individual sides (cm) | Max sum (cm) | Source |
+|---|---|---|---|---|
+| JP-DOM-100 | ANA/JAL domestic, aircraft with >=100 seats | 55 × 40 × 25 | 115 | [ANA domestic](https://www.ana.co.jp/ja/jp/guide/boarding-procedures/baggage/domestic/carry-rule/), [JAL domestic](https://www.jal.co.jp/jp/ja/dom/baggage/inflight/) |
+| JP-DOM-SMALL | ANA/JAL domestic, aircraft with <100 seats | 45 × 35 × 20 | 100 | Same official sources |
+| ANA-INT-115 | ANA-operated international flights under published standard carry-on policy | 55 × 40 × 25 | 115 | [ANA international](https://www.ana.co.jp/ja/jp/guide/boarding-procedures/baggage/international/carry-rule/) |
+
+**Comparison algorithm:** sort verified exterior side lengths descending, and compare against sorted maximum sides descending. PASS only if all three comparisons **and** the sum limit pass. An exceeded limit yields FAIL; missing/unverified values yield UNKNOWN. Include wheels, handles, pockets and protrusions. Do not round down measured values to force a PASS. For expandable luggage, evaluate the actual configured exterior dimensions; without expansion state return UNKNOWN if it can change the result.
+
+| Exterior sides (cm) | JP-DOM-100 | JP-DOM-SMALL |
+|---|---|---|
+| 54 × 38 × 23 | PASS | FAIL |
+| 55 × 40 × 25 | PASS | FAIL |
+| 56 × 35 × 20 | FAIL | FAIL |
+| 44 × 34 × 19 | PASS | PASS |
+
+**Additional published conditions (not SKU-level size checks):** ANA and JAL domestic published combined allowance is 10 kg for carry-on and personal item; ANA international likewise publishes 10 kg combined. Airline/operating-carrier, cabin storage, flight, and item-count conditions still apply. No universal international-airline threshold is asserted here.
+
+**Claim policy:** `PASS` authorizes only a qualified dimensional statement naming the evaluated rule, not an unconditional `機内持ち込み可能` badge. `FAIL` means outside the selected rule. `UNKNOWN` must not be rendered as PASS.
+
 ## Evaluation contract (proposed)
 1. Require verified exterior dimensions and policy context; if missing or contradictory return `UNKNOWN`.
 2. Compare **each** permitted side and total linear dimensions where the carrier specifies them; consider orientation only if policy permits.
