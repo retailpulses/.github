@@ -1,5 +1,5 @@
-# Canonical Product & Marketplace Identity (Draft)
-状态：Sponsor Review · 日期：2026-10-29
+# Canonical Product & Marketplace Model (Draft)
+状态：Sponsor Review · 日期：2026-10-30
 
 ## Retailpulses internal product identity
 | ID | Term | Definition / Boundary |
@@ -23,6 +23,53 @@
 - Mercari Product Group 的管理 ID、Category ID 和组内商品 ID 分别保存；同类目约束及商品数量上限按官方最新规则核验。
 - Rakuten Item / Child SKU 在可验证 RMS 官方资料前标 **PARTIALLY VERIFIED**；CSV 字段存在不等于官方语义和 Cardinality 已验证。
 - 类目与商品标题的更改不改变内部身份；发布前验证平台类目和具体目标。
+
+<a id="product-content-rules"></a>
+## 共享商品属性与媒体
+
+适用Canonical Copy、NPL、Product Center及Giga商品内容消费者；保留BUS-GIGA ID作为稳定引用。以下为共享规则草案，文档登记不代表运行时已实现。
+
+## 属性含义与显示规则
+
+### BUS-GIGA-COPY-004 — 同一商品属性只表达一次
+
+在同一Variant、同一属性范围内，color / main_color / Main Color / 色 / カラー经明确映射可表达同一个主色；Natural与ナチュラル表示相同值时只显示一项。**主色、包装色、配件色不是同一个属性**，不能因为都叫“颜色”而合并。
+
+同一规格重复出现在结构字段和正文时只合并该规格，不能连同同一段中的其他规格一起丢弃。来源出现互斥值时，按已有字段权威契约裁决；没有权威依据则标明具体冲突，不能擅定“最新记录”或“HTML优先”，也不能向买家同时断言两个互斥值。支持事实的来源仍须可追溯。
+
+### BUS-GIGA-COPY-005 — 日文属性保持原意
+
+面向日本买家的属性显示采用一致的日文含义。已核实示例：Natural→ナチュラル、Indoor→屋内用、Product Style→スタイル、Classic,Cute→クラシック,かわいい。Indoor不能扩成防水或户外能力，多值不能丢成一个值；品牌/型号/SKU保留其合法名称。
+
+本Draft提议Location标签为“使用場所”，待业务评审；未知词不能凭空补造事实译文。完整词表与转换代码由能力Owner维护，不在本文再建平行词库。
+
+### BUS-GIGA-COPY-006 — 商品尺寸与包装尺寸分开，轴向不得猜测
+
+尺寸包含数值、单位、对象和轴向；产品本体与包装、净重与毛重、SPU通用值与精确Variant值不能混用。800mm=80cm，但80mm不等于80cm；单位未知不能补cm。
+
+宽/深/高需要可信轴向依据，不能仅按内部字段名或数值大小推断。三值236/119/190且单位cm有来源、轴向未知时，按来源顺序表达“サイズ：236 × 119 × 190 cm”，不擅自重排或补宽深高。来源矛盾按具体事实保留和诊断。依据：[Lab #267](https://github.com/retailpulses/commerce-lab/issues/267)。
+
+## 图片适用与交付规则
+
+### BUS-GIGA-IMG-002 — 图片适用性以Variant为准
+
+**商品媒体归产品域，Listing仅记录发布位置；SPU共用图片保持一份资产，Variant通过适用关系引用。** 同一原图可以复用于多个Variant，但必须有通用图或对应Variant的适用依据；SPU同族或名称相近不能证明颜色/规格相符。Operator选图、排除和顺序代表商品展示决定；技术修复或生成交付图不得自行改变这些决定，不引入第二轮业务审批。
+
+### BUS-GIGA-IMG-005 — 大图形成可用交付图，保留原图
+
+**Sponsor于2026-10-30明确：超过10MB的图片必须压缩，上传Cloudflare R2并生成新URL；交付图默认尺寸为1600×1600。** 这是当前内部交付策略，不冒称Giga或全部平台的官方限制。目标平台有更严格约束时还须满足对应要求；不把这条理解为已上线。
+
+原图保留，压缩产物仍对应同一商品/Variant，不能改变颜色、文字事实或擅自裁掉商品信息。发布使用处理后的交付URL；不能因来源已经登记到Canonical就继续提交超限原URL。图片选择与顺序保持Operator决定。
+
+“10MB”执行时的精确字节定义、非正方形的保比例排版、较小原图是否放大、输出格式与压缩质量属于Owner TRD参数，须明确后验证；不得在实现中默默拉伸/裁切。R2 bucket、URL访问及处理脚本属于实现契约，不在business维护部署清单。实现缺口继续由[Store OPS #254](https://github.com/retailpulses/store-ops/issues/254)跟踪。
+
+发布衍生图默认1600×1600；原始/master资产保留原始分辨率，不强制缩成发布尺寸。有效的Giga外部来源可继续引用，不要求将全部来源图立即镜像到R2；超过10MB的处理仍遵循上述交付政策。
+
+### 标题表达与商品事实
+
+源标题是事实参考，不是生成标题的措辞约束。SEO关键词、词序、表达预算和A/B实验可以随产品策略演进，但不能改变属性事实或Variant适用性；标题变更不改变商品身份。产品生成、候选采用与发布流程由产品Design维护。
+
+优选代码入口见[GigaB2B Capability Registry](../references/giga/capability-registry.md#giga-content-preprocessing-assets)。本文定义共享语义，不以代码或设计参考替代正文规则；实现与部署状态由Owner记录。
 
 ## Sources
 - [Mercari API Reference](https://api.mercari-shops.com/docs/index.html)
