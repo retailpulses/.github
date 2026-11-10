@@ -18,6 +18,8 @@ Use this as the organization-level default. Repo-level guidance may add stricter
 
 This guide covers shared design and interaction principles.
 
+**Authority and precedence:** This file is the cross-product frontend baseline. For internal operator portals and operational workflows, [Product-grade Operator Experience Standard](../../engineering/PORTAL_UX_WORKFLOW_GUIDELINE.md) is the more specific source of truth for action semantics, feedback, recovery, workflow verification, and desktop operator acceptance. Follow both where compatible; on overlapping operator-UX requirements, apply the more specific Operator Standard. Repo-specific business and safety rules remain authoritative within their domains. Do not maintain competing detailed interaction prescriptions here.
+
 This guide does not replace:
 
 - repo-specific business rules
@@ -80,6 +82,8 @@ State messaging should tell the user:
 - what is happening
 - what succeeded or failed
 - what they can do next
+
+For immediate action feedback (including Copy, Download, Save, and Generate), use the canonical [UX-02a rule](../../engineering/PORTAL_UX_WORKFLOW_GUIDELINE.md#ux-02a-immediate-action-feedbackcopy--download--save-等) for operator interfaces; do not infer success from a click alone.
 
 ---
 
@@ -154,4 +158,5 @@ Before closing a frontend task, check:
 
 ## Version Log
 
+- 2026-11-10: Clarified scope/precedence with the operator UX standard; linked canonical immediate-action feedback behavior.
 - 2026-06-12: Initial shared frontend baseline created for cross-repo reuse.
