@@ -378,3 +378,34 @@ Do not create these prematurely. Wait until 2+ repos need the same pattern.
 ---
 
 *Update this document when deployment patterns evolve or new workflow families are added.*
+
+## 5. Self-hosted runner release readiness and queue incidents
+
+Production workflows that target self-hosted runners must preserve their approved runner group and labels. Do not change `runs-on`, relax group access, or bypass environment protection to make a queued release move.
+
+### 5.1 Before production dispatch
+
+The release operator checks the target workflow's `runs-on` labels and runner group, then confirms that at least one compatible runner is registered, online, not busy, and allowed for the repository/workflow. Record the observation time and source. A green CI job on another runner group is not evidence that the deployment group is available. Environment approval and concurrency are separate gates and must be checked separately.
+
+Runner inventory requires organization runner/group read permission. If the operator cannot inspect it, stop before dispatch and escalate to the engineering infrastructure owner; do not infer availability from a local Listener process or a prior successful run.
+
+### 5.2 Queue threshold and classification
+
+If a production job remains queued for **10 minutes**, investigate and notify the release owner. Record run/job IDs, requested labels, queue start time, runner assignment/group, environment pending-deployment state, concurrency group, and relevant check-run annotations.
+
+Classify evidence before changing configuration:
+
+- **Offline / communication:** compatible runner is offline, or check-run/log evidence reports lost server communication. Contact its host owner and inspect Listener, Worker, network, and service-manager state.
+- **Busy / capacity:** compatible runners are online but executing jobs. Identify those jobs and their owners; do not terminate them to free a slot.
+- **Label / group access:** no online runner is compatible, or repository/workflow access to the runner group is absent. Verify registration labels and group policy with an authorized group administrator.
+- **Environment approval:** a pending deployment is explicitly shown. Follow the existing environment reviewer gate.
+- **Concurrency:** identify the exact matching concurrency group and active run. Do not cancel or replace it without checking whether it has begun external side effects.
+- **GitHub service / network:** correlate runner diagnostics and host connectivity with the incident window and public GitHub status. A cancelled long-poll request alone is not proof of an outage.
+
+Do not restart a runner until its active Worker jobs and side effects have been inspected. Prefer the existing service manager and a controlled restart by the host owner. Do not delete/re-register a runner unless the failure evidence establishes stale registration or a damaged runner installation. After repair, verify that the existing queued job acquires a compatible runner; do not dispatch a duplicate deployment as a scheduling probe.
+
+### 5.3 Ownership, escalation, and release evidence
+
+The engineering infrastructure owner is accountable for runner-group availability and coordinates the host owner and release owner. Escalate immediately when no authorized operator can inspect the required group, when the runner reports lost communication, or when a production release remains blocked after the 10-minute threshold. Include the evidence and the next owner/action in the canonical incident issue.
+
+For each production target, record in the existing release issue/closeout: workflow run ID and URL, requested and deployed commit SHA, outcome, environment approval where applicable, production health/readback evidence with timestamp, and rollback reference. A completed workflow is not production verification; report any missing readback as unverified.
