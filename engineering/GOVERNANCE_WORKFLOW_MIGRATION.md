@@ -95,3 +95,20 @@ The frozen kit source was read at exact commit `3bdf3a5f37bc6308806793713320b4e9
 ### S0 disposition and remaining gates
 
 S0 is **PARTIAL**, not complete: repository heads, open PRs, selected code-search results, a current CatalogSync ruleset, and one recent-run sample are recorded. A complete live consumer/branch census, open-PR head scan, nested and dynamic `uses:`/checkout/installer/local-agent search, required contexts and environment settings, all consumer owners, runner/local-agent installation readback, and per-consumer rollback evidence remain outstanding. Do not use this partial inventory as proof of zero dependencies or archive readiness. No consumer migration is authorized by this central import.
+
+### S2 pilot candidate screen — live readback 2026-11-11 JST
+
+The candidate set was rechecked after opening PR A. **No currently evidenced qualifying active, non-production old-kit consumer was selected**, so PR B is not opened. The table records the reason and is not an authorization to change production consumers.
+
+| Candidate | Current default-branch evidence | Risk / pilot disposition |
+|---|---|---|
+| `retailpulses-tool-services` | HEAD `e09c357a9f61aad6a5181760120a7439909b6c1f` dated 2026-09-15; latest Actions sample is Governance Checks run `34949070046` on 2026-09-15; only open PR #7 is a POC last updated 2026-09-05. | Utility-only profile appears lower risk, but recent activity is not evidenced; **not eligible as an active pilot**. Recheck if work resumes. |
+| `homebliss-vpn` | HEAD `d1f1c49f1b0103229a6b8e7aa0ff6e0f89413963` on branch `feat/initial-implementation`; no Actions runs returned. | **Not active / UNKNOWN_BLOCKED**; no real run for pilot evidence. |
+| `boutique-listing` | HEAD `2424b7e0b38cc84e0a404bba555ce6847ec31237`; latest runs include successful Deploy runs `37620351582` and `37620323744` on 2026-10-07. | Has a production publishing/release path and historical broken kit checkout; **not a low-risk non-production pilot**. Preserve until its own fitness/required-context review. |
+| `RPagentOS` | HEAD `010e50038b681298e8655db2d9d509b2f21a53a7`; DB governance run `38254920015` is meaningful failure evidence; production recovery workflows ran on 2026-10-11. | Real DB MUST protection and production recovery path; **not a low-risk pilot**. |
+| `OrderMgmt` | HEAD `7eef5ed7dfa00ba22a6cc31e1430058838445f6c` dated 2026-11-11; active deploy API/relay/worker workflows; PR/database/governance runs on the same date. | Active, but order-management deployment and schema paths make this **production-sensitive**, not a low-risk pilot. |
+| `CatalogSync` | HEAD `4b118f453118a4ee862eaf836deed314b379b5c9`; required ruleset `23862538` requires `governance / Governance Checks`; deploy workflow and production VPS chain are present. | **Excluded** from pilot; preserve exact required context and production release contract. |
+| `inbox` | HEAD `af4658803e776e5805b60a254f2def43e8c6f658` dated 2026-11-10; latest Actions samples are Project 3 Event Intake canaries on 2026-10-20; old-kit post-deploy wrapper is `workflow_call`. | Active repository, but no actual wrapper caller was demonstrated; **not an evidenced active old-kit workflow consumer**. |
+| `commerce-ops` | HEAD advanced 2026-11-11 with open PRs; local governance is app-specific and no direct kit reusable workflow call is present in the workflow census. | Active, but adding a central required gate would violate its existing local safety boundary; **not eligible for a blanket pilot**. |
+
+PR A must be reviewed and merged before any pilot can pin its published merge SHA. B remains pending a future S0 refresh that identifies an active non-production consumer with an actual old-kit call, no production side effect, and a validated owner/required-context/revert path. Do not substitute a stale repo or create a new caller just to produce a green run.
