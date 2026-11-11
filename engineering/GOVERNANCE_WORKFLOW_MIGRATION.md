@@ -112,3 +112,43 @@ The candidate set was rechecked after opening PR A. **No currently evidenced qua
 | `commerce-ops` | HEAD advanced 2026-11-11 with open PRs; local governance is app-specific and no direct kit reusable workflow call is present in the workflow census. | Active, but adding a central required gate would violate its existing local safety boundary; **not eligible for a blanket pilot**. |
 
 PR A must be reviewed and merged before any pilot can pin its published merge SHA. B remains pending a future S0 refresh that identifies an active non-production consumer with an actual old-kit call, no production side effect, and a validated owner/required-context/revert path. Do not substitute a stale repo or create a new caller just to produce a green run.
+
+### Post-merge execution readback — 2026-11-11 JST
+
+PR [#92](https://github.com/retailpulses/.github/pull/92) is merged. GitHub resolves immutable central ref `16ddc55f89261ff00081cfd9940037bd517e1e1a`; `main` has advanced to `cbe24169b9e5d79a140cf343916229d96c08cdf6` since that merge. Focused installer hardening and comment cleanup are proposed in [PR #96](https://github.com/retailpulses/.github/pull/96); no consumer repository is changed.
+
+#### Installer hardening evidence
+
+- `bin/rp-governance-install` compares each target against generated content and refuses to replace changed existing files unless `--force` is supplied. `governance/local.yaml` and `docs/01_ARCHITECTURE.md` remain preserved. Planned changes are printed as a Git diff before any push/PR.
+- `.github/governance-managed.sha256` records hashes for central-managed installed entrypoints. Repeat runs validate the manifest, so post-install content drift invalidates the up-to-date result. Existing installs without this manifest are treated as needing review/upgrade; differing targets require explicit overwrite opt-in.
+- The local safety regression exercises fresh install, repeat/idempotence, customized-file collision, explicit upgrade, and checksum drift. Duplicate explanatory comments were removed from the central DB workflow.
+- Local results: installer shell syntax **PASS**; installer safety regression **PASS**; database governance fixture suite **5/5 PASS**; `git diff --check` **PASS**. No consumer install was run.
+
+#### Isolated S2 compatibility harness
+
+An ephemeral private repository `retailpulses/governance-compat-harness-20261111` was created solely for this test. Both fixture PRs were closed and their branches deleted after run readback. Repository deletion was attempted but GitHub returned HTTP 403 because the active token lacks `delete_repo`; no token scope was added. The repository remains private until an admin deletes it or grants that scope. Actions used default read-only token permissions; the harness contains no secrets, environments, deploy jobs, or write scopes. Its caller pinned the reusable workflow and `governance_ref` to `16ddc55f89261ff00081cfd9940037bd517e1e1a`.
+
+| Fixture | Run | Result | Evidence |
+|---|---:|---|---|
+| Docs-only positive PR #1 | `42953518883` | **PASS** — BLOCKING, PRODUCTION_GATE, ADVISORY jobs all passed | [Actions run](https://github.com/retailpulses/governance-compat-harness-20261111/actions/runs/42953518883) |
+| Deliberately malformed migration PR #2 | `42953578004` | **EXPECTED FAIL** — BLOCKING rejected the migration filename and missing governance docs; the other jobs completed successfully | [Actions run](https://github.com/retailpulses/governance-compat-harness-20261111/actions/runs/42953578004) |
+
+This proves an isolated reusable-workflow caller and expected blocking semantics for the pinned database workflow. It does not establish any consumer's branch rules, deployment contract, or migration-path coverage. The temporary harness PRs are not to be merged.
+
+#### S0 refresh and remaining classification
+
+The refreshed organization code search for `rp-governance-kit` (2026-11-11) still shows default-branch references across `.github`, RPagentOS, commerce-ops, CatalogSync, inbox, boutique-listing, retailpulses-tool-services, OrderMgmt, and homebliss-vpn. Results include executable files, local tool copies, and historical documentation; GitHub code search is bounded and does not resolve dynamic/external callers or all open-PR heads. Therefore S0 remains **PARTIAL**.
+
+| Surface | Current disposition | Evidence / limit |
+|---|---|---|
+| CatalogSync governance | **KEEP_AND_MIGRATE / protection-sensitive** | Live ruleset `23862538` is active and requires exact `governance / Governance Checks`; preserve that context. VPS production release chain is excluded from this follow-up. |
+| RPagentOS database checks | **KEEP_AND_MIGRATE / production-sensitive** | Prior run `38254920015` shows meaningful migration-policy rejection; production recovery and migration workflows remain untouched. |
+| OrderMgmt | **KEEP / production-sensitive pending owner review** | Active API/relay/worker deployment workflows and same-day DB/governance runs; no cutover proposed. |
+| boutique-listing | **UNKNOWN_BLOCKED / preserve** | Production deploy runs exist; historical governance checkout failures need product-owner review before replacement. |
+| retailpulses-tool-services | **UNKNOWN_BLOCKED** | Last observed default-branch activity/run is 2026-09-15; insufficient evidence of current active non-production use. |
+| homebliss-vpn | **UNKNOWN_BLOCKED** | Default branch remains `feat/initial-implementation`; no runs returned in prior live query. |
+| inbox post-deploy wrapper | **UNKNOWN_BLOCKED** | `workflow_call` wrapper present, but no caller was demonstrated; absence is not established. |
+| commerce-ops | **KEEP_LOCAL / no blanket central gate** | App-local governance remains product-owned; no universal gate was added. |
+| External callers, dynamic refs, local-agent runtime installs, full open-PR heads, most consumer rulesets/runners/environments | **UNKNOWN_BLOCKED** | Not exhaustively read back; requires owner/path-level census before kit retirement. |
+
+No consumer migration or required-context/ruleset change was made. Old kit retirement, #11 closure, and #44 closure are not ready. Keep both issues open until caller census, owner decisions, consumer rollback evidence, and release-chain review are complete. Next bounded action: exhaustive per-repository workflow/open-PR and local-agent caller census, preserving CatalogSync's required context and excluding production release writes.
