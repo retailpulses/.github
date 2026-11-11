@@ -34,16 +34,16 @@
 - 商品ステータス: `1` 非公開、`2` 公開。**建议首次受控试点用非公開，不将建议当平台强制要求。**
 - `メルカリBiz配送_クール区分` 等仅当对应配送方式需要；预售字段如発売日、予約受付开始/结束、キャンセル期限、お届け予定按条件出现，不能默认填造。
 
-## Shop4 / NPL 业务实现建议（尚未批准/实现）
-1. **入口**：NPL Variant/SPU1列表增加 `Shop4 → 批量导出 CSV`；使用现有共享 title、description、selected image order、shop boilerplate、price intent 和 Canonical commercial facts；不新建另一套内容库。
-2. **准备集**：选择仅 Shop4 缺口且 Seller SKU **查重已确认不存在**的目标；保留源 hash / versions / price / shop identity / intended status / operator selection，并将 UNKNOWN_OUTCOME 阻断重复创建。
-3. **适配层**：独立 `MercariCsvCreateAdapter`，消费与 GraphQL publisher 相同的冻结业务 snapshot，但输出官方 CSV 的字符串字段/枚举/图片 URL/filename；载入官方 template+masters version fixture，不重新编码 GraphQL JSON。
-4. **批次 UX**：展示 total / ready / draft-only / blocked 和逐行原因；Operator 一次显式确认批次，下载 `csv` + `manifest`（不额外强制复核已接受文案/图片）。CSV 只**生成文件**，不调用 Seller 发布 API。
-5. **上传/回读**：操作员在 Shop4 的 Seller PC Web 上传 CSV；导入完成后回读商品/SKU，与导出的 manifest 对齐，分别标记已创建、草稿、失败、重复、待核实；UNKNOWN 只能人工恢复/核查，不能盲重试。
-6. **加速目标**：优先处理 Shop4 的 HERO/NEW backlog，先导出有完整图片与类目的 20–50 条验收试批；再扩大批量（非平台限制），以成功 Seller 回读数量和减少的积压数衡量，不以生成 CSV 行数宣称完成。
-7. **兼容**：沿用现有 Shop4 price rules（含已批准的 9% bottom-line 特例），Canon 来源、类别人工选择、无成本非阻断但显式 warning 等现有 NPL Sponsor 决定；不引入另一套定价算法或双重审核。现行代码的严格门槛与设计批准差异须按 Current State 核对。
-8. **验收**：官方 header 精确 fixture、编码/日文换行、图片顺序/URL、1/10 SKU、价格边界、缺图/类目草稿、配送/运费组合、Shop4身份不符、Seller已存在、UNKNOWN_OUTCOME、重复导出、部分成功/7日证据保留、零自动 marketplace mutation。
+## Shop4 — Agent 利用现有 NPL 生成 CSV（Sponsor 2026-11-11 已明确）
 
-**Open for owner/sponsor:** Shop4 当下真实 CSV template/master 下载与身份验证；图像可用公链还是要先预上传；销售价格/库存 provenance；Seller 真实试点。实施任务应留在 store-ops GitHub Issue，设计/TRD/Current State 分开更新，不在本文件维护另一个 Sprint 状态。
+**不是新功能开发需求。** 规则登记仅负责 CSV 业务语义；不授权建设 exporter、修改 NPL UI/后端/SQLite/schema、部署发布流程或追加产品审批。实际交付使用一次性 Agent 读取现有 NPL/Canonical/Seller 数据，离线生成 CSV，交给运营者审核与人工上传。
+
+- 已有 NPL 共享 title、description、accepted images、按店铺渲染、价格/库存/分类字段及 Seller 查询能力；在**读权限允许且值真实可用**时直接复用，不重新生成内容、不覆盖人工修改。
+- Agent 下载当前官方模板与分类等 master，保留原始文件及版本；根据真实 header/编码做字段映射，不把 GraphQL payload 当 CSV schema。
+- 只筛选 Shop4 的真实缺口；对 Seller SKU 重复和 UNKNOWN_OUTCOME 做只读查重，不把本地未映射当不存在。
+- 一次性输出 `shop4_new_listings_YYYYMMDD.csv`、紧凑 `manifest.csv` 与不足条件清单；将有完整字段可导入商品与缺图/类别可存草稿商品分开，不伪造库存、类目、售价。
+- 校验官方格式、价格范围、日文字符编码、图片可访问性、SKU、店铺身份、当前运营策略；**没有人工确认不上传**。
+- 若缺现有环境访问权限或真实数据，报告具体阻断；不得生成虚构 CSV 或提出改造系统才能做。
+- 操作追踪以 [Store OPS #303](https://github.com/retailpulses/store-ops/issues/303) 为准；不在规范中维护额外实施计划。
 
 **Rule change governance:** 官方平台变更重新验证来源、修订 BUS-MER ID 及消费者测试；仅 Sponsor-approved 商业政策可改变公司内部运营规则。官方约束与商业决策分层，不把 Draft 当已经部署。
