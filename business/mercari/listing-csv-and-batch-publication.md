@@ -62,7 +62,7 @@
 | `SKU2`–`SKU10` 相应列 | 条件可选 | 多種類时使用；不可假定每个 SKU 单独定价 |
 | `ブランドID` | 可选 | 使用官方品牌 Master 的 ID，不用品牌文本 |
 | `販売価格` | 必填 | 300–9,999,999 日元；同商品所有 SKU 同价 |
-| `カテゴリID` | 正式注册必需 | 使用商品类别 Master 的 ID；缺失只能草稿，之后可在后台补齐 |
+| `カテゴリID` | 正式注册必需 | 必须使用**当前 Mercari 商品类别 Master 中存在的字符串 ID**。Shop4/NPL 生成时优先读取 Canonical/NPL category resolver 的当前 `canonical_presentation` / approved resolution；不得直接使用旧 `production.product_variants.mercari_category_id` 数字字段。缺失只能草稿，之后可在后台补齐 |
 | `商品の状態` | 必填 | 数字 1–6 |
 | `配送方法` | 必填 | 数字 1–6，Shop4 实际可用方式须核实 |
 | `発送元の地域` | 必填 | 都道府县官方代码，例如东京为 `jp13` |
