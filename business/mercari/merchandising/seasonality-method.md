@@ -13,6 +13,13 @@ Maintain three **distinct** outputs: (A) all-time cumulative revenue leaders, (B
 - Exclude name regex `手数料|追加料金|金額調整|送料差額` and codes `N00000000`, `RP004`; manually review fee/bundle/custom-order outliers. Treat zero/negative/missing quantity or price as data-quality exceptions rather than silently accepting them.
 - Scope is Mercari across four stores unless explicitly scoped. Shop3 is a separate business entity for company accounting and MUST NOT be blended into company revenue or margin. For commercial demand intelligence, combined marketplace observations may be shown with an explicit cross-entity label. Shop4-specific recommendations require shop mapping verification and a separate Shop4 calculation.
 
+## Corrected product identity and store linkage (2026-11-11)
+- The **required output keys** are `spu1 = product_spus.spu_code` and `item_code = product_variants.item_code`, joined from `sales_orders.b2b_item_code`. If unresolved, report the exception and do not invent a SPU1. Aggregate all variants to SPU1 for both Hero exclusion and seasonal rankings; include representative item_code(s) for operators.
+- **Shop4 store ID verified:** `2JMLHBxjiFHDr55jMwA7fs`. Use `sales_orders.source_store_id` as the historical filter. The optional `platform_account_id` is NULL on many Shop4 July–October rows; joining it as mandatory causes material data loss.
+- **Strict JST cutoff:** `(purchase_date AT TIME ZONE 'Asia/Tokyo')::date < DATE '2026-11-01'`. The earlier raw timestamp cutoff can leak November 1 JST records into October coverage.
+- `platform_listings` cannot be assumed to resolve via `variant_id`; check mapping coverage and authoritative listing identity. No listing match = not execution-ready, not proof the product is delisted.
+- Candidate rank by monthly SPU1 revenue is only **historical monthly leaderboard**. Do not label a product 'seasonal' without validated relative lift and comparable periods.
+
 ## Ranking contracts
 1. **All-time revenue leaders:** rank by `gross_item_revenue DESC`, show units, distinct sales months, stores, date range. These are not automatically evergreen.
 2. **Evergreen Hero candidate:** preliminary deterministic rule `distinct_sales_months >= 8 AND total_units >= 20`. Record sales-month count and distribution. This is a candidate filter, **not** a proven stable-demand model; verify month-to-month concentration, listing availability, first/last active dates and recent momentum before approving as evergreen. Store-scoped hero set may differ from cross-store set.
