@@ -1,26 +1,333 @@
-# Mercari monthly Top-20 bestseller discovery — all available history
+# Mercari monthly Top-20 bestseller discovery — all four shops + consolidated
 
-**Updated 2026-11-11.** All available Mercari completed marketplace order lines up to 2026-10-31 **JST**; no artificial 2026 restriction for Shop4. Group by calendar month **across all years with observations**; shop4 identified by `source_store_id=2JMLHBxjiFHDr55jMwA7fs`. January/other months with no qualifying Shop4 sales stay empty, never filled artificially. Shop3 participates in cross-store demand only, not company accounting.
+As of 2026-11-11. All available historical completed Mercari marketplace sales through **2026-10-31 JST** (November 2026 incomplete). Four shops mapped from `platform_accounts` and aggregated using `sales_orders.source_store_id` to avoid dropping rows with missing `platform_account_id`. No artificial year restriction. Shop1 starts May 2024, Shop2 Jan 2025, Shop3 Dec 2025, Shop4 Feb 2026 in the observed qualifying order history. Shop3 contributes to demand intelligence only, **not** company revenue/P&L.
 
-**Business selection rule:** group variants at `product_spus.spu_code` (SPU1), keep representative highest-revenue `product_variants.item_code`, exclude all 25 cross-store provisional evergreen Hero SPU1s. Reject nonpositive quantities/revenue, fee/adjustment lines, and **SPU1s with fewer than 3 cumulative units in that calendar month across available years**. For each month/scope: first 10 eligible **revenue-ranked** SPU1s, then up to 10 *distinct additional* eligible **unit-ranked** SPU1s. If fewer than 20 meet the evidence threshold, show fewer rather than promote 1-unit sales. Revenue rank and unit rank are both shown; unit-ranked fill is not a claim of verified seasonal demand.
+**Ranking:** map item_code to canonical SPU1 using product_variants/product_spus, combine variants, exclude **25 cross-store evergreen Hero candidate SPU1s** (≥20 units, ≥8 distinct year-months), reject fee/adjustment and nonpositive sale lines, require **≥3 units per SPU1 per calendar month across available years**. Take top 10 by gross item revenue, fill remaining slots with *distinct* top unit-ranked products. Include both ranks. Do not invent candidates to reach 20. Revenue is gross proxy (price × quantity), not reconciled net sales. Representative item_code is highest-revenue variant, **not** a confirmed live listing.
 
-Revenue = `sum(product_price * quantity)`, gross historical proxy, **not finance-reconciled net revenue**. Hero set is historical preliminary (≥20 units and ≥8 distinct sale year-months); Shop4 may have fewer months of history than other stores. `Years` indicates number of distinct observed years for each SPU1 in that calendar month, not necessarily consecutive years. **Seasonality is not verified until normalized lift and multi-year comparable exposure are validated.**
+**Newsletter:** candidate pool is up to 20 SPU1s per shop-month, but each newsletter may promote **up to 10 live eligible listings**. Shop-specific listing, stock, current price, Effective TCOGS/margin, quota and approval checks are mandatory. This is historical bestseller candidate intelligence, **not yet validated seasonality lift**. Multi-year month coverage varies and must be normalized for actual seasonality conclusions. See [methodology](seasonality-method.md), [Hero exclusions](hero-products.md), [newsletter governance](../newsletter.md).
 
-Newsletter: each month's Top-20 is a candidate pool for up to **10 actual Shop4 live listings**, not 20 automatic newsletter placements. Require listing resolution, live stock, price, Effective TCOGS/margin and Campaign Service approval before scheduling. Sold-out products must be excluded at execution. See [seasonality method](seasonality-method.md), [Hero exclusions](hero-products.md), and [newsletter rules](../newsletter.md).
+## Shop1 — all available years
 
-## Shop4 — all available historical years
+### 1月 — 5 candidates
 
-### 1月 — 0 eligible SPU1s
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N509P291413` | `N509P291413E` | 4 | 40,056 | 1 | 1 | 1 |
+| 2 | Revenue | `WF320580` | `WF320580WAA` | 3 | 35,400 | 2 | 2 | 1 |
+| 3 | Revenue | `N515P170407` | `N515P170407N` | 3 | 26,133 | 3 | 3 | 1 |
+| 4 | Revenue | `N507P264589` | `N507P264589B` | 3 | 10,030 | 4 | 4 | 1 |
+| 5 | Revenue | `N512P232188` | `N512P232188G` | 3 | 7,938 | 5 | 5 | 1 |
 
-No qualifying historical SPU1 sales with ≥3 units.
+### 2月 — 4 candidates
 
-### 2月 — 0 eligible SPU1s
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `PP315133` | `PP315133AAA` | 3 | 42,345 | 1 | 2 | 1 |
+| 2 | Revenue | `N509P320510` | `N509P320510A` | 3 | 23,866 | 2 | 3 | 1 |
+| 3 | Revenue | `N510P293034G` | `N510P293034G` | 4 | 23,712 | 3 | 1 | 1 |
+| 4 | Revenue | `N509P336421` | `N509P336421B` | 3 | 7,065 | 4 | 4 | 1 |
 
-No qualifying historical SPU1 sales with ≥3 units.
+### 3月 — 3 candidates
 
-### 3月 — 5 eligible SPU1s
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N504P398914` | `N504P398914C` | 3 | 38,502 | 1 | 1 | 1 |
+| 2 | Revenue | `N504P398915` | `N504P398915Z` | 3 | 37,530 | 2 | 2 | 1 |
+| 3 | Revenue | `N507P264589` | `N507P264589A` | 3 | 5,100 | 3 | 3 | 1 |
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+### 4月 — 1 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P339216` | `N506P339216A` | 4 | 65,756 | 1 | 1 | 1 |
+
+### 5月 — 1 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P360600` | `N506P360600A` | 3 | 43,702 | 1 | 1 | 1 |
+
+### 6月 — 0 candidates
+
+No products meeting the ≥3-unit evidence floor.
+
+### 7月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P503228D` | `N506P503228D` | 3 | 50,202 | 1 | 1 | 1 |
+| 2 | Revenue | `MS306394` | `MS306394AAA` | 3 | 32,400 | 2 | 2 | 1 |
+
+### 8月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `WF326429` | `WF326429BAA` | 3 | 99,791 | 1 | 2 | 2 |
+| 2 | Revenue | `WF295662` | `WF295662DAA` | 6 | 58,980 | 2 | 1 | 1 |
+
+### 9月 — 6 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `ES324482` | `ES324482AAA` | 7 | 133,210 | 1 | 1 | 1 |
+| 2 | Revenue | `WF324486` | `WF324486BAA` | 3 | 51,040 | 2 | 3 | 1 |
+| 3 | Revenue | `PH313803CAA` | `PH313803CAA` | 3 | 34,290 | 3 | 4 | 1 |
+| 4 | Revenue | `WF297842AAA` | `WF297842AAA` | 3 | 22,950 | 4 | 5 | 1 |
+| 5 | Revenue | `WF292337` | `WF292337AAA` | 3 | 17,850 | 5 | 6 | 1 |
+| 6 | Revenue | `HOKKAIDO0611426` | `HOKKAIDO0611426` | 5 | 5,000 | 6 | 2 | 1 |
+
+### 10月 — 6 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P359769` | `N506P359769C` | 3 | 81,668 | 1 | 2 | 2 |
+| 2 | Revenue | `N506P339216` | `N506P339216D` | 3 | 47,820 | 2 | 3 | 1 |
+| 3 | Revenue | `TX289429` | `TX289429BAA` | 4 | 43,311 | 3 | 1 | 1 |
+| 4 | Revenue | `WF297842AAA` | `WF297842AAA` | 3 | 27,690 | 4 | 4 | 1 |
+| 5 | Revenue | `N504P415034` | `N504P415034T` | 3 | 15,300 | 5 | 5 | 1 |
+| 6 | Revenue | `N510P371973` | `N510P371973W` | 3 | 13,380 | 6 | 6 | 1 |
+
+### 11月 — 6 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `WF326433` | `WF326433AAA` | 3 | 111,577 | 1 | 2 | 1 |
+| 2 | Revenue | `ES324482` | `ES324482AAA` | 5 | 93,315 | 2 | 1 | 1 |
+| 3 | Revenue | `N511P336633` | `N511P336633W` | 3 | 28,480 | 3 | 3 | 1 |
+| 4 | Revenue | `TH197100` | `TH197100AAA` | 3 | 23,780 | 4 | 4 | 1 |
+| 5 | Revenue | `N512P232188` | `N512P232188G` | 3 | 10,610 | 5 | 5 | 1 |
+| 6 | Revenue | `N511P221569` | `N511P221569W` | 3 | 9,120 | 6 | 6 | 1 |
+
+### 12月 — 9 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N512P360687` | `N512P360687W` | 7 | 175,270 | 1 | 1 | 1 |
+| 2 | Revenue | `WF319897` | `WF319897CAA` | 3 | 136,912 | 2 | 6 | 2 |
+| 3 | Revenue | `WF326429` | `WF326429AAA` | 4 | 131,180 | 3 | 4 | 1 |
+| 4 | Revenue | `N508P194679` | `N508P194679A` | 7 | 125,457 | 4 | 2 | 2 |
+| 5 | Revenue | `WF326433` | `WF326433BAA` | 3 | 98,876 | 5 | 7 | 2 |
+| 6 | Revenue | `WF309175` | `WF309175AAA` | 3 | 51,784 | 6 | 8 | 1 |
+| 7 | Revenue | `TX289429` | `TX289429BAA` | 3 | 29,703 | 7 | 9 | 2 |
+| 8 | Revenue | `N509P210958A` | `N509P210958A` | 5 | 24,225 | 8 | 3 | 1 |
+| 9 | Revenue | `N512P232188` | `N512P232188G` | 4 | 10,785 | 9 | 5 | 1 |
+
+## Shop2 — all available years
+
+### 1月 — 6 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P255944` | `N506P255944A` | 4 | 88,109 | 1 | 3 | 1 |
+| 2 | Revenue | `N512P304773` | `N512P304773W` | 5 | 33,334 | 2 | 2 | 1 |
+| 3 | Revenue | `N512P295133B` | `N512P295133B` | 3 | 29,995 | 3 | 4 | 1 |
+| 4 | Revenue | `N515P252400` | `N515P252400W` | 3 | 28,942 | 4 | 5 | 1 |
+| 5 | Revenue | `N510P254487P` | `N510P254487P` | 6 | 25,134 | 5 | 1 | 1 |
+| 6 | Revenue | `N0000000000` | `N0000000000` | 3 | 20,500 | 6 | 6 | 1 |
+
+### 2月 — 4 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N510P16798` | `N510P167986` | 4 | 35,796 | 1 | 3 | 2 |
+| 2 | Revenue | `N510P293034G` | `N510P293034G` | 5 | 29,034 | 2 | 1 | 1 |
+| 3 | Revenue | `N515P266079` | `N515P266079S` | 5 | 20,220 | 3 | 2 | 1 |
+| 4 | Revenue | `N512P304772` | `N512P304772W` | 3 | 19,736 | 4 | 4 | 1 |
+
+### 3月 — 7 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N504P384911` | `N504P384911A` | 4 | 55,880 | 1 | 2 | 1 |
+| 2 | Revenue | `N509P304376` | `N509P304376A` | 3 | 51,528 | 2 | 5 | 1 |
+| 3 | Revenue | `N508P320628` | `N508P320628A` | 4 | 33,128 | 3 | 3 | 1 |
+| 4 | Revenue | `N509P276931` | `N509P276931C` | 5 | 24,276 | 4 | 1 | 1 |
+| 5 | Revenue | `WF291562` | `WF291562CAA` | 4 | 23,640 | 5 | 4 | 1 |
+| 6 | Revenue | `N509P317043` | `N509P317043A` | 3 | 22,601 | 6 | 6 | 1 |
+| 7 | Revenue | `PP315895` | `PP315895NAA` | 3 | 17,139 | 7 | 7 | 1 |
+
+### 4月 — 4 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `PP315895` | `PP315895AAA` | 3 | 17,522 | 1 | 1 | 1 |
+| 2 | Revenue | `N508P394171` | `N508P394171C` | 3 | 17,071 | 2 | 2 | 1 |
+| 3 | Revenue | `N504P180006` | `N504P180006W` | 3 | 15,066 | 3 | 3 | 1 |
+| 4 | Revenue | `N0000000000` | `N0000000000` | 3 | 1,800 | 4 | 4 | 1 |
+
+### 5月 — 0 candidates
+
+No products meeting the ≥3-unit evidence floor.
+
+### 6月 — 1 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N509P176640` | `N509P176640K` | 3 | 68,495 | 1 | 1 | 2 |
+
+### 7月 — 0 candidates
+
+No products meeting the ≥3-unit evidence floor.
+
+### 8月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N508P308768` | `N508P308768G` | 4 | 50,820 | 1 | 1 | 1 |
+| 2 | Revenue | `WF296359` | `WF296359BAA` | 3 | 38,259 | 2 | 2 | 1 |
+
+### 9月 — 6 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `WF303355` | `WF303355AAA` | 5 | 97,760 | 1 | 1 | 1 |
+| 2 | Revenue | `N508P291699` | `N508P291699K` | 3 | 31,530 | 2 | 3 | 1 |
+| 3 | Revenue | `MX317937` | `MX317937AAA` | 3 | 23,820 | 3 | 4 | 1 |
+| 4 | Revenue | `N504P335428` | `N504P335428W` | 3 | 23,650 | 4 | 5 | 1 |
+| 5 | Revenue | `PP309928` | `PP309928GAA` | 4 | 20,502 | 5 | 2 | 2 |
+| 6 | Revenue | `hokkaido900` | `hokkaido900` | 3 | 2,880 | 6 | 6 | 1 |
+
+### 10月 — 6 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `TX295749` | `TX295749CAA` | 4 | 32,756 | 1 | 1 | 1 |
+| 2 | Revenue | `N515P416432` | `N515P416432C` | 3 | 31,960 | 2 | 4 | 1 |
+| 3 | Revenue | `W6360P546830` | `W6360P546830` | 4 | 22,400 | 3 | 2 | 1 |
+| 4 | Revenue | `N510P293821` | `N510P293821W` | 4 | 15,627 | 4 | 3 | 1 |
+| 5 | Revenue | `TX299555` | `TX299555AAA` | 3 | 14,631 | 5 | 5 | 1 |
+| 6 | Revenue | `N510P371976` | `N510P371976W` | 3 | 12,890 | 6 | 6 | 1 |
+
+### 11月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N512P295132` | `N512P295132W` | 4 | 52,212 | 1 | 1 | 1 |
+| 2 | Revenue | `N512P295132B` | `N512P295132B` | 3 | 28,900 | 2 | 2 | 1 |
+
+### 12月 — 10 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N510P254487O` | `N510P254487O` | 13 | 59,090 | 1 | 1 | 1 |
+| 2 | Revenue | `N509P209661` | `N509P209661A` | 4 | 48,809 | 2 | 2 | 1 |
+| 3 | Revenue | `N515P196885` | `N515P196885W` | 4 | 47,022 | 3 | 3 | 1 |
+| 4 | Revenue | `N512P342210` | `N512P342210B` | 3 | 33,600 | 4 | 7 | 1 |
+| 5 | Revenue | `N512P337889` | `N512P337889B` | 4 | 32,512 | 5 | 4 | 1 |
+| 6 | Revenue | `N508P299231` | `N508P299231B` | 3 | 31,073 | 6 | 8 | 1 |
+| 7 | Revenue | `N515P252389` | `N515P252389W` | 4 | 23,720 | 7 | 5 | 1 |
+| 8 | Revenue | `MS322500` | `MS322500AAA` | 3 | 18,940 | 8 | 9 | 1 |
+| 9 | Revenue | `N510P293821` | `N510P293821B` | 4 | 18,564 | 9 | 6 | 1 |
+| 10 | Revenue | `N510P254487P` | `N510P254487P` | 3 | 13,194 | 10 | 10 | 1 |
+
+## Shop3 — all available years
+
+### 1月 — 3 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N504P384907` | `N504P384907A` | 4 | 29,880 | 1 | 1 | 1 |
+| 2 | Revenue | `N506P270388` | `N506P270388B` | 3 | 23,520 | 2 | 3 | 1 |
+| 3 | Revenue | `N515P332844` | `N515P332844B` | 4 | 22,268 | 3 | 2 | 1 |
+
+### 2月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N511P329013` | `N511P329013N` | 3 | 32,802 | 1 | 1 | 1 |
+| 2 | Revenue | `N512P295133N` | `N512P295133N` | 3 | 27,912 | 2 | 2 | 1 |
+
+### 3月 — 11 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P339216` | `N506P339216D` | 6 | 102,202 | 1 | 2 | 1 |
+| 2 | Revenue | `N509SA303811` | `N509SA303811A` | 3 | 88,925 | 2 | 6 | 1 |
+| 3 | Revenue | `N512P401975` | `N512P401975W` | 6 | 79,866 | 3 | 3 | 1 |
+| 4 | Revenue | `N509SA329186` | `N509SA329186A` | 3 | 79,572 | 4 | 7 | 1 |
+| 5 | Revenue | `N512P356532` | `N512P356532B` | 3 | 58,074 | 5 | 8 | 1 |
+| 6 | Revenue | `WF320579` | `WF320579WAA` | 7 | 57,332 | 6 | 1 | 1 |
+| 7 | Revenue | `W1082P373` | `W1082P373514` | 4 | 42,444 | 7 | 5 | 1 |
+| 8 | Revenue | `N511P335775` | `N511P335775N` | 3 | 30,152 | 8 | 9 | 1 |
+| 9 | Revenue | `N510P419601` | `N510P419601Z` | 5 | 29,923 | 9 | 4 | 1 |
+| 10 | Revenue | `N511P335797` | `N511P335797N` | 3 | 24,396 | 10 | 10 | 1 |
+| 11 | Quantity fill | `WF295683` | `WF295683CAA` | 3 | 14,201 | 11 | 11 | 1 |
+
+### 4月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P339216` | `N506P339216B` | 10 | 167,445 | 1 | 1 | 1 |
+| 2 | Revenue | `W770P366` | `W770P366224` | 3 | 19,014 | 2 | 2 | 1 |
+
+### 5月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N509P332040` | `N509P332040D` | 3 | 73,942 | 1 | 2 | 1 |
+| 2 | Revenue | `N506P339216` | `N506P339216B` | 4 | 66,233 | 2 | 1 | 1 |
+
+### 6月 — 1 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N510P254505` | `N510P254505D` | 3 | 17,040 | 1 | 1 | 1 |
+
+### 7月 — 5 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P503228D` | `N506P503228D` | 5 | 83,670 | 1 | 1 | 1 |
+| 2 | Revenue | `N504P384909` | `N504P384909A` | 4 | 48,313 | 2 | 2 | 1 |
+| 3 | Revenue | `N504P384911` | `N504P384911A` | 3 | 46,552 | 3 | 4 | 1 |
+| 4 | Revenue | `N504P384907` | `N504P384907A` | 4 | 34,464 | 4 | 3 | 1 |
+| 5 | Revenue | `N509P446031` | `N509P446031A` | 3 | 12,225 | 5 | 5 | 1 |
+
+### 8月 — 1 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N506P503228C` | `N506P503228C` | 3 | 51,578 | 1 | 1 | 1 |
+
+### 9月 — 4 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N504P384907` | `N504P384907A` | 6 | 57,750 | 1 | 1 | 1 |
+| 2 | Revenue | `WF321176` | `WF321176BAA` | 3 | 25,995 | 2 | 2 | 1 |
+| 3 | Revenue | `N508P320628` | `N508P320628D` | 3 | 25,825 | 3 | 3 | 1 |
+| 4 | Revenue | `WF295684` | `WF295684CAA` | 3 | 12,000 | 4 | 4 | 1 |
+
+### 10月 — 1 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N508P320628` | `N508P320628D` | 3 | 24,840 | 1 | 1 | 1 |
+
+### 11月 — 0 candidates
+
+No products meeting the ≥3-unit evidence floor.
+
+### 12月 — 2 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
+|---:|---|---|---|---:|---:|---:|---:|---:|
+| 1 | Revenue | `N511P329013` | `N511P329013N` | 5 | 57,550 | 1 | 1 | 1 |
+| 2 | Revenue | `SETN506P29541` | `SETN506P295412BB` | 4 | 41,768 | 2 | 2 | 1 |
+
+## Shop4 — all available years
+
+### 1月 — 0 candidates
+
+No products meeting the ≥3-unit evidence floor.
+
+### 2月 — 0 candidates
+
+No products meeting the ≥3-unit evidence floor.
+
+### 3月 — 5 candidates
+
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N515P401190` | `N515P401190B` | 21 | 359,320 | 1 | 1 | 1 |
 | 2 | Revenue | `N506P339216` | `N506P339216A` | 3 | 49,794 | 2 | 2 | 1 |
@@ -28,9 +335,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 4 | Revenue | `WF320579` | `WF320579WAA` | 3 | 24,852 | 4 | 4 | 1 |
 | 5 | Revenue | `N510P343720` | `N510P343720B` | 3 | 15,859 | 5 | 5 | 1 |
 
-### 4月 — 11 eligible SPU1s
+### 4月 — 11 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `W1266S00` | `W1266S00005` | 3 | 163,793 | 1 | 8 | 1 |
 | 2 | Revenue | `N515P401190` | `N515P401190B` | 9 | 160,920 | 2 | 1 | 1 |
@@ -44,9 +351,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 10 | Revenue | `N512P403841` | `N512P403841C` | 3 | 20,184 | 10 | 11 | 1 |
 | 11 | Quantity fill | `N510P343720` | `N510P343720C` | 4 | 19,286 | 11 | 7 | 1 |
 
-### 5月 — 14 eligible SPU1s
+### 5月 — 14 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N515P401190` | `N515P401190B` | 8 | 140,040 | 1 | 1 | 1 |
 | 2 | Revenue | `N508P397567` | `N508P397567A` | 7 | 89,694 | 2 | 2 | 1 |
@@ -63,9 +370,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 13 | Quantity fill | `N510P343719` | `N510P343719C` | 3 | 15,300 | 12 | 13 | 1 |
 | 14 | Quantity fill | `WF295683` | `WF295683AAA` | 3 | 13,962 | 13 | 14 | 1 |
 
-### 6月 — 11 eligible SPU1s
+### 6月 — 11 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N515P401190` | `N515P401190B` | 4 | 69,729 | 1 | 2 | 1 |
 | 2 | Revenue | `WF295683` | `WF295683DAA` | 10 | 47,458 | 2 | 1 | 1 |
@@ -79,9 +386,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 10 | Revenue | `N508P383786` | `N508P383786B` | 3 | 20,342 | 10 | 10 | 1 |
 | 11 | Quantity fill | `N510P371980` | `N510P371980B` | 3 | 11,359 | 11 | 11 | 1 |
 
-### 7月 — 8 eligible SPU1s
+### 7月 — 8 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `WF315212` | `WF315212BAA` | 5 | 95,726 | 1 | 3 | 1 |
 | 2 | Revenue | `N515P401190` | `N515P401190W` | 5 | 83,611 | 2 | 4 | 1 |
@@ -92,9 +399,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 7 | Revenue | `N510P343719` | `N510P343719L` | 3 | 15,975 | 7 | 7 | 1 |
 | 8 | Revenue | `N509P446031` | `N509P446031A` | 3 | 10,227 | 8 | 8 | 1 |
 
-### 8月 — 8 eligible SPU1s
+### 8月 — 8 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N508P397567` | `N508P397567A` | 6 | 75,443 | 1 | 1 | 1 |
 | 2 | Revenue | `WF315212` | `WF315212BAA` | 3 | 57,848 | 2 | 5 | 1 |
@@ -105,37 +412,37 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 7 | Revenue | `WF295683` | `WF295683FAA` | 4 | 19,320 | 7 | 4 | 1 |
 | 8 | Revenue | `N504P312648` | `N504P312648A` | 3 | 12,384 | 8 | 8 | 1 |
 
-### 9月 — 4 eligible SPU1s
+### 9月 — 4 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N508P397567` | `N508P397567A` | 4 | 48,972 | 1 | 2 | 1 |
 | 2 | Revenue | `N506P408474` | `N506P408474C` | 3 | 40,917 | 2 | 3 | 1 |
 | 3 | Revenue | `N510P371976` | `N510P371976B` | 8 | 30,008 | 3 | 1 | 1 |
 | 4 | Revenue | `N510P465593` | `N510P465593L` | 3 | 18,100 | 4 | 4 | 1 |
 
-### 10月 — 4 eligible SPU1s
+### 10月 — 4 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N515P401190` | `N515P401190B` | 6 | 105,492 | 1 | 2 | 1 |
 | 2 | Revenue | `N510P371976` | `N510P371976B` | 27 | 102,898 | 2 | 1 | 1 |
 | 3 | Revenue | `N504P398915` | `N504P398915Z` | 3 | 40,558 | 3 | 3 | 1 |
 | 4 | Revenue | `N00000002` | `N00000002` | 3 | 2,700 | 4 | 4 | 1 |
 
-### 11月 — 0 eligible SPU1s
+### 11月 — 0 candidates
 
-No qualifying historical SPU1 sales with ≥3 units.
+No products meeting the ≥3-unit evidence floor.
 
-### 12月 — 0 eligible SPU1s
+### 12月 — 0 candidates
 
-No qualifying historical SPU1 sales with ≥3 units.
+No products meeting the ≥3-unit evidence floor.
 
-## All Mercari stores — all available historical years
+## All shops consolidated — all available years
 
-### 1月 — 20 eligible SPU1s
+### 1月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N506P255944` | `N506P255944A` | 4 | 88,109 | 1 | 5 | 1 |
 | 2 | Revenue | `N512P401909` | `N512P401909B` | 5 | 54,233 | 2 | 2 | 1 |
@@ -158,9 +465,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `N510P293034G` | `N510P293034G` | 3 | 18,723 | 19 | 19 | 1 |
 | 20 | Quantity fill | `N509P276931` | `N509P276931A` | 3 | 17,043 | 20 | 20 | 1 |
 
-### 2月 — 14 eligible SPU1s
+### 2月 — 14 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N511P329013` | `N511P329013N` | 5 | 53,486 | 1 | 3 | 1 |
 | 2 | Revenue | `N510P293034G` | `N510P293034G` | 9 | 52,746 | 2 | 1 | 1 |
@@ -177,9 +484,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 13 | Quantity fill | `N509P326102` | `N509P326102B` | 3 | 12,570 | 13 | 13 | 1 |
 | 14 | Quantity fill | `N509P336421` | `N509P336421B` | 3 | 7,065 | 14 | 14 | 1 |
 
-### 3月 — 20 eligible SPU1s
+### 3月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N515P401190` | `N515P401190B` | 22 | 380,570 | 1 | 1 | 1 |
 | 2 | Revenue | `N506P339216` | `N506P339216A` | 10 | 168,963 | 2 | 3 | 1 |
@@ -202,9 +509,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `WF295683` | `WF295683CAA` | 4 | 18,401 | 33 | 15 | 1 |
 | 20 | Quantity fill | `N507P264589` | `N507P264589A` | 4 | 7,323 | 38 | 16 | 1 |
 
-### 4月 — 20 eligible SPU1s
+### 4月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N506P339216` | `N506P339216B` | 16 | 266,942 | 1 | 1 | 1 |
 | 2 | Revenue | `W1266S00` | `W1266S00005` | 4 | 212,072 | 2 | 8 | 1 |
@@ -227,9 +534,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `MS283416` | `MS283416AAA` | 3 | 27,938 | 15 | 19 | 1 |
 | 20 | Quantity fill | `N508P383787` | `N508P383787A` | 3 | 25,832 | 18 | 20 | 1 |
 
-### 5月 — 20 eligible SPU1s
+### 5月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N515P401190` | `N515P401190B` | 8 | 140,040 | 1 | 2 | 1 |
 | 2 | Revenue | `N508P397567` | `N508P397567A` | 8 | 105,684 | 2 | 3 | 1 |
@@ -252,9 +559,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `N506P360600` | `N506P360600A` | 3 | 43,702 | 12 | 19 | 1 |
 | 20 | Quantity fill | `N504P384911` | `N504P384911A` | 3 | 43,061 | 13 | 20 | 1 |
 
-### 6月 — 17 eligible SPU1s
+### 6月 — 17 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N509P176640` | `N509P176640K` | 4 | 92,645 | 1 | 2 | 2 |
 | 2 | Revenue | `WF324486` | `WF324486BAA` | 4 | 69,757 | 2 | 3 | 1 |
@@ -274,9 +581,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 16 | Quantity fill | `PP316713` | `PP316713BAA` | 3 | 19,288 | 16 | 16 | 2 |
 | 17 | Quantity fill | `N510P371980` | `N510P371980B` | 3 | 11,359 | 17 | 17 | 1 |
 
-### 7月 — 20 eligible SPU1s
+### 7月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N506P503228D` | `N506P503228D` | 9 | 150,722 | 1 | 2 | 1 |
 | 2 | Revenue | `WF315212` | `WF315212AAA` | 7 | 134,656 | 2 | 3 | 3 |
@@ -299,9 +606,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `PP315895` | `PP315895PAA` | 3 | 17,812 | 19 | 19 | 2 |
 | 20 | Quantity fill | `N510P343719` | `N510P343719L` | 3 | 15,975 | 20 | 20 | 1 |
 
-### 8月 — 15 eligible SPU1s
+### 8月 — 15 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `WF326429` | `WF326429BAA` | 3 | 99,791 | 1 | 9 | 2 |
 | 2 | Revenue | `WF315212` | `WF315212BAA` | 4 | 76,787 | 2 | 5 | 1 |
@@ -319,9 +626,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 14 | Quantity fill | `N510P419601` | `N510P419601P` | 3 | 15,605 | 14 | 14 | 1 |
 | 15 | Quantity fill | `N504P312648` | `N504P312648A` | 3 | 12,384 | 15 | 15 | 1 |
 
-### 9月 — 20 eligible SPU1s
+### 9月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `ES324482` | `ES324482AAA` | 7 | 133,210 | 1 | 2 | 1 |
 | 2 | Revenue | `WF303355` | `WF303355AAA` | 5 | 97,760 | 2 | 4 | 1 |
@@ -344,9 +651,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `WF316026` | `WF316026AAA` | 3 | 31,430 | 15 | 19 | 3 |
 | 20 | Quantity fill | `W1082P373` | `W1082P373514` | 3 | 31,321 | 16 | 20 | 1 |
 
-### 10月 — 20 eligible SPU1s
+### 10月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N510P371976` | `N510P371976B` | 31 | 119,498 | 1 | 1 | 1 |
 | 2 | Revenue | `N515P401190` | `N515P401190B` | 6 | 105,492 | 2 | 2 | 1 |
@@ -369,9 +676,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `N506P408474` | `N506P408474C` | 3 | 44,096 | 11 | 19 | 1 |
 | 20 | Quantity fill | `N504P398915` | `N504P398915Z` | 3 | 40,558 | 13 | 20 | 1 |
 
-### 11月 — 15 eligible SPU1s
+### 11月 — 15 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `WF326433` | `WF326433AAA` | 3 | 111,577 | 1 | 7 | 1 |
 | 2 | Revenue | `N512P360687` | `N512P360687W` | 4 | 98,765 | 2 | 4 | 1 |
@@ -389,9 +696,9 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 14 | Quantity fill | `N512P232188` | `N512P232188G` | 3 | 10,610 | 14 | 14 | 1 |
 | 15 | Quantity fill | `N511P221569` | `N511P221569W` | 3 | 9,120 | 15 | 15 | 1 |
 
-### 12月 — 20 eligible SPU1s
+### 12月 — 20 candidates
 
-| Slot | Selection | SPU1 | Representative item_code | Units | Revenue ¥ | Revenue rank | Units rank | Years |
+| Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `N512P360687` | `N512P360687W` | 7 | 175,270 | 1 | 3 | 1 |
 | 2 | Revenue | `WF319897` | `WF319897CAA` | 3 | 136,912 | 2 | 21 | 2 |
@@ -414,9 +721,8 @@ No qualifying historical SPU1 sales with ≥3 units.
 | 19 | Quantity fill | `MS322500` | `MS322500AAA` | 4 | 25,466 | 24 | 17 | 1 |
 | 20 | Quantity fill | `N515P252389` | `N515P252389W` | 4 | 23,720 | 26 | 18 | 1 |
 
+## Limitations
 
-## Validation notes
-- 3-unit threshold is a **provisional practical floor**, not statistical significance. Use higher thresholds when enough historical data exists; do not force 20 entries.
-- If a candidate SPU1 has only one year's sales for a given month, label as monthly bestseller *candidate*, not seasonally recurring.
-- Historical item_code is not the live Mercari listing ID. Confirm current Shop4 catalog/listing and actual availability before promotion.
-- Store growth, promotion exposure and inventory affect apparent seasonality. The above is revenue/quantity candidate intelligence, not seasonality lift.
+- Three units is a pragmatic minimum, not statistical significance. One-year month sales cannot establish recurring seasonality.
+- All-store demand is a discovery pool, not a substitute for a specific shop's live catalog or a company revenue statement.
+- Do not schedule newsletters or promotions without verifying actual shop listings, inventory and margin.
