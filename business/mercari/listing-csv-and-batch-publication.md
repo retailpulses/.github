@@ -111,7 +111,7 @@
 - 已有 NPL 共享 title、description、accepted images、按店铺渲染、价格/库存/分类字段及 Seller 查询能力；在**读权限允许且值真实可用**时直接复用，不重新生成内容、不覆盖人工修改。
 - Agent 下载当前官方模板与分类等 master，保留原始文件及版本；根据真实 header/编码做字段映射，不把 GraphQL payload 当 CSV schema。
 - 只筛选 Shop4 的真实缺口；对 Seller SKU 重复和 UNKNOWN_OUTCOME 做只读查重，不把本地未映射当不存在。
-- 一次性输出 `shop4_new_listings_YYYYMMDD.csv`、紧凑 `manifest.csv` 与不足条件清单；将有完整字段可导入商品与缺图/类别可存草稿商品分开，不伪造库存、类目、售价。
+- 一次性输出 `shop4_new_listings_YYYYMMDD.csv`、紧凑 `manifest.csv` 与不足条件清单；将有完整字段可导入商品与缺图/类别可存草稿商品分开，不伪造库存、类目、售价。 **最终可上传的 `shop4_new_listings_YYYYMMDD.csv` 只能包含通过必填字段校验的行；缺图片、价格、库存、类别或其他阻断项的商品必须从最终上传 CSV 剔除，只保留在 gap/manifest 中。已存在 SKU 与 `UNKNOWN_OUTCOME` 同样不得进入 CREATE CSV。**
 - 校验官方格式、价格范围、日文字符编码、图片可访问性、SKU、店铺身份、当前运营策略；**没有人工确认不上传**。
 - 若缺现有环境访问权限或真实数据，报告具体阻断；不得生成虚构 CSV 或提出改造系统才能做。
 - 操作追踪以 [Store OPS #303](https://github.com/retailpulses/store-ops/issues/303) 为准；不在规范中维护额外实施计划。
