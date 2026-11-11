@@ -41,6 +41,7 @@
 ## 工程实践研究（Informative）
 
 - [Nursingroom 测试实践研究与可复用经验（2026-10-29）](research/nursingroom-testing-practices-2026-10-29.md)：外部项目 Golden Journey、Seed、Scenario/Evidence 和测试资产生命周期的来源审查。**仅供参考，不是新规范或实施决定**；测试权威仍为现有 Documentation Standard §16 与 Operator UX Test Catalog。
+- [Production Supabase → Mac mini 完全退出 Cloud 可行性研究（2026-11-11）](research/production-supabase-macmini-feasibility-2026-11-11.md)：#93 的实测环境、生产依赖、私有网络/文件交付、工程成本和四方案裁决。**技术可行；商业收益尚需评估；不是实施或生产切换授权。**
 
 ## 相关入口
 
