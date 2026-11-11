@@ -68,6 +68,19 @@ Shop4 had no qualifying completed marketplace orders in January 2026 under this 
 ## Listing execution readiness — BLOCKED, not hidden
 The historical item_code/SPU1 mapping is **resolved**, but the current Shop4 listing mapping is **not**. Direct joins of sampled winning `product_variants.id` to `platform_listings.variant_id` returned no Shop4 listing for `N515P401190`, `N510P371976`, `N508P397567`, `N508P301428`. Shop4 has 6,204 `platform_listings` rows, but only 996 with `variant_id`, **0 with `product_spu_id`**, **0 with `manage_number`**, and 5,799 with external_listing_id. Therefore **do not invent listing IDs, availability or stock**. This is a canonical mapping/data-lineage gap; resolve with supported catalog linkage or authoritative shop listing matching before execution.
 
+## Shop4 catalog cross-check (read-only, 2026-11-11)
+
+The existing `catalogsync_mercari_shop4_catalog_v1` **does resolve candidate item_code to catalog variant and supplier-side availability**, despite the missing `platform_listings` mapping. This is useful for promotion triage, but it is **not** proof of a live Mercari listing or an approved margin.
+
+| item_code | SPU1 | Inventory status | Supplier available qty | Catalog price incl. shipping | Action |
+|---|---|---|---:|---:|---|
+| N515P401190B | N515P401190 | Restocked | 38 | ¥19,150 | Candidate; resolve live listing and margin |
+| N510P371976B | N510P371976 | Sold out | 0 | ¥5,300 | **Exclude from immediate promotion** |
+| N512P291470SA | N512P291470S | NULL/unknown | 24 | ¥39,800 | Candidate only; verify stock state and listing |
+| N508P397567A | N508P397567 | Restocked | 39 | ¥16,800 | Candidate; resolve live listing and margin |
+
+Do not interpret supplier available quantity as confirmed Mercari stock. The catalog price is a source-side projection, not a live listing price. The **actionable next step** is mapping these item codes to current Shop4 listing IDs and checking live price, margin and campaign eligibility.
+
 ## Downstream usage
 - **Newsletter Agent:** use the SPU1 and item_code candidates as historical discovery inputs, with Hero exclusion; Campaign Service must resolve current Shop4 listing and validate stock, current price, quota and authorization before scheduling.
 - **Monthly Promotion:** same candidate pool, but require Effective TCOGS, fee, margin floor and inventory; no discount computed from this historical ranking.
