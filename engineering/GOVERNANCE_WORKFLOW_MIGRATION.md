@@ -152,3 +152,47 @@ The refreshed organization code search for `rp-governance-kit` (2026-11-11) stil
 | External callers, dynamic refs, local-agent runtime installs, full open-PR heads, most consumer rulesets/runners/environments | **UNKNOWN_BLOCKED** | Not exhaustively read back; requires owner/path-level census before kit retirement. |
 
 No consumer migration or required-context/ruleset change was made. Old kit retirement, #11 closure, and #44 closure are not ready. Keep both issues open until caller census, owner decisions, consumer rollback evidence, and release-chain review are complete. Next bounded action: exhaustive per-repository workflow/open-PR and local-agent caller census, preserving CatalogSync's required context and excluding production release writes.
+
+---
+
+## Final owner closeout — 2026-11-11 (canonical; supersedes historical PARTIAL statements)
+
+**Status: Runtime migration COMPLETE; old kit ARCHIVED (not deleted).**
+
+- Canonical implementation: retailpulses/.github, central PR #92 (merge 16ddc55f89261ff00081cfd9940037bd517e1e1a), installer-safety PR #96 (merge 4806c84b9d2acf76f7ac295fdb2fcc84ca1aeda1).
+- All consumer external reusable workflow uses are pinned to immutable central SHA 4806c84b9d2acf76f7ac295fdb2fcc84ca1aeda1. The database-governance callers pass the matching governance_ref.
+- Live authenticated GitHub API audit of **17 active non-kit default branches** plus Archon main (its default is dev): **0 executable uses or checkout repository references to retailpulses/rp-governance-kit**. The negative-regex grep string in .github/workflows/governance-migration-tests.yml is test data, not a call.
+- Open PR head check: **117 open PRs**, 7 modified workflow files. Only stale inbox#220 had two old execution references; corrected both on its PR head to the central pin (98b296f and 0828e0e), leaving separate unrelated merge conflicts intact.
+- Archive readback: https://github.com/retailpulses/rp-governance-kit returned archived=true at approximately 15:24 JST, 2026-11-11. Reversible archive preserves the old source and its history; deletion remains out of scope.
+- Isolated Actions harness positive 42953518883 (three jobs passed) and negative 42953578004 (expected block); harness repo https://github.com/retailpulses/governance-compat-harness-20261111 is also archived (private), preserving the evidence without delete_repo scope.
+
+### Consumer execution matrix
+
+| Consumer (merged PR) | Merge SHA prefix | Verification / disposition |
+|---|---|---|
+| [homepage#4](https://github.com/retailpulses/homepage/pull/4) | 9515bbd4 | DB and governance green; unrelated Pages npm-ci baseline failure |
+| [retailpulses-tool-services#12](https://github.com/retailpulses/retailpulses-tool-services/pull/12) | fe351fad | DB / governance green |
+| [inbox#478](https://github.com/retailpulses/inbox/pull/478) | bb3d86f1 | Post-deploy reusable caller migrated; no PR required checks |
+| [workers#28](https://github.com/retailpulses/workers/pull/28) | 1fa84cdf | DB / governance green; 3 unrelated missing-package-directory failures |
+| [Archon#3](https://github.com/retailpulses/Archon/pull/3) | c1744ecf | Ubuntu / Windows / Docker tests green; migrated default dev, main has no old callers |
+| [boutique-listing#94](https://github.com/retailpulses/boutique-listing/pull/94) | 91050300 | DB / governance / Validate green |
+| [CatalogSync#280](https://github.com/retailpulses/CatalogSync/pull/280) | c56aa152 | DB / governance / Validate green; VPS contract preserved, no dispatch |
+| [OrderMgmt#287](https://github.com/retailpulses/OrderMgmt/pull/287) | b6f35a96 | DB / governance green; Portal Acceptance moved byte-for-byte to repo-owned workflow, no deploy |
+| [RPagentOS#146](https://github.com/retailpulses/RPagentOS/pull/146) | 24c955a3 | BLOCKING / PRODUCTION_GATE / ADVISORY DB checks green; no deploy |
+| [homebliss-vpn#9](https://github.com/retailpulses/homebliss-vpn/pull/9) | 3b95ad1b | Caller updated; no PR check contexts configured |
+| [homebliss-rustdesk#4](https://github.com/retailpulses/homebliss-rustdesk/pull/4) | b39be899 | DB / governance Actions successful |
+
+### Preserved critical contracts and explicit exceptions
+
+- CatalogSync required ruleset 23862538 still requires exact context **governance / Governance Checks**. The PR check with this exact name passed. The migration retains scripts/gigab2b/migrations/** as a database-governance workflow trigger, keeps original deploy-vps adapter path, production environment and secret names (VPS_DEPLOY_SSH_KEY, VPS_KNOWN_HOSTS); does not dispatch or modify VPS deployment. Central immutable release YAML is unchanged except rehomed nested post-deploy call.
+- OrderMgmt former central Portal Acceptance remains available as the same workflow definition within OrderMgmt itself; its deploy-api caller is now local. Production endpoint verification was not invoked during this workflow-only migration.
+- RPagentOS DB MUST checks retained, proved by passing BLOCKING and PRODUCTION_GATE PR jobs.
+- homepage Deploy Pages has historical main failures, and this PR failed npm ci because package-lock was absent. workers validation attempts on non-existent package directories caused unrelated failures. Neither was changed as part of governance scope. homepage, workers and boutique-listing squash commits used [skip ci] to prevent push-time deployment/validation side effects. No production deployment, change to rulesets, secret values or environment approval gates.
+- Historical text references to old kit in policy documents, issue-work CLI guidance and some local ownership metadata are **non-executable** and retained for provenance. Do not treat these as an active Actions dependency or permission to delete the old repo.
+- Old kit PRs #19/#31/#35 were closed as unmerged historical proposals after recording their full links and current-state revalidation scope in [canonical follow-up #97](https://github.com/retailpulses/.github/issues/97). In particular, old July deployment status is not asserted current.
+
+### Cutover recovery and stewardship
+
+SSOT for governance maintenance: retailpulses/.github. New consumers must use the central installer with explicit collision review, and pin immutable SHA. Existing consumer migration can be reverted by reverting its listed merge commit; if recovery requires the old implementation, an authorized repository admin can unarchive rp-governance-kit before rollback. Archived kit and private harness remain readable for audit and rollback. Do not delete the old kit without a distinct approved retention review.
+
+Owner evidence and cross-repo links: https://github.com/retailpulses/.github/issues/11#issuecomment-6788736925 .
