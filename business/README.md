@@ -20,7 +20,7 @@
 
 Knowledge entries need not have BUS IDs. Distinguish observed facts, hypotheses, approved insights and decisions. Preserve source provenance, store scope, dates, method and review cadence. Do not duplicate raw order history or customer data.
 
-## Authority boundaries
+| Mercari | [All-time best sellers & evergreen Hero candidates](mercari/merchandising/hero-products.md) | PARTIAL; cross-store revenue + continuity, Hero exclusion list |\n| Mercari | [Monthly seasonality intelligence](mercari/merchandising/seasonality-intelligence.md) | PARTIAL; revenue-ranked category observations, not validated seasonality |\n| Mercari | [Seasonality analysis method](mercari/merchandising/seasonality-method.md) | DRAFT; reproducibility and validation contract |\n\n## Authority boundaries
 - Business definitions: reviewed shared semantics and calculations; product-specific Design/TRD links here.
 - Business knowledge: curated, time-bound conclusions; operational source systems remain authoritative for raw data.
 - External facts: [Foundational References](../references/README.md) and official documentation.
