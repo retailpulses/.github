@@ -1,0 +1,438 @@
+# Database Ownership Registry
+# ============================
+# Canonical machine-readable domain ownership for Retailpulses shared Supabase.
+#
+# Version: 5
+# Last updated: 2026-08-24
+# Governance ref: v1.5.0
+#
+# Governed by: retailpulses/.github
+#
+# This file answers: who owns what?
+# For access policy, see DATABASE_ACCESS_POLICY.yaml
+# For capabilities, see DATABASE_CAPABILITIES.yaml
+# For workload declarations, see DATABASE_WORKLOADS.yaml
+#
+# Schema:
+#   database: logical database name (no project ref or URL)
+#   domains:
+#     <domain-name>:
+#       domain_type: schema | consumer_capability
+#       owner: <owner-repo>
+#       access_class: worker_only | authenticated_user | public_read | internal_admin
+#       generated_types: <path or "exempt">
+#       cross_domain: true | false
+#       shared: true | false
+#       consumers: [<repo>, ...]          # repos that read from this domain
+#       objects:
+#         tables: [<name>, ...]
+#         views: [<name>, ...]
+#         functions: [<name>, ...]
+#         triggers: [<name>, ...]          # trigger objects on domain tables
+#         storage_buckets: [<name>, ...]
+#       notes: <free-text technical debt, warnings, or domain-specific constraints>
+
+database: retailpulses_shared
+
+domains:
+
+  # ── Manual Receipt Issuance ───────────────────────────────
+  receipt_issuance:
+    domain_type: schema
+    owner: retailpulses/commerce-ops
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: false
+    consumers: []
+    objects:
+      tables:
+        - receipt_documents
+      views: []
+      functions: []
+      storage_buckets:
+        - receipt-pdfs
+    notes: >
+      Ops Portal owns the manual receipt issuance boundary for commerce-ops#57.
+      The gateway is the sole writer. Objects are private, immutable after
+      issuance, and must not be reused by Ticket Handling or OrderMgmt.
+
+  # ── Ticketing ─────────────────────────────────────────────
+  ticketing:
+    domain_type: schema
+    owner: retailpulses/ticket-handling
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: true
+    shared: false
+    consumers:
+      - retailpulses/RPagentOS
+    objects:
+      tables:
+        - ticket_issue_types
+        - tickets
+        - ticket_products
+        - ticket_messages
+        - ticket_notes
+        - ticket_attachments
+        - ticket_events
+        - ticket_resolution_actions
+        - ticket_statuses
+        - message_drafts
+        - sent_messages
+        - copywriting_logs
+        - customer_submissions
+        - submission_tokens
+        - inbound_ticket_messages
+        - ticket_share_tokens
+        - ticket_share_attachments
+        - rakuten_rmesse_inquiries
+        - rakuten_rmesse_sync_state
+        - amazon_mail_sync_state
+      views: []
+      functions:
+        - generate_ticket_number
+        - update_updated_at_column
+        - claim_pending_inbound_messages
+        - record_ticket_resolution
+        - finalize_ticketform_submission
+        - finalize_operator_message_send
+        - create_ticket_share
+        - revoke_ticket_share
+        - resolve_ticket_share
+        - authorize_ticket_share_attachment
+        - ingest_rakuten_rmesse_inquiry
+        - ingest_amazon_mail_message
+        - convert_amazon_mail_to_ticket
+        - claim_amazon_mail_attachments
+        - finalize_amazon_mail_attachment_batch
+        - claim_amazon_mail_send
+        - promote_abandoned_amazon_send
+        - begin_amazon_mail_provider_mutation
+        - resolve_amazon_mail_send_as_not_sent
+        - finalize_amazon_mail_send
+      storage_buckets:
+        - ticket-attachments
+    notes: >
+      Mixed migration naming: 0001/0002 (grandfathered sequential) + timestamp-based.
+      18 zero-byte _remote.sql placeholder files for RPagentOS-authored migrations
+      on the shared database. These are history alignment artifacts, not ownership claims.
+
+  # ── Product Catalog & Platform Listings ───────────────────
+  product_catalog:
+    domain_type: schema
+    owner: retailpulses/RPagentOS
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: false
+    consumers:
+      - retailpulses/CatalogSync
+      - retailpulses/ticket-handling
+      - retailpulses/inquiry-automation
+      - retailpulses/workers
+      - retailpulses/ops-portal
+      - retailpulses/OrderMgmt
+      - retailpulses/skills:sync-giga-saved-products
+      - retailpulses/skills:mercari-csv-listing
+    objects:
+      tables:
+        - products
+        - product_variants
+        - platform_listings
+        - product_families
+        - product_spus
+        - product_assets
+        - product_commercials
+        - bundle_products
+        - bundle_components
+        - platform_listing_skus
+        - platform_listing_images
+        - platform_listing_attributes
+        - platform_listing_price_tiers
+        - product_platform_links
+        - promotion_candidates
+        - merchandising_focus_items
+        - source_import_runs
+        - source_import_rows
+        - platform_accounts
+        - platform_account_monthly_metrics
+        - import_errors
+        - catalog_sync_runs
+        - catalog_sync_failures
+        - catalog_change_outbox
+        - catalog_sync_api_requests
+      views:
+        - listing_target_classification_v1
+        - baserow_886994_compat_vw
+        - catalog_sync_products_vw
+        - product_mercari_qty_vw
+        - product_presale_qty_vw
+        - product_rakuten_pricing_vw
+        - catalogsync_marketplace_projection_v1
+      functions:
+        - set_updated_at
+        - parse_giga_arrival_date
+        - compute_effective_arrival_date
+        - compute_effective_cost_price
+        - compute_inventory_status
+        - compute_presale_qty
+        - compute_mercari_qty
+        - compute_mercari_effective_prices
+        - compute_mercari_price_incl_shipping
+        - trg_product_commercials_pricing
+      triggers:
+        - trg_pricing ON product_commercials
+      storage_buckets: []
+    notes: >
+      Core product and platform listing data model.
+      Schema and migration ownership remain with RPagentOS.
+      Consumer access paths declared in DATABASE_ACCESS_POLICY.yaml.
+      CatalogSync's disabled product-mirror workload is documented in the workload registry.
+
+  # ── Agent OS ──────────────────────────────────────────────
+  agent_os:
+    domain_type: schema
+    owner: retailpulses/RPagentOS
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: false
+    consumers:
+      - retailpulses/ticket-handling
+    objects:
+      tables:
+        - agent_runs
+        - agent_decisions
+        - human_approvals
+        - agent_execution_logs
+      views: []
+      functions: []
+      storage_buckets: []
+    notes: >
+      Agent execution and decision tracking. Tightly coupled to RPagentOS workflows.
+
+  # ── Task Management ───────────────────────────────────────
+  task_management:
+    domain_type: schema
+    owner: retailpulses/RPagentOS
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: true
+    consumers:
+      - retailpulses/ticket-handling
+    objects:
+      tables:
+        - tasks
+        - task_targets
+        - task_steps
+        - task_comments
+        - task_logs
+        - task_select_options
+        - task_attachments
+      views: []
+      functions: []
+      storage_buckets: []
+    notes: >
+      Operational task management. Shared across repos for ticket-to-task linking.
+
+  # ── Project Management ────────────────────────────────────
+  project_management:
+    domain_type: schema
+    owner: retailpulses/RPagentOS
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: true
+    consumers:
+      - retailpulses/ticket-handling
+    objects:
+      tables:
+        - projects
+        - project_attachments
+      views: []
+      functions: []
+      storage_buckets: []
+    notes: >
+      DUPLICATE MIGRATION WARNING: 20260708000003_add_projects.sql exists in both
+      RPagentOS (canonical owner) and ticket-handling (near-identical copy, whitespace
+      diff only). ticket-handling copy should be converted to a _remote.sql placeholder
+      in a follow-up reconciliation. Do not create new project migrations in ticket-handling.
+
+  # ── Listing Intelligence ──────────────────────────────────
+  listing_intelligence:
+    domain_type: schema
+    owner: retailpulses/RPagentOS
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: false
+    consumers: []
+    objects:
+      tables:
+        - listing_intelligence_runs
+        - listing_intelligence_results
+        - listing_work_items
+      views: []
+      functions: []
+      storage_buckets: []
+    notes: >
+      Listing intelligence workbench MVP. The browser client writes work_items with
+      the anon key (no-RLS MVP pattern — documented technical debt).
+
+  # ── Listing Quality Engineering ───────────────────────────
+  listing_quality:
+    domain_type: schema
+    owner: retailpulses/RPagentOS
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: false
+    consumers:
+      - retailpulses/ticket-handling
+    objects:
+      tables:
+        - listing_qwen_reviews
+        - listing_qwen_review_requests
+        - listing_review_policies
+        - listing_review_jobs
+        - listing_quality_cycles
+      views:
+        - listing_review_schedule_status_v1
+      functions: []
+      storage_buckets: []
+    notes: >
+      DUPLICATE MIGRATION WARNING: 20260708000002_listing_review_schedule_status.sql
+      exists in both RPagentOS (canonical owner) and ticket-handling (near-identical copy,
+      whitespace diff only). ticket-handling copy should be converted to a
+      _remote.sql placeholder in a follow-up reconciliation.
+
+  # ── Order Management ──────────────────────────────────────
+  order_management:
+    domain_type: schema
+    owner: retailpulses/OrderMgmt
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: true
+    consumers:
+      - retailpulses/commerce-ops  # Orders Portal API/Worker; policy settings consumer, no schema ownership
+    objects:
+      tables:
+        - sales_orders
+        - giga_shipment_projections
+        - sales_order_message_state
+        - order_message_templates
+        - pipeline_run_log
+        - auto_approval_policy_versions
+        - auto_approval_policy_active
+        - auto_approval_policy_audit
+      views: []
+      functions:
+        - is_valid_order_auto_approval_policy
+        - guard_order_auto_approval_policy_version
+        - create_order_auto_approval_policy_draft
+        - validate_order_auto_approval_policy
+        - set_order_auto_approval_policy_state
+        - activate_order_auto_approval_policy
+        - disable_order_auto_approval_policy
+        - rollback_order_auto_approval_policy
+      storage_buckets: []
+    notes: >
+      TIMESTAMP COLLISION WARNING: 20260710000000 is used for order_mgmt_core.sql
+      (this repo) AND inbound_ticket_messages.sql (ticket-handling) — different SQL.
+      This is a real naming collision. Both migrations already exist on the hosted
+      database. Do not rename either without a reviewed reconciliation plan.
+      RLS policies exist on all tables (operator-read pattern).
+
+  # ── Inquiry Management ────────────────────────────────────
+  inquiry_management:
+    domain_type: schema
+    owner: retailpulses/inquiry-automation
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: true                # UUID FKs and reads depend on product_catalog owner objects
+    shared: false
+    consumers:
+      - retailpulses/workers          # mail-integration: inquiry create/update, product/knowledge reads
+      - retailpulses/skills:mercari-inquiry-follow-up  # follow-up reads/writes
+      - retailpulses/RPagentOS        # temporary legacy mercari_inquiries compatibility consumer
+    objects:
+      tables:
+        - inquiries
+        - inquiry_product_links
+        - inquiry_knowledge_links
+        - knowledge_articles
+        - inquiry_messages
+        - inquiry_webhook_events
+        - inquiry_ingestion_runs
+        - inquiry_quarantine
+        - inquiry_outbound_operations
+        - inquiry_follow_up_events
+      views:
+        - inquiry_list_vw
+        - inquiry_detail_vw
+        - inquiry_message_timeline_vw
+        - follow_up_review_queue_vw
+        - follow_up_upcoming_vw
+        - follow_up_history_vw
+      functions:
+        - inquiry_management_set_updated_at
+        - inquiry_claim_outbound_cycle
+        - inquiry_finalize_outbound
+        - inquiry_schedule_follow_up
+        - inquiry_claim_webhook_event
+        - inquiry_complete_webhook_event
+        - inquiry_apply_platform_transition
+        - inquiry_reconcile_api_thread
+      triggers:
+        - trg_inquiries_updated_at ON inquiries
+        - trg_knowledge_articles_updated_at ON knowledge_articles
+      storage_buckets: []
+    notes: >
+      Phase 1 MVP — replaces Baserow tables 886975 (Inquiries), 886994 (Products for inquiry
+      product context), and 897440 (Knowledge). inquiry_product_links.product_variant_id is a
+      UUID foreign key to RPagentOS-owned product_catalog.product_variants; the optional
+      inquiries.platform_account_id UUID foreign key depends on product_catalog.platform_accounts.
+      Runtime product reads must use approved product_catalog projections over PostgREST.
+      Migrations: 20260721000000 (core schema), 20260721000001 (views),
+      20260806000001 (operator product links), and 20260903000000 (Mercari
+      Inquiry API-first message/event/outbound/follow-up expansion under
+      retailpulses/inquiry-automation#92 / PR #93).
+      Worker, dashboard, VPS enrichment, mail-integration, and follow-up skill all consume
+      this domain. Access class is worker_only: browser roles have no policies or grants,
+      and every runtime must use a server-side scoped PostgREST credential. Bootstrap
+      service_role grants do not constitute production runtime approval.
+      The retired Python pipeline is not a consumer. RPagentOS remains a temporary read-only
+      consumer while its owner migration retires/renames public.mercari_inquiries and, only
+      after the canonical completeness guard passes, creates a read-only compatibility view
+      at the legacy name. That compatibility object remains RPagentOS-owned and is not an
+      inquiry-automation schema object. Remove this temporary consumer access by 2026-10-31,
+      after dependent follow-up callers use the canonical contract and compatibility-view
+      query telemetry is zero for 30 consecutive days.
+
+  # ── Catalog Synchronization (consumer capability domain) ──
+  catalog_sync:
+    domain_type: consumer_capability
+    owner: retailpulses/CatalogSync
+    access_class: worker_only
+    generated_types: exempt
+    cross_domain: false
+    shared: false
+    consumers: []
+    objects:
+      tables: []
+      views: []
+      functions: []
+      storage_buckets: []
+    notes: >
+      Consumer capability domain — CatalogSync owns no database schema objects
+      and has no supabase/ directory. Listed here for workload tracking
+      and capability declaration purposes. Does not own migrations for any
+      database domain. Schema ownership for the product_catalog domain
+      remains with retailpulses/RPagentOS.
+      CatalogSync may use approved server-side access paths declared in
+      DATABASE_ACCESS_POLICY.yaml and DATABASE_WORKLOADS.yaml.
+      INCIDENT #23: The disabled product-mirror workload requires explicit
+      re-approval before re-enable.

@@ -1,13 +1,18 @@
 name: Database Governance Checks
 
+# GitHub project references are identifiers for work tracking and are NOT secrets.
+# Findings redact secret values: the checker prints file paths and finding types only.
+
+# GitHub project references are identifiers for work tracking and are NOT secrets.
+# Findings redact secret values: the checker prints file paths and finding types only.
+
 on:
   workflow_call:
     inputs:
       governance_ref:
-        description: "retailpulses/.github implementation commit SHA (pin to caller workflow release)"
-        required: false
+        description: "Exact retailpulses/.github implementation commit SHA; caller must pass its reusable-workflow ref."
+        required: true
         type: string
-        default: main
 
 jobs:
   blocking:

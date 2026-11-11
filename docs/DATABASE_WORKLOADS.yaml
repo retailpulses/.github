@@ -1,0 +1,2137 @@
+# Database Workload Registry — Shared-Database Risk Governance
+# ==========================================================
+# Registry of recurring workloads that require shared-database ownership,
+# access-path, credential, or database-risk governance.
+#
+# This is NOT a master inventory of all sync behavior. Schedules, release SHAs,
+# batch sizes, marketplace mapping, and monitoring thresholds are owned by the
+# business repository's local sync inventory (docs/SYNC_JOB_INVENTORY.md).
+#
+# Version: 11
+# Last updated: 2026-09-13
+# Governance ref: main
+#
+# Governed by: retailpulses/.github
+#
+# ── Risk-Based Profiles ─────────────────────────────────────
+#
+# Every workload entry starts with a standard declaration.
+# Only workloads that meet one or more high-risk conditions require
+# the extended safety_profile section.
+#
+# Standard declaration (minimum for all workloads):
+#
+#   workload_id:               unique identifier (lower_snake_case)
+#   owner_repo:                GitHub owner/repo
+#   domain:                    domain from DATABASE_OWNERSHIP.yaml
+#   mode:                      read_only | write
+#   access_path:               postgrest | supavisor | internal_api | direct_postgres
+#   credential_class:          read_only | write_scoped | admin | service_role
+#   triggers:                  structured trigger objects (see below)
+#   status:                    active | disabled | pending_approval
+#   kill_switch:
+#     method:                  config_flag | process_signal | worker_cancel | dashboard_session_terminate | sql_terminate_backend | deploy_rollback
+#     identifier:              config key, cron name, or timer name that disables this workload
+#     fail_closed:             true for write workloads unless explicitly approved otherwise
+#   local_inventory_ref:       owner-repository path to the local workload inventory
+#
+# Extended safety_profile (required when any condition applies):
+#
+#   Conditions requiring extended profile:
+#     - mode: write                           (database writes)
+#     - High expected row/request volume      (high volume)
+#     - trigger is cron/scheduled             (frequent cron)
+#     - credential_class is admin or service_role (privileged credential)
+#     - Destructive or data-rewriting ops     (destructive transformation)
+#     - Large blast radius                    (many consumers or domains affected)
+#     - Prior related incident                (incident_ref is set)
+#
+#   safety_profile:
+#     category:                imports | syncs | backfills | scheduled_jobs | agent_operations | maintenance | diagnostics
+#     risk_level:              low | medium | high
+#     description:             human-readable description
+#     affected_tables:         [table_name, ...]
+#     concurrency_max:         integer
+#     statement_timeout_ms:    integer
+#     max_retries:             integer
+#     retry_strategy:          exponential_backoff_with_jitter | fixed_delay | none
+#     request_budget:
+#       max_requests_per_invocation: integer
+#       max_requests_per_1000_input_rows: integer
+#       bulk_fetch_strategy:  IN-clause-batch | bulk-endpoint | pagination-cursor | none
+#     egress_contract:         required for scheduled, bulk, high-volume, or prior-incident reads
+#       client_identity:       stable repo/workload identity sent in x-client-info, User-Agent, or application_name
+#       projection_policy:     explicit_columns | wildcard_bounded
+#       wildcard_justification: required only for wildcard_bounded; include owner and review date
+#       pagination_strategy:   cursor | keyset | bounded_single_page | offset_legacy
+#       incremental_cursor:    cursor field/checkpoint, or "not_applicable: <reason>"
+#       max_response_bytes_per_invocation: positive integer; measured baseline, not a guess
+#       max_response_bytes_per_day: positive integer; measured/projected daily ceiling
+#       warning_budget_pct:    integer 1..99
+#       critical_budget_pct:   integer >=100
+#     incident_ref:            GitHub issue URL or #number
+#     rollback:                URL or description of how to undo this workload's effects
+#
+# Optional fields for any entry:
+#   depends_on:               [workload_id, ...]
+#   excluded_windows:         cron expressions or time windows when this workload must NOT run
+#   credential_contract:      deployment-level credential details (role, forbiddance, rotation)
+#   approved_by:              who authorized
+#   approved_at:              YYYY-MM-DD
+#   last_reviewed:            YYYY-MM-DD
+#   notes:                    free-text notes, dependencies, known limitations
+
+database: retailpulses_shared
+
+workloads:
+
+  # ── RPagentOS Mercari paired-target backfill ───────────────────────
+  rpagentos_mercari_paired_target_backfill_20260913:
+    owner_repo: retailpulses/RPagentOS
+    domain: product_catalog
+    mode: write
+    access_path: direct_postgres
+    credential_class: admin
+    triggers:
+      - type: manual
+        mode: one_time_migration
+    status: active
+    kill_switch:
+      method: worker_cancel
+      identifier: supabase-migrations-workflow
+      fail_closed: true
+    safety_profile:
+      category: backfills
+      risk_level: medium
+      description: >
+        One-time change-aware migration backfill that persists paired Mercari
+        excl-shipping and incl-shipping canonical targets for rows with valid
+        pricing inputs. No marketplace mutation is performed.
+      affected_tables:
+        - product_commercials
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 10000
+      expected_request_count_min: 1
+      expected_request_count_max: 1
+      expected_runtime_seconds_max: 300
+      concurrency_max: 1
+      statement_timeout_ms: 300000
+      max_retries: 0
+      retry_strategy: none
+      batch_size_min: 1
+      batch_size_max: 1000
+      cursor_strategy: ordered_variant_id_batches_inside_one_transaction
+      request_budget:
+        max_requests_per_invocation: 1
+        max_rows_per_invocation: 10000
+        max_requests_per_1000_input_rows: 1
+        bulk_fetch_strategy: none
+        formula: "one migration transaction; up to ten 1000-row update statements"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: update_only_when_tcogs_or_either_target_is_distinct
+        unchanged_write_ratio_target: 0.0
+      rollout_gates:
+        dry_run_completed: true
+        dry_run_evidence_ref: "retailpulses/RPagentOS#131 isolated PostgreSQL 17 migration and reapply"
+        kill_switch_tested: true
+        canary_completed: false
+        canary_row_limit: 1000
+      error_recording:
+        mechanism: github_actions_migration_log_and_owner_consistency_readback
+        retention_days: 90
+        owner_repo: retailpulses/RPagentOS
+      monitoring:
+        mechanism: github_actions_and_read_only_consistency_query
+        required_metrics:
+          - pending_migration_count
+          - rows_updated
+          - missing_target_count
+          - target_mismatch_count
+          - legacy_incl_wrapper_mismatch_count
+        warning_thresholds:
+          missing_target_count: 1
+          target_mismatch_count: 1
+        critical_thresholds:
+          target_mismatch_count: 1
+          legacy_incl_wrapper_mismatch_count: 1
+      rollback: >
+        Cancel before transaction commit. After commit, keep downstream writers
+        disabled and deploy a reviewed forward migration restoring the prior
+        trigger/function bodies; target fields are reproducible derived data.
+    local_inventory_ref: docs/16_DATABASE_GOVERNANCE.local.md#one-off-workload-mercari-paired-target-backfill
+    source_repo: retailpulses/RPagentOS
+    deployed_from: "pending merge of retailpulses/RPagentOS#131"
+    approved_by: "Retailpulses owner approval on 2026-09-13"
+    approved_at: "2026-09-13"
+    last_reviewed: "2026-09-13"
+    notes: >
+      This authorizes only the owner migration/backfill and readback. CatalogSync
+      writer activation and Mercari mutations remain separately approval-gated.
+
+  # ── Ticketing Amazon buyer-message Zoho mail ingestion ──────
+  ticketing_amazon_zoho_mail_sync:
+    owner_repo: retailpulses/ticket-handling
+    domain: ticketing
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: cron
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: AMAZON_MAIL_INGESTION_MODE
+      fail_closed: true
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: high
+      description: >
+        Polls one governed Zoho account/folder for authenticated Amazon buyer
+        mail and persists idempotent ticketing source evidence. Polling never
+        creates tickets; authenticated operator Convert is the only creation path.
+      affected_tables:
+        - inbound_ticket_messages
+        - amazon_mail_sync_state
+        - tickets
+        - ticket_messages
+        - ticket_events
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 6001
+      expected_request_count_min: 1
+      expected_request_count_max: 2100
+      expected_runtime_seconds_max: 120
+      concurrency_max: 1
+      statement_timeout_ms: 15000
+      max_retries: 0
+      retry_strategy: none
+      batch_size_min: 1
+      batch_size_max: 100
+      cursor_strategy: durable_received_time_message_id_with_frozen_window
+      request_budget:
+        max_requests_per_invocation: 2100
+        max_rows_per_invocation: 2000
+        max_requests_per_1000_input_rows: 1050
+        bulk_fetch_strategy: pagination-cursor
+        formula: "2100 requests / (2000 max input rows / 1000) = 1050 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: provider_message_identity_insert_or_skip
+        unchanged_write_ratio_target: 0.0
+      egress_contract:
+        client_identity: ticket-handling/ticketing_amazon_zoho_mail_sync
+        projection_policy: explicit_columns
+        pagination_strategy: cursor
+        incremental_cursor: "durable (received_time,message_id) watermark with 15-minute overlap and frozen run_to"
+        max_response_bytes_per_invocation: 52428800
+        max_response_bytes_per_day: 52428800
+        warning_budget_pct: 70
+        critical_budget_pct: 100
+      rollout_gates:
+        dry_run_completed: false
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      error_recording:
+        mechanism: amazon_mail_sync_state_and_cloudflare_structured_logs
+        retention_days: 30
+        owner_repo: retailpulses/ticket-handling
+      monitoring:
+        mechanism: cloudflare_worker_logs_and_sync_state_metrics
+        required_metrics: [requests, database_query_count, rows_scanned, business_rows_changed, rows_written, unchanged_rows_written, unchanged_write_ratio, response_bytes, retries, errors, runtime_ms, cursor_range, statement_timeout_count, statement_timeout_rate_pct]
+        warning_thresholds: { request_budget_pct: 70, response_byte_budget_pct: 70, rows_written_pct: 80, retry_count: 1, statement_timeout_rate_pct: 5, unchanged_write_ratio: 0.0 }
+        critical_thresholds: { request_budget_pct: 100, response_byte_budget_pct: 100, rows_written_pct: 150, retry_count: 1, statement_timeout_rate_pct: 15, unchanged_write_ratio: 0.1 }
+      incident_ref: ""
+      rollback: >
+        Set AMAZON_MAIL_INGESTION_MODE=off and deploy the prior reviewed Worker
+        release while retaining source evidence.
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md#ticketing_amazon_zoho_mail_sync
+    source_repo: retailpulses/ticket-handling
+    deployed_from: ""
+    approved_by: "pending retailpulses/ticket-handling#235 rollout approval"
+    last_reviewed: "2026-09-07"
+    notes: >
+      Canonical plan: ticket-handling PR #236. Implementation: PR #237.
+      Provisional egress ceilings must be replaced with measurements from two
+      shadow cycles before activation. Attachment download and outbound reply
+      are separately governed workloads below.
+
+  # ── Ticketing Amazon mail attachment reconciliation ─────────
+  ticketing_amazon_zoho_attachment_reconciliation:
+    owner_repo: retailpulses/ticket-handling
+    domain: ticketing
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: cron
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: AMAZON_MAIL_ATTACHMENTS_ENABLED
+      fail_closed: true
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: high
+      description: >
+        Claims only authenticated Amazon mail already linked to a valid ticket,
+        downloads bounded image attachments, verifies MIME and magic bytes, and
+        stores deterministic private Evidence objects.
+      affected_tables:
+        - inbound_ticket_messages
+        - ticket_attachments
+      affected_storage_buckets:
+        - ticket-attachments
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 175
+      expected_request_count_min: 1
+      expected_request_count_max: 277
+      expected_runtime_seconds_max: 300
+      concurrency_max: 1
+      statement_timeout_ms: 15000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 25
+      cursor_strategy: oldest_first_retry_claim
+      request_budget:
+        max_requests_per_invocation: 277
+        max_rows_per_invocation: 25
+        max_requests_per_1000_input_rows: 11080
+        bulk_fetch_strategy: bounded_single_page
+        formula: "277 requests / (25 max input rows / 1000) = 11080 requests per 1000 rows; covers 1 claim + 25 attachmentinfo reads + 125 downloads + 125 Storage writes + 1 transactional bulk Evidence/final-state RPC"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: deterministic_storage_path_and_evidence_upsert_skip
+        unchanged_write_ratio_target: 0.0
+      egress_contract:
+        client_identity: ticket-handling/ticketing_amazon_zoho_attachment_reconciliation
+        projection_policy: explicit_columns
+        pagination_strategy: bounded_single_page
+        incremental_cursor: "oldest-first claim with retry timestamp and max 25 rows"
+        max_response_bytes_per_invocation: 1442000000
+        max_response_bytes_per_day: 5768000000
+        warning_budget_pct: 70
+        critical_budget_pct: 100
+      rollout_gates:
+        dry_run_completed: false
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      error_recording:
+        mechanism: inbound_attachment_status_and_cloudflare_structured_logs
+        retention_days: 30
+        owner_repo: retailpulses/ticket-handling
+      monitoring:
+        mechanism: cloudflare_worker_logs_and_attachment_report
+        required_metrics: [requests, database_query_count, claimed, stored, rejected, failed, response_bytes, business_rows_changed, rows_written, unchanged_rows_written, unchanged_write_ratio, retries, runtime_ms, statement_timeout_count, statement_timeout_rate_pct]
+        warning_thresholds: { request_budget_pct: 70, response_byte_budget_pct: 70, rows_written_pct: 80, retry_count: 1, statement_timeout_rate_pct: 5, unchanged_write_ratio: 0.0 }
+        critical_thresholds: { request_budget_pct: 100, response_byte_budget_pct: 100, rows_written_pct: 150, retry_count: 2, statement_timeout_rate_pct: 15, unchanged_write_ratio: 0.1 }
+      incident_ref: ""
+      rollback: "Set AMAZON_MAIL_ATTACHMENTS_ENABLED=false; retain pending references and stored Evidence."
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md#ticketing_amazon_zoho_attachment_reconciliation
+    source_repo: retailpulses/ticket-handling
+    deployed_from: ""
+    approved_by: "pending retailpulses/ticket-handling#235 attachment canary approval"
+    last_reviewed: "2026-09-07"
+    notes: >
+      Maximum 25 messages, five images per message, and 10 MiB per image.
+      There are zero same-invocation retries; failed references are durably
+      rescheduled with exponential backoff plus jitter for at most three retries
+      (four total attempts).
+      Disablement performs no claim, Zoho attachment GET, or Storage write;
+      pending references remain resumable.
+
+  # ── Ticketing Amazon mail outbound reply ────────────────────
+  ticketing_amazon_zoho_outbound_reply:
+    owner_repo: retailpulses/ticket-handling
+    domain: ticketing
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: event
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: AMAZON_MAIL_OUTBOUND_ENABLED
+      fail_closed: true
+    safety_profile:
+      category: agent_operations
+      risk_level: high
+      description: >
+        Authenticated Portal operator reply through a fixed Zoho sender, with
+        per-ticket send lease, reviewed-thread revision, durable pre-send
+        baseline, provider readback, and atomic ticket audit finalization.
+      affected_tables:
+        - inbound_ticket_messages
+        - sent_messages
+        - ticket_messages
+        - tickets
+        - ticket_events
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 4
+      expected_request_count_min: 1
+      expected_request_count_max: 10
+      expected_runtime_seconds_max: 60
+      concurrency_max: 1
+      statement_timeout_ms: 15000
+      max_retries: 0
+      retry_strategy: none
+      batch_size_min: 1
+      batch_size_max: 1
+      cursor_strategy: one_operator_operation_with_sent_baseline
+      request_budget:
+        max_requests_per_invocation: 10
+        max_rows_per_invocation: 1
+        max_requests_per_1000_input_rows: 10000
+        bulk_fetch_strategy: none
+        formula: "10 requests / (1 max input row / 1000) = 10000 requests per 1000 rows"
+      egress_contract:
+        client_identity: ticket-handling/ticketing_amazon_zoho_outbound_reply
+        projection_policy: explicit_columns
+        pagination_strategy: bounded_single_page
+        incremental_cursor: "not_applicable: one authenticated operator operation"
+        max_response_bytes_per_invocation: 1048576
+        max_response_bytes_per_day: 10485760
+        warning_budget_pct: 70
+        critical_budget_pct: 100
+      rollout_gates:
+        dry_run_completed: false
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      error_recording:
+        mechanism: sent_messages_ticket_events_and_cloudflare_structured_logs
+        retention_days: 30
+        owner_repo: retailpulses/ticket-handling
+      monitoring:
+        mechanism: cloudflare_worker_logs_and_outbox_status
+        required_metrics: [provider_requests, database_query_count, response_bytes, rows_written, delivery_status, ambiguous_count, retries, errors, runtime_ms, statement_timeout_count, statement_timeout_rate_pct]
+        warning_thresholds: { request_budget_pct: 70, response_byte_budget_pct: 70, rows_written_pct: 80, retry_count: 1, statement_timeout_rate_pct: 5 }
+        critical_thresholds: { request_budget_pct: 100, response_byte_budget_pct: 100, rows_written_pct: 150, retry_count: 1, statement_timeout_rate_pct: 15 }
+      incident_ref: ""
+      rollback: "Set AMAZON_MAIL_OUTBOUND_ENABLED=false; retain outbox and sent audit evidence."
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md#ticketing_amazon_zoho_outbound_reply
+    source_repo: retailpulses/ticket-handling
+    deployed_from: ""
+    approved_by: "pending retailpulses/ticket-handling#235 real reply approval"
+    last_reviewed: "2026-09-07"
+    notes: >
+      Every initial real reply requires explicit approval of ticket, source,
+      sender, recipient, subject, and final Japanese body. Ambiguous results
+      reconcile before any further provider mutation.
+
+  # ── Ticketing Rakuten RMS R-Messe inquiry sync ────────────────
+  ticketing_rakuten_rmesse_sync:
+    owner_repo: retailpulses/ticket-handling
+    domain: ticketing
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: cron
+        expression: "*/2 * * * * UTC"
+      - type: manual
+    status: active
+    kill_switch:
+      method: config_flag
+      identifier: RAKUTEN_RMESSE_INGESTION_MODE
+      fail_closed: true
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Pulls official RMS InquiryManagementAPI inquiries through the fixed-egress
+        OrderMgmt relay, excludes inquiries without an explicit order number, and
+        idempotently creates or appends ticketing records with a ten-minute overlap.
+      affected_tables:
+        - rakuten_rmesse_inquiries
+        - rakuten_rmesse_sync_state
+        - tickets
+        - ticket_messages
+        - ticket_events
+      concurrency_max: 1
+      statement_timeout_ms: 15000
+      max_retries: 0
+      retry_strategy: none
+      request_budget:
+        max_requests_per_invocation: 4021
+        max_requests_per_1000_input_rows: 2011
+        bulk_fetch_strategy: pagination-cursor
+      rollout_gates:
+        dry_run_completed: true
+        kill_switch_tested: true
+        canary_completed: false
+        canary_row_limit: 0
+      incident_ref: "retailpulses/ticket-handling#192"
+      rollback: "Set RAKUTEN_RMESSE_INGESTION_MODE=off and deploy the prior reviewed Worker release; existing ticket rows remain auditable."
+    local_inventory_ref: docs/16_DATABASE_GOVERNANCE.local.md
+    source_repo: retailpulses/ticket-handling
+    deployed_from: "ticket-handling#193"
+    approved_by: "Retailpulses operator request in ticket-handling R-Messe session"
+    approved_at: "2026-08-23"
+    last_reviewed: "2026-08-23"
+    notes: >
+      Shadow mode performs official RMS reads but no database writes. Production
+      rollout requires two healthy shadow cycles before active mode. Outbound
+      customer replies have a separate fail-closed switch and are not part of
+      this scheduled workload.
+
+  # ── RPagentOS Rakuten DeepSeek copy improvement ─────────────────────
+  rakuten_deepseek_copy_live_loop:
+    owner_repo: retailpulses/RPagentOS
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: service_role
+    triggers:
+      - type: cron
+        expression: "17 */2 * * * UTC"
+      - type: manual
+    status: active
+    kill_switch:
+      method: config_flag
+      identifier: COPY_IMPROVEMENT_ENABLED
+      fail_closed: true
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Selects one low-quality Rakuten canonical listing per scheduled run,
+        requests preserve-first Japanese enrichment from DeepSeek, audits hard
+        claims against first-party evidence, and writes only a safe commercial
+        improvement through the revision-checked RPagentOS content endpoint.
+      affected_tables:
+        - platform_listings
+        - listing_qwen_reviews
+      concurrency_max: 1
+      statement_timeout_ms: 15000
+      max_retries: 1
+      retry_strategy: provider_json_repair_once
+      request_budget:
+        max_requests_per_invocation: 16
+        max_requests_per_1000_input_rows: 16000
+        bulk_fetch_strategy: bounded-bulk-reads-max-100-listings
+      rollout_gates:
+        dry_run_completed: true
+        kill_switch_tested: true
+        canary_completed: true
+        canary_row_limit: 1
+      incident_ref: ""
+      rollback: "Disable COPY_IMPROVEMENT_ENABLED or the GitHub schedule; restore content through the revisioned lifecycle API from the audit snapshot."
+    local_inventory_ref: docs/16_DATABASE_GOVERNANCE.local.md
+    source_repo: retailpulses/RPagentOS
+    deployed_from: "RPagentOS@088f5b1442bb92c60f643e75f5d4507f06b2f939"
+    approved_by: "Retailpulses owner request in RPagentOS live-loop session"
+    approved_at: "2026-08-14"
+    last_reviewed: "2026-08-14"
+    notes: >
+      Scheduled batches are fixed at one; manual batches are capped at five.
+      Operator confirmation is optional. Hero, operator-authored, recently
+      reviewed, evidence-poor, conflict-bearing, low-confidence, and
+      non-improving listings fail closed without canonical mutation. This loop
+      does not publish to Rakuten RMS. One-row canonical canary completed in
+      RPagentOS Actions run 31771261819: revision 1 to 2, audit persisted,
+      protected title unchanged, and no stale or failed write.
+
+  # ── RPagentOS manual account metrics portal entry ───────────────────
+  account_metrics_manual_portal_entry:
+    owner_repo: retailpulses/RPagentOS
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: service_role
+    triggers:
+      - type: manual
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: functions/api/account-metrics.ts:onRequestPost
+      fail_closed: true
+    safety_profile:
+      category: agent_operations
+      risk_level: medium
+      description: >
+        Lets a manager insert one validated monthly marketplace account metric
+        row from the RPagentOS metrics page. The Worker verifies the active
+        account, rejects every existing account/month, and exposes no update,
+        delete, overwrite, bulk, scheduled, or retry path.
+      affected_tables:
+        - platform_accounts
+        - platform_account_monthly_metrics
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 0
+      retry_strategy: none
+      request_budget:
+        max_requests_per_invocation: 3
+        max_requests_per_1000_input_rows: 3000
+        bulk_fetch_strategy: none
+      incident_ref: ""
+      rollback: "Disable or remove the account-metrics POST handler and redeploy; retain submitted rows for audit unless an explicit owner-reviewed correction targets exact row IDs."
+    local_inventory_ref: docs/16_DATABASE_GOVERNANCE.local.md
+    source_repo: retailpulses/RPagentOS
+    deployed_from: "retailpulses/RPagentOS#86"
+    approved_by: "Retailpulses owner request in RPagentOS#86"
+    approved_at: "2026-08-24"
+    last_reviewed: "2026-08-24"
+    notes: >
+      The browser never receives a Supabase credential; service_role remains in
+      the server-side Pages Function. The owner explicitly deferred portal-wide
+      authentication, so POST is temporarily unauthenticated and accepts only
+      application/json with strict field, type, range, date, active-account,
+      and account/month conflict validation. RPagentOS#85 tracks retirement of
+      this exception and complete portal authorization. Governance registration
+      evidence: rp-governance-kit#51.
+
+  ops_product_manual_fields:
+    owner_repo: retailpulses/RPagentOS
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: write_scoped
+    triggers:
+      - type: event
+    status: active
+    kill_switch:
+      method: feature_flag
+      identifier: OPS_PRODUCT_WRITES_ENABLED
+      fail_closed: true
+    safety_profile:
+      category: agent_operations
+      risk_level: medium
+      description: >
+        Existing Access operators edit three allowed fields for one Item Code.
+        Ops gateway verifies user JWT; RPagentOS is the sole product writer and
+        logs trusted actor/request ID. No bulk or schedule. Last-write-wins.
+      affected_tables:
+        - product_variants
+        - product_commercials
+      concurrency_max: 1
+      max_retries: 0
+      retry_strategy: none
+      request_budget:
+        max_requests_per_invocation: 3
+        max_requests_per_1000_input_rows: 3000
+        bulk_fetch_strategy: none
+      incident_ref: ""
+      rollback: "Disable Ops writes or remove OPS_CATALOG_API_TOKEN; preserve OrderMgmt token and business rows."
+    local_inventory_ref: docs/16_DATABASE_GOVERNANCE.local.md
+    source_repo: retailpulses/RPagentOS
+    deployed_from: "RPagentOS@df7a0a39a6fa246b55beddf4fab6c75c6e450dbb; ops-portal@e938832bfe17b74b900a8f31cd7ca346e47702d0"
+    approved_by: "User deployment authorization 2026-09-08; rp-governance-kit#74"
+    approved_at: "2026-09-08"
+    last_reviewed: "2026-09-08"
+    notes: >
+      Request-local concurrency one; multiple operators may overlap. Gateway has
+      an 8-second owner deadline, no write retry. Cost computed by existing DB
+      trigger, marketplace sync separate. Three PostgREST calls maximum per PATCH;
+      explicit projections, one affected commercial row, fail on missing/duplicate.
+
+      Release runs 34182183427 / 34182187305 / 34182200835 passed. Owner same-value
+      PATCH and GET were 200 with no business-value change. Gateway writes enabled;
+      existing Access browser login acceptance remains pending.
+  # ── OrderMgmt operator product overrides ───────────────────────────────
+  ordermgmt_manual_product_overrides:
+    owner_repo: retailpulses/OrderMgmt
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: write_scoped
+    triggers:
+      - type: event
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: ORDERMGMT_CATALOG_API_TOKEN
+      fail_closed: true
+    safety_profile:
+      category: agent_operations
+      risk_level: medium
+      description: >
+        An authenticated OrderMgmt portal operator updates up to three explicitly
+        allowed manual commercial overrides for one canonical SKU per request.
+        RPagentOS owns validation, identity resolution, audit evidence, and the
+        product_catalog write. There is no bulk or scheduled mode.
+      affected_tables:
+        - product_variants
+        - product_commercials
+      concurrency_max: 1
+      statement_timeout_ms: 5000
+      max_retries: 0
+      retry_strategy: none
+      request_budget:
+        max_requests_per_invocation: 1
+        max_requests_per_1000_input_rows: 1000
+        bulk_fetch_strategy: none
+      incident_ref: ""
+      rollback: "Roll back the OrderMgmt Portal deployment or remove ORDERMGMT_CATALOG_API_TOKEN from the owner API."
+    local_inventory_ref: docs/16_DATABASE_GOVERNANCE.local.md
+    source_repo: retailpulses/OrderMgmt
+    deployed_from: "RPagentOS@39d15cbbbaf71bf74e8a716301be41d995180819; OrderMgmt@6335d53fe855312432194e71b361f060dbbc8027"
+    approved_by: "retailpulses/rp-governance-kit#39"
+    approved_at: "2026-08-13"
+    last_reviewed: "2026-08-13"
+    notes: >
+      Issue retailpulses/OrderMgmt#174. The dedicated credential is server-side
+      only. Unknown fields, ambiguous SKU identities, missing commercial rows,
+      and owner audit failures fail closed.
+
+  # ── Ticketing Seller Share Event API ──────────────────────────────────
+  ticket_share_event_api:
+    owner_repo: retailpulses/ticket-handling
+    domain: ticketing
+    mode: write
+    access_path: postgrest
+    credential_class: write_scoped
+    triggers:
+      - type: event
+    status: pending_approval
+    kill_switch:
+      method: deploy_rollback
+      identifier: ENABLE_TICKET_SHARES
+    safety_profile:
+      category: agent_operations
+      risk_level: medium
+      description: >
+        Event-driven operator create/rotate/revoke operations and seller page
+        resolve/evidence authorization for seven-day ticket share links. The
+        ConoHa viewer calls an authenticated ticketing Worker bridge and has no
+        direct database credentials.
+      affected_tables:
+        - tickets
+        - ticket_products
+        - ticket_attachments
+        - platform_accounts
+        - ticket_share_tokens
+        - ticket_share_attachments
+      concurrency_max: 1
+      statement_timeout_ms: 5000
+      max_retries: 0
+      retry_strategy: none
+      request_budget:
+        max_requests_per_invocation: 6
+        max_requests_per_1000_input_rows: 6000
+        bulk_fetch_strategy: none
+      incident_ref: ""
+      rollback: "Deploy rollback to remove ENABLE_TICKET_SHARES flag"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    approved_by: "retailpulses/ticket-handling#151"
+    approved_at: "2026-07-16"
+    last_reviewed: "2026-07-16"
+    notes: >
+      Migration replay and functional lifecycle tests passed in isolated local
+      PostgreSQL. `none` bulk-fetch strategy is intentional because each request
+      is scoped to one ticket/share; product and attachment reads are batched,
+      never N+1. Create/rotate retries are idempotent by client operation UUID,
+      but the Worker performs no automatic retry. Production remains pending
+      until the reviewed ticket-handling commit is recorded in deployed_from,
+      schema backup/preflight gates pass, and the ConoHa canary completes.
+
+  # Example entries moved to templates/DATABASE_WORKLOAD.example.yaml
+
+  # ── Inquiry Mail Ingestion ──────────────────────────────────────────────
+  inquiry_mail_ingestion:
+    owner_repo: retailpulses/workers
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: cron
+        expression: "*/30 * * * *"
+        mode: full
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_INGEST_WRITES_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+    safety_profile:
+      category: syncs
+      risk_level: high
+      description: >
+        Mail ingestion Worker creates and updates inquiries from Zoho emails.
+        New production write path — requires full high-risk rollout gates.
+      affected_tables:
+        - inquiries
+        - inquiry_product_links
+        - inquiry_knowledge_links
+      affected_domains:
+        - inquiry_management
+        - product_catalog
+      read_dependencies:
+        - product_catalog.product_variants
+        - product_catalog.platform_accounts
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 100
+      expected_request_count_min: 1
+      expected_request_count_max: 50
+      expected_runtime_seconds_max: 120
+      concurrency_max: 2
+      statement_timeout_ms: 15000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 100
+      cursor_strategy: zoho_cursor_with_bounded_in_clause_reads
+      source_repo: retailpulses/workers
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 50
+        max_rows_per_invocation: 100
+        max_requests_per_1000_input_rows: 500
+        bulk_fetch_strategy: IN-clause-batch
+        formula: "50 requests / (100 max input rows / 1000) = 500 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: source_message_identity
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: cloudflare_worker_structured_logs
+        retention_days: 30
+        owner_repo: retailpulses/workers
+      rollout_gates:
+        dry_run_completed: false
+        dry_run_evidence_ref: "pending retailpulses/workers#20 Stage C evidence"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 10
+      monitoring:
+        mechanism: cloudflare_worker_logs_and_cron_metrics
+        required_metrics:
+          - input_rows
+          - inserted_rows
+          - updated_rows
+          - error_count
+          - retry_budget_consumed
+          - statement_timeout_count
+        warning_thresholds:
+          error_count: 1
+          retry_budget_pct: 30
+        critical_thresholds:
+          error_rate_pct: 10
+          retry_budget_pct: 50
+      rollback: "Set INQUIRY_INGEST_WRITES_ENABLED=false"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    local_inventory_status: pending_in_owner_repo
+    notes: >
+      Replaces Baserow table 886975 writes. Kill switch is evaluated fail-closed at
+      batch boundaries. retailpulses/workers PR #20 must add and populate the declared
+      local inventory path before this workload may activate.
+
+  # ── Inquiry Automation Worker ───────────────────────────────────────────
+  inquiry_automation_worker:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: cron
+        expression: "*/30 * * * *"
+        mode: full
+    status: active
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_AUTOMATION_WRITES_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+    safety_profile:
+      category: agent_operations
+      risk_level: high
+      description: >
+        Classification, product linking, and draft generation Worker.
+        New production write path — requires full high-risk rollout gates.
+      affected_tables:
+        - inquiries
+        - inquiry_product_links
+      affected_domains:
+        - inquiry_management
+        - product_catalog
+      read_dependencies:
+        - product_catalog.product_variants
+        - product_catalog.platform_accounts
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 150
+      expected_request_count_min: 1
+      expected_request_count_max: 200
+      expected_runtime_seconds_max: 300
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 50
+      cursor_strategy: durable_object_cursor_with_bounded_bulk_reads
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: "Cloudflare version f6aa4026-8aa0-48bc-a805-ef3013a84057; source commit mapping pending"
+      request_budget:
+        max_requests_per_invocation: 200
+        max_rows_per_invocation: 50
+        max_requests_per_1000_input_rows: 4000
+        bulk_fetch_strategy: IN-clause-batch
+        formula: "200 requests / (50 max input rows / 1000) = 4000 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: workflow_state_transition
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: cloudflare_worker_structured_logs
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: false
+        dry_run_evidence_ref: "pending retailpulses/inquiry-automation#35 integrated Stage C"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 10
+      monitoring:
+        mechanism: cloudflare_worker_logs_durable_object_metrics_and_cron_metrics
+        required_metrics:
+          - input_rows
+          - classified_rows
+          - linked_rows
+          - drafted_rows
+          - error_count
+          - request_count
+          - retry_budget_consumed
+          - statement_timeout_count
+        warning_thresholds:
+          error_count: 1
+          retry_budget_pct: 30
+        critical_thresholds:
+          error_rate_pct: 10
+          retry_budget_pct: 50
+      rollback: "Set INQUIRY_AUTOMATION_WRITES_ENABLED=false"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+
+  # ── Inquiry Dashboard Mutations ─────────────────────────────────────────
+  inquiry_dashboard_mutations:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_DASHBOARD_MUTATIONS_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+    safety_profile:
+      category: agent_operations
+      risk_level: high
+      description: >
+        Operator dashboard mutations (status changes, product links, drafts,
+        copywriting, units). Protected by Cloudflare Access JWT validation.
+        Bounded interactive writes. Classified High during the new-path rollout;
+        any later downgrade requires evidence and a separately reviewed declaration.
+      affected_tables:
+        - inquiries
+        - inquiry_product_links
+      affected_domains:
+        - inquiry_management
+        - product_catalog
+      read_dependencies:
+        - product_catalog.product_variants
+        - product_catalog.platform_accounts
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 2
+      expected_request_count_min: 1
+      expected_request_count_max: 10
+      expected_runtime_seconds_max: 15
+      concurrency_max: 5
+      statement_timeout_ms: 10000
+      max_retries: 0
+      retry_strategy: none
+      batch_size_min: 1
+      batch_size_max: 1
+      cursor_strategy: bounded_single_mutation_with_cursor_paginated_search
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 10
+        max_rows_per_invocation: 1
+        max_requests_per_1000_input_rows: 10000
+        bulk_fetch_strategy: pagination-cursor
+        formula: "10 requests / (1 max input row / 1000) = 10000 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: operator_submitted_field_diff
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: cloudflare_pages_function_structured_logs
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: false
+        dry_run_evidence_ref: "pending retailpulses/inquiry-automation#35 integrated Stage C"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      monitoring:
+        mechanism: cloudflare_pages_function_logs
+        required_metrics:
+          - mutation_count
+          - authorization_failure_count
+          - error_count
+          - statement_timeout_count
+        warning_thresholds:
+          error_count: 1
+        critical_thresholds:
+          authorization_bypass_count: 1
+          error_rate_pct: 10
+      rollback: "Set INQUIRY_DASHBOARD_MUTATIONS_ENABLED=false"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+
+  # ── Mercari Inquiry API-first webhook ingestion ────────────────────────
+  inquiry_mercari_webhook_ingestion:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: event
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_MERCARI_INGEST_WRITES_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+    safety_profile:
+      category: syncs
+      risk_level: medium
+      description: >
+        Durably records Mercari inquiry webhook notifications, performs
+        authoritative thread readback through the fixed-egress relay, excludes
+        order targets, and reconciles one presales thread per atomic RPC.
+      affected_tables:
+        - inquiry_webhook_events
+        - inquiries
+        - inquiry_messages
+        - inquiry_quarantine
+        - inquiry_follow_up_events
+      affected_domains:
+        - inquiry_management
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 50
+      expected_request_count_min: 1
+      expected_request_count_max: 25
+      expected_runtime_seconds_max: 30
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 1
+      cursor_strategy: durable_event_identity_then_thread_message_cursor
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 25
+        max_rows_per_invocation: 50
+        max_requests_per_1000_input_rows: 500
+        bulk_fetch_strategy: pagination-cursor
+        formula: "25 requests / (50 max rows / 1000) = 500 requests per 1000 rows"
+      egress_contract:
+        client_identity: inquiry-automation-worker/inquiry_mercari_webhook_ingestion
+        projection_policy: explicit_columns
+        pagination_strategy: cursor
+        incremental_cursor: durable event identity plus Mercari message endCursor
+        max_response_bytes_per_invocation: 9939
+        max_response_bytes_per_day: 1000000
+        warning_budget_pct: 70
+        critical_budget_pct: 100
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: external_identity_plus_business_field_diff
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: durable_event_retry_and_quarantine_plus_worker_logs
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: true
+        dry_run_evidence_ref: "retailpulses/inquiry-automation#92 local migration replay and contract tests"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      monitoring:
+        mechanism: inquiry event ledger and Cloudflare Worker logs
+        required_metrics:
+          - received_count
+          - duplicate_count
+          - processed_count
+          - failed_count
+          - quarantine_count
+          - statement_timeout_count
+        warning_thresholds:
+          failed_count: 1
+        critical_thresholds:
+          duplicate_canonical_identity_count: 1
+          order_target_inquiry_projection_count: 1
+      rollback: "Set INQUIRY_MERCARI_INGEST_WRITES_ENABLED=false; preserve raw inbox and cursor"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    notes: >
+      Activation is forbidden until the existing mail writer is disabled at a
+      recorded ownership epoch. Issue: retailpulses/inquiry-automation#92.
+
+  # ── Mercari Inquiry daily completeness audit ───────────────────────────
+  inquiry_mercari_daily_completeness_audit:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: cron
+        expression: "0 16 * * * UTC"
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_COMPLETENESS_AUDIT_WRITES_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Once-daily 72-hour bounded completeness scan per shop. Mercari list and
+        message reads are cursor capped; each changed thread is reconciled by one
+        database RPC and unchanged business rows are never rewritten.
+      affected_tables:
+        - inquiries
+        - inquiry_messages
+        - inquiry_ingestion_runs
+      affected_domains:
+        - inquiry_management
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 1000
+      expected_request_count_min: 4
+      expected_request_count_max: 1040
+      expected_runtime_seconds_max: 300
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 50
+      cursor_strategy: seventy_two_hour_window_with_inquiry_and_message_end_cursors
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 1040
+        max_rows_per_invocation: 1000
+        max_requests_per_1000_input_rows: 1040
+        bulk_fetch_strategy: pagination-cursor
+        formula: "20 inquiry pages + one bounded thread read/RPC per 1000 max rows"
+      egress_contract:
+        client_identity: inquiry-automation-worker/inquiry_mercari_daily_completeness_audit
+        projection_policy: explicit_columns
+        pagination_strategy: cursor
+        incremental_cursor: 72-hour JST-neutral timestamp window plus GraphQL endCursor
+        max_response_bytes_per_invocation: 9939
+        max_response_bytes_per_day: 1000000
+        warning_budget_pct: 70
+        critical_budget_pct: 100
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: atomic_thread_business_field_diff
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: inquiry_ingestion_runs plus bounded error samples
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: true
+        dry_run_evidence_ref: "retailpulses/inquiry-automation#92 unchanged replay rows_written=0"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 10
+      monitoring:
+        mechanism: inquiry_ingestion_runs and Cloudflare Worker logs
+        required_metrics:
+          - scanned
+          - compared
+          - recovered
+          - rows_written
+          - unchanged_rows_written
+          - error_count
+          - request_count
+          - response_bytes
+        warning_thresholds:
+          error_count: 1
+          unchanged_rows_written: 1
+        critical_thresholds:
+          request_budget_pct: 100
+          unchanged_write_ratio_pct: 10
+      rollback: "Set INQUIRY_COMPLETENESS_AUDIT_WRITES_ENABLED=false; retain run evidence"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+
+  # ── Mercari Inquiry operator outbound ──────────────────────────────────
+  inquiry_operator_send:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_OUTBOUND_SEND_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+    safety_profile:
+      category: agent_operations
+      risk_level: high
+      description: >
+        Authenticated operator click claims one inquiry cycle, fresh-reads the
+        platform thread, sends one idempotent Mercari message, performs
+        authoritative readback, and atomically finalizes message/follow-up facts.
+      affected_tables:
+        - inquiries
+        - inquiry_messages
+        - inquiry_outbound_operations
+        - inquiry_follow_up_events
+      affected_domains:
+        - inquiry_management
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 4
+      expected_request_count_min: 1
+      expected_request_count_max: 10
+      expected_runtime_seconds_max: 30
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 0
+      retry_strategy: none
+      batch_size_min: 1
+      batch_size_max: 1
+      cursor_strategy: inquiry_cycle_claim_and_authoritative_message_readback
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 10
+        max_rows_per_invocation: 1
+        max_requests_per_1000_input_rows: 10000
+        bulk_fetch_strategy: pagination-cursor
+        formula: "10 requests / (1 max input row / 1000) = 10000 requests per 1000 rows"
+      egress_contract:
+        client_identity: inquiry-dashboard/inquiry_operator_send
+        projection_policy: explicit_columns
+        pagination_strategy: bounded_single_page
+        incremental_cursor: "not_applicable: one operator-selected inquiry cycle"
+        max_response_bytes_per_invocation: 9939
+        max_response_bytes_per_day: 1000000
+        warning_budget_pct: 70
+        critical_budget_pct: 100
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: claim_then_platform_readback_then_atomic_finalize
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: durable outbound operation ledger plus Pages logs
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: true
+        dry_run_evidence_ref: "retailpulses/inquiry-automation#92 local SQL lifecycle and stale-thread tests"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      monitoring:
+        mechanism: inquiry_outbound_operations and Cloudflare Pages logs
+        required_metrics:
+          - attempted_count
+          - confirmed_count
+          - ambiguous_count
+          - failed_count
+          - duplicate_send_count
+        warning_thresholds:
+          ambiguous_count: 1
+        critical_thresholds:
+          duplicate_send_count: 1
+          unauthorized_send_count: 1
+      rollback: "Set INQUIRY_OUTBOUND_SEND_ENABLED=false; reconcile ambiguous operations before retry"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+
+  # ── Inquiry VPS Enrichment ──────────────────────────────────────────────
+  inquiry_vps_enrichment:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_ENRICHMENT_WRITES_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+      secondary_method: process_signal
+      secondary_identifier: SIGINT_or_SIGTERM
+    safety_profile:
+      category: syncs
+      risk_level: high
+      description: >
+        VPS browser enrichment extracts Mercari inquiry details (customer name,
+        product ID, variant name, message content) via Playwright and writes through
+        PostgREST from ConoHa VPS using a write-scoped credential.
+      affected_tables:
+        - inquiries
+        - inquiry_product_links
+      affected_domains:
+        - inquiry_management
+        - product_catalog
+      read_dependencies:
+        - product_catalog.product_variants
+        - product_catalog.platform_accounts
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 100
+      expected_request_count_min: 1
+      expected_request_count_max: 100
+      expected_runtime_seconds_max: 900
+      concurrency_max: 1
+      statement_timeout_ms: 15000
+      max_retries: 2
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 50
+      cursor_strategy: bounded_input_ids_with_in_clause_resolution
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 50
+        max_requests_per_1000_input_rows: 2000
+        bulk_fetch_strategy: IN-clause-batch
+        formula: "100 requests / (50 max input rows / 1000) = 2000 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: extracted_field_diff
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: structured_local_run_artifact
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: false
+        dry_run_evidence_ref: "pending retailpulses/inquiry-automation#35 integrated Stage C"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 5
+      monitoring:
+        mechanism: vps_structured_run_report_and_postgrest_response_metrics
+        required_metrics:
+          - input_rows
+          - enriched_rows
+          - linked_rows
+          - skipped_unchanged_rows
+          - error_count
+          - retry_budget_consumed
+          - statement_timeout_count
+        warning_thresholds:
+          error_count: 1
+          retry_budget_pct: 30
+        critical_thresholds:
+          error_rate_pct: 10
+          retry_budget_pct: 50
+      rollback: "Set INQUIRY_ENRICHMENT_WRITES_ENABLED=false"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+
+  # ── Inquiry Follow-up ───────────────────────────────────────────────────
+  inquiry_follow_up:
+    owner_repo: retailpulses/skills:mercari-inquiry-follow-up
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: manual
+    status: pending_approval
+    kill_switch:
+      method: config_flag
+      identifier: INQUIRY_FOLLOWUP_DB_WRITES_ENABLED
+      fail_closed: true
+      disabled_value: "false"
+      independent_external_send_flag: INQUIRY_EXTERNAL_SEND_ENABLED
+    safety_profile:
+      category: agent_operations
+      risk_level: high
+      description: >
+        Follow-up skill writes follow_up_status and follow_up_sent_at.
+        External Mercari message sends are controlled by a separate
+        INQUIRY_EXTERNAL_SEND_ENABLED kill switch.
+      affected_tables:
+        - inquiries
+      affected_domains:
+        - inquiry_management
+      expected_volume_rows_min: 0
+      expected_volume_rows_max: 50
+      expected_request_count_min: 1
+      expected_request_count_max: 100
+      expected_runtime_seconds_max: 900
+      concurrency_max: 1
+      statement_timeout_ms: 10000
+      max_retries: 2
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 50
+      cursor_strategy: cursor_paginated_eligibility_read
+      source_repo: retailpulses/skills
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 50
+        max_requests_per_1000_input_rows: 2000
+        bulk_fetch_strategy: pagination-cursor
+        formula: "100 requests / (50 max input rows / 1000) = 2000 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: follow_up_sent_at_idempotency_guard
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: durable_skill_audit_report
+        retention_days: 30
+        owner_repo: retailpulses/skills
+      rollout_gates:
+        dry_run_completed: false
+        dry_run_evidence_ref: "pending clean replacement of retailpulses/skills#7"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      monitoring:
+        mechanism: per_run_skill_audit_report
+        required_metrics:
+          - eligible_rows
+          - database_updates
+          - external_send_attempts
+          - external_send_successes
+          - error_count
+          - retry_budget_consumed
+        warning_thresholds:
+          error_count: 1
+        critical_thresholds:
+          duplicate_send_count: 1
+          unauthorized_send_count: 1
+      rollback: "Set INQUIRY_FOLLOWUP_DB_WRITES_ENABLED=false"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    local_inventory_status: requires_phase1_entry_update
+    notes: >
+      The skills repository has this inventory path, but its inquiry follow-up entry
+      must be updated to the canonical inquiry_management workload before activation.
+
+  # ── One-time Inquiry Historical Migration ───────────────────────────────
+  inquiry_historical_migration:
+    owner_repo: retailpulses/inquiry-automation
+    domain: inquiry_management
+    mode: write
+    access_path: postgrest
+    credential_class: service_role
+    triggers:
+      - type: manual
+        mode: one_time
+    status: pending_approval
+    depends_on:
+      - coordinated_RPagentOS_mercari_inquiries_retirement_PR
+    kill_switch:
+      method: process_signal
+      identifier: SIGINT_or_SIGTERM
+      fail_closed: true
+      write_enablement: explicit_confirm_flag_required
+    safety_profile:
+      category: backfills
+      risk_level: high
+      description: >
+        One-time import and consolidation of approved Baserow extracts plus the
+        legacy mercari_inquiries report into the canonical Phase 1 tables. Runtime
+        Baserow access is forbidden; only bounded migration tooling may read extracts.
+      affected_tables:
+        - inquiries
+        - inquiry_product_links
+        - knowledge_articles
+        - inquiry_knowledge_links
+      affected_domains:
+        - inquiry_management
+        - product_catalog
+      read_dependencies:
+        - product_catalog.product_variants
+        - product_catalog.platform_accounts
+        - legacy mercari_inquiries report
+      expected_volume_rows_min: 700
+      expected_volume_rows_max: 10000
+      expected_request_count_min: 20
+      expected_request_count_max: 1000
+      expected_runtime_seconds_max: 3600
+      concurrency_max: 1
+      statement_timeout_ms: 60000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      batch_size_min: 1
+      batch_size_max: 50
+      cursor_strategy: bounded_ndjson_stream_with_50_value_lookup_batches
+      source_repo: retailpulses/inquiry-automation
+      deployed_from: ""
+      request_budget:
+        max_requests_per_invocation: 1000
+        max_rows_per_invocation: 10000
+        max_requests_per_1000_input_rows: 100
+        bulk_fetch_strategy: IN-clause-batch
+        formula: "1000 requests / (10000 max input rows / 1000) = 100 requests per 1000 rows"
+      change_aware_writes:
+        enabled: true
+        freshness_strategy: idempotent_provenance_keys_and_field_diff_upserts
+        unchanged_write_ratio_target: 0.0
+      error_recording:
+        mechanism: machine_readable_reconciliation_and_error_artifacts
+        retention_days: 30
+        owner_repo: retailpulses/inquiry-automation
+      rollout_gates:
+        dry_run_completed: true
+        dry_run_evidence_ref: "retailpulses/inquiry-automation#35 local Stage C fixture replay"
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 10
+      monitoring:
+        mechanism: operator_console_plus_machine_readable_reconciliation_report
+        required_metrics:
+          - source_rows
+          - inserted_rows
+          - updated_rows
+          - skipped_rows
+          - field_mismatch_count
+          - error_count
+          - retry_budget_consumed
+          - statement_timeout_count
+        warning_thresholds:
+          error_count: 1
+          field_mismatch_count: 1
+          retry_budget_pct: 30
+        critical_thresholds:
+          reconciliation_failure_count: 1
+          retry_budget_pct: 50
+      rollback: >
+        Send SIGINT/SIGTERM, revoke the temporary migration credential, and retain
+        reconciliation evidence; destructive rollback requires separate approval.
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    notes: >
+      Local fixture replay is complete, but hosted extraction/import, kill-switch
+      test, canary, and production activation remain unapproved. The coordinated
+      RPagentOS migration must not rename public.mercari_inquiries or create its
+      temporary read-only compatibility view until this workload's canonical
+      completeness guard passes. The RPagentOS PR reference is pending.
+
+  # ── CatalogSync Product Mirror ─────────────────────────────────────────
+  catalogsync_product_mirror:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: write_scoped
+    triggers:
+      - type: manual
+    status: disabled
+    kill_switch:
+      method: worker_cancel
+      identifier: catalogsync.timer
+    safety_profile:
+      category: syncs
+      risk_level: high
+      description: >
+        Product catalog mirror — reads product data from RPagentOS and writes
+        to product_catalog domain tables. Disabled due to resource-exhaustion
+        incident #23.
+      affected_tables:
+        - products
+        - product_variants
+        - platform_listings
+      concurrency_max: 2
+      statement_timeout_ms: 30000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      request_budget:
+        max_requests_per_invocation: 100
+        max_requests_per_1000_input_rows: 18
+        bulk_fetch_strategy: bulk-endpoint
+      incident_ref: "retailpulses/CatalogSync#23"
+      rollback: "Worker cancel + deploy rollback; see DATABASE_INCIDENT_RESPONSE.md"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    approved_by: "Requires explicit re-approval after incident #23 remediation"
+    approved_at: ""
+    last_reviewed: ""
+    notes: >
+      Disabled after resource-exhaustion incident #23. Re-enable requires:
+      (1) explicit infra authority approval,
+      (2) access path verified and declared,
+      (3) batch size bounded to 100-250, request budget to tens/low hundreds,
+      (4) change-aware writes with run-level freshness,
+      (5) all rollout gates completed in sequence,
+      (6) deployed from a reviewed Git commit (no untracked VPS source).
+
+  # ── CatalogSync Marketplace Projection API ────────────────────────────
+  catalogsync_giga_mercari_daily_publish:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: write_scoped
+    triggers:
+      - type: cron
+        schedule: "daily before 08:00 Asia/Tokyo"
+    status: active
+    kill_switch:
+      method: environment_flag
+      identifier: CATALOGSYNC_GIGA_MERCARI_PIPELINE_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: high
+      description: >
+        Bounded GigaB2B saved-product import through RPagentOS owner APIs,
+        followed by scored four-shop Mercari UNOPENED admission and verified
+        listing-state writeback. Initial window is seven days; subsequent
+        windows use the last successful cutoff.
+      affected_tables:
+        - source_import_runs
+        - source_import_rows
+        - product_variants
+        - product_commercials
+        - platform_listings
+        - platform_listing_skus
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 2
+      retry_strategy: exponential_backoff
+      request_budget:
+        max_requests_per_invocation: 50
+        max_requests_per_1000_input_rows: 40
+        bulk_fetch_strategy: owner-api-batches-max-100
+      rollout_gates:
+        dry_run_completed: false
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      rollback: "Disable environment flag and remove cron; retain immutable prior VPS release"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    approved_by: "Retailpulses owner; requested production build/deploy in retailpulses/CatalogSync#75"
+    approved_at: "2026-08-04"
+    last_reviewed: "2026-08-04"
+    notes: >
+      CatalogSync has no schema authority and no direct database credential.
+      RPagentOS owns validation, conflict detection, and database writes. Mercari
+      side effects are serialized with existing per-shop locks and use exact SKU
+      readback before owner state is accepted.
+
+  catalogsync_mercari_weekly_mapping_reconciliation:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: write_scoped
+    triggers:
+      - type: cron
+        schedule: "weekly gate inside existing full sync; Monday 03:00-04:00 Asia/Tokyo staggered by shop"
+    status: active
+    kill_switch:
+      method: environment_flag
+      identifier: CATALOGSYNC_MERCARI_MAPPING_RECONCILIATION_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Reuses each shop full-sync Mercari OPENED snapshot to detect live SKU
+        identities missing from owner mappings. Deterministic candidates are
+        repaired only through the RPagentOS listing-state owner API; the weekly
+        phase performs no Mercari mutation and adds no Mercari API request.
+      affected_tables:
+        - platform_listings
+        - platform_listing_skus
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 2
+      retry_strategy: exponential_backoff
+      request_budget:
+        max_requests_per_invocation: 3
+        max_requests_per_1000_input_rows: 120
+        bulk_fetch_strategy: owner-api-batches-max-100
+      rollout_gates:
+        dry_run_completed: false
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      rollback: >
+        Disable CATALOGSYNC_MERCARI_MAPPING_REPAIR_ENABLED to retain detect-only,
+        or disable CATALOGSYNC_MERCARI_MAPPING_RECONCILIATION_ENABLED entirely.
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    approved_by: "Retailpulses owner; autonomous weekly reconciliation requested in retailpulses/CatalogSync#148"
+    approved_at: "2026-08-30"
+    last_reviewed: "2026-08-30"
+    notes: >
+      Automatic repair cap is 25 rows per shop/run. Idempotency binds shop,
+      item code, Mercari product ID and variant ID. Unknown, ambiguous, inactive,
+      blank-SKU and conflicting identities are quarantined. Exact owner projection
+      readback is required before success; failure is isolated from existing
+      quantity reconciliation and retries cool down for six hours with no more
+      than three attempts per ISO week.
+
+  catalogsync_mercari_hourly_fifo_open:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: write
+    access_path: internal_api
+    credential_class: write_scoped
+    triggers:
+      - type: cron
+        schedule: "7 8-20 * * * Asia/Tokyo"
+    status: active
+    kill_switch:
+      method: environment_flag
+      identifier: CATALOGSYNC_MERCARI_AUTO_OPEN_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: high
+      description: >
+        Opens at most one owner-queued Mercari listing per shop and hour using
+        persisted queued_at FIFO, then writes verified OPENED IDs/status through
+        the RPagentOS listing-state owner API.
+      affected_tables:
+        - platform_listings
+        - platform_listing_skus
+      concurrency_max: 1
+      statement_timeout_ms: 30000
+      max_retries: 2
+      retry_strategy: exponential_backoff
+      request_budget:
+        max_requests_per_invocation: 8
+        max_requests_per_1000_input_rows: 20
+        bulk_fetch_strategy: owner-api-batches-max-100
+      rollout_gates:
+        dry_run_completed: false
+        kill_switch_tested: false
+        canary_completed: false
+        canary_row_limit: 1
+      rollback: "Disable environment flag and restore prior immutable opener release"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    approved_by: "Retailpulses owner; requested production build/deploy in retailpulses/CatalogSync#75"
+    approved_at: "2026-08-04"
+    last_reviewed: "2026-08-04"
+    notes: >
+      Direct Supabase reads were removed. Pending external-success/internal-write
+      uncertainty is durably reconciled before further queue progress.
+
+  catalogsync_marketplace_projection_api_read:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: read_only
+    access_path: postgrest
+    credential_class: read_only
+    triggers:
+      - type: manual
+    # schedule enabled only after rollout gates
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: CATALOGSYNC_MARKETPLACE_PROJECTION_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Read-only PostgREST workload used by the CatalogSync Cloudflare Worker
+        to serve authenticated Amazon and Rakuten marketplace projections to VPS
+        consumers. The Worker may read only the RPagentOS-owned
+        catalogsync_marketplace_projection_v1 view.
+      affected_tables:
+        - catalogsync_marketplace_projection_v1
+      concurrency_max: 4
+      statement_timeout_ms: 10000
+      max_retries: 2
+      retry_strategy: exponential_backoff_with_jitter
+
+      request_budget:
+        max_requests_per_invocation: 50
+        max_requests_per_1000_input_rows: 20
+        bulk_fetch_strategy: pagination-cursor
+
+      incident_ref: ""
+      rollback: "Deploy rollback to disable CATALOGSYNC_MARKETPLACE_PROJECTION_ENABLED"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    credential_contract:
+      role: catalogsync_marketplace_reader
+      service_role_forbidden: true
+      generic_anon_forbidden: true
+      operation_mode: read_only
+    approved_by: "Retailpulses owner; evidence retailpulses/RPagentOS#32 issuecomment-4999776725"
+    approved_at: "2026-07-17"
+    last_reviewed: "2026-07-17"
+    notes: >
+      Two-hop architecture: VPS consumers call the CatalogSync-owned
+      authenticated internal API; the CatalogSync Worker separately reads the
+      RPagentOS-owned projection through this declared PostgREST workload. No
+      automatic fallback, database writes, base-table grants, schema privilege,
+      or service-role credential. Production activation requires the owner
+      migration, dedicated role JWT, endpoint smoke tests, SKU-scoped dry-runs,
+      and deployed_from evidence.
+
+  # ── CatalogSync Rakuten direct VPS read projection ──────────────────
+  catalogsync_rakuten_vps_read:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: read_only
+    access_path: postgrest
+    credential_class: read_only
+    triggers:
+      - type: cron
+        expression: "*/10 * * * *"
+        mode: full
+    status: active
+    kill_switch:
+      method: config_flag
+      identifier: CATALOGSYNC_RAKUTEN_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Direct read-only Supabase projection for the Rakuten inventory consumer
+        on the CatalogSync ConoHa VPS. Reads only the owner-managed marketplace
+        projection view and performs no database writes.
+      affected_tables:
+        - catalogsync_marketplace_projection_v1
+      concurrency_max: 1
+      statement_timeout_ms: 20000
+      max_retries: 2
+      retry_strategy: exponential_backoff_with_jitter
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 25000
+        max_requests_per_1000_input_rows: 10
+        bulk_fetch_strategy: pagination-cursor
+      incident_ref: "retailpulses/CatalogSync#61"
+      rollback: "Set CATALOGSYNC_RAKUTEN_ENABLED=false and restore the prior immutable release"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    credential_contract:
+      role: catalogsync_marketplace_reader
+      service_role_forbidden: true
+      generic_anon_forbidden: true
+      database_writes_forbidden: true
+      rotation_days_max: 90
+      storage: /etc/catalogsync/rakuten.env
+      file_mode: "0600"
+    approved_by: "Retailpulses owner instruction to complete CatalogSync#61"
+    approved_at: "2026-07-20"
+    last_reviewed: "2026-07-20"
+    notes: >
+      Runtime is ConoHa VPS 160.251.141.110. The dedicated Supabase Auth
+      identity receives short-lived JWTs bound to catalogsync_marketplace_reader
+      and may select only catalogsync_marketplace_projection_v1. No Worker,
+      Baserow, base-table, service-role, generic-anon, direct-PostgreSQL, or
+      automatic fallback path is permitted. Activation requires a reviewed
+      CatalogSync release, full dry-run, scoped Rakuten canary, marketplace
+      verification, and failed-listing report reconciliation.
+
+  # ── CatalogSync Mercari shop4 read projection ─────────────────────────
+  catalogsync_mercari_shop4_read:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: read_only
+    access_path: postgrest
+    credential_class: read_only
+    triggers:
+      - type: cron
+        expression: "*/10 * * * *"
+        mode: full
+      - type: cron
+        expression: "* * * * *"
+        delay_seconds: 30
+        mode: priority
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: CATALOGSYNC_SHOP4_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Read-only Supabase projection used by the CatalogSync VPS to reconcile
+        Mercari shop4 inventory, presale title prefix, and shipping lead time.
+        It does not write Supabase and does not cover shops 1-3, Amazon,
+        Rakuten, dashboards, or archival.
+      affected_tables:
+        - platform_accounts
+        - platform_listings
+        - platform_listing_skus
+        - product_variants
+        - product_commercials
+      concurrency_max: 1
+      statement_timeout_ms: 20000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 25000
+        max_requests_per_1000_input_rows: 5
+        bulk_fetch_strategy: pagination-cursor
+      incident_ref: "retailpulses/CatalogSync#23"
+      rollback: "Deploy rollback to disable CATALOGSYNC_SHOP4_ENABLED"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    credential_contract:
+      role: catalogsync_shop4_reader
+      service_role_forbidden: true
+      database_writes_forbidden: true
+      rotation_days_max: 90
+      storage: /root/mercari-sync/.env
+      file_mode: "0600"
+    approved_by: "retailpulses/CatalogSync#29"
+    approved_at: "2026-07-17"
+    last_reviewed: "2026-07-17"
+    notes: >
+      Owner approval via RPagentOS PRs 33 and 34 (read-only shop4 projection
+      and dedicated Auth identity).
+
+      Active views: catalogsync_mercari_shop4_listing_map_v1 and
+      catalogsync_mercari_shop4_catalog_v1. The dedicated
+      catalogsync_shop4_reader credential is limited to the approved Shop4
+      projections and cannot read Shops 1-3 or base tables. Migration to the
+      planned shared projections is a separate, not-yet-activated change.
+
+      The runtime token must never be a Supabase service-role credential.
+      Completion report at CatalogSync PR #32.
+
+  # ── CatalogSync Mercari shop1 read projection ─────────────────────────
+  catalogsync_mercari_shop1_read:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: read_only
+    access_path: postgrest
+    credential_class: read_only
+    triggers:
+      - type: cron
+        expression: "*/10 * * * *"
+        mode: full
+      - type: cron
+        expression: "* * * * *"
+        delay_seconds: 30
+        mode: priority
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: CATALOGSYNC_SHOP1_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Read-only Supabase projection for Mercari shop1 inventory, presale
+        title prefix, and shipping lead time reconciliation. Matches the
+        active shop4 pattern. Does not write Supabase.
+      affected_tables:
+        - platform_accounts
+        - platform_listings
+        - platform_listing_skus
+        - product_variants
+        - product_commercials
+      concurrency_max: 1
+      statement_timeout_ms: 20000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 25000
+        max_requests_per_1000_input_rows: 5
+        bulk_fetch_strategy: pagination-cursor
+      incident_ref: ""
+      rollback: "Deploy rollback to disable CATALOGSYNC_SHOP1_ENABLED"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    credential_contract:
+      role: catalogsync_shop1_reader
+      service_role_forbidden: true
+      database_writes_forbidden: true
+      rotation_days_max: 90
+      storage: /root/mercari-sync/.env
+      file_mode: "0600"
+    approved_by: "Plan ref: shops-1-3-supabase-wiring-2026-07-17.md"
+    approved_at: "2026-07-17"
+    last_reviewed: "2026-07-17"
+    notes: >
+      Views: catalogsync_mercari_listing_map_v1, catalogsync_mercari_catalog_v1
+      (shared across all four Mercari shops).  Rows include shop_code.
+
+      Role: catalogsync_shop1_reader (NOLOGIN, NOBYPASSRLS).  Security-barrier view role gate
+      enforces shop_code = 'shop1' at the database boundary — this credential
+      cannot read shop2/3/4 rows.  Per-shop roles enable independent revocation
+      without cross-shop blast radius.
+
+      Mercari shop ID: WMyisFmhbGWyVAPEwsfirn.
+
+      Deployed 2026-07-17 via CatalogSync VPS release b17bd83-20260717110407.
+      Production cutover 22:00 JST 2026-07-17: 5-SKU canary passed (5/5),
+      first full sync applied 326 mutations (262 stock, 64 product), 0 failures.
+      Legacy Baserow runners disabled (single-writer transition complete).
+
+  # ── CatalogSync Mercari shop2 read projection ─────────────────────────
+  catalogsync_mercari_shop2_read:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: read_only
+    access_path: postgrest
+    credential_class: read_only
+    triggers:
+      - type: cron
+        expression: "*/10 * * * *"
+        mode: full
+      - type: cron
+        expression: "* * * * *"
+        delay_seconds: 30
+        mode: priority
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: CATALOGSYNC_SHOP2_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Read-only Supabase projection for Mercari shop2 inventory, presale
+        title prefix, and shipping lead time reconciliation. Matches the
+        active shop4 pattern. Does not write Supabase.
+      affected_tables:
+        - platform_accounts
+        - platform_listings
+        - platform_listing_skus
+        - product_variants
+        - product_commercials
+      concurrency_max: 1
+      statement_timeout_ms: 20000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 25000
+        max_requests_per_1000_input_rows: 5
+        bulk_fetch_strategy: pagination-cursor
+      incident_ref: ""
+      rollback: "Deploy rollback to disable CATALOGSYNC_SHOP2_ENABLED"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    credential_contract:
+      role: catalogsync_shop2_reader
+      service_role_forbidden: true
+      database_writes_forbidden: true
+      rotation_days_max: 90
+      storage: /root/mercari-sync/.env
+      file_mode: "0600"
+    approved_by: "Plan ref: shops-1-3-supabase-wiring-2026-07-17.md"
+    approved_at: "2026-07-17"
+    last_reviewed: "2026-07-17"
+    notes: >
+      Views: catalogsync_mercari_listing_map_v1, catalogsync_mercari_catalog_v1
+      (shared across all four Mercari shops).  Rows include shop_code.
+
+      Role: catalogsync_shop2_reader (NOLOGIN, NOBYPASSRLS).  Security-barrier view role gate
+      enforces shop_code = 'shop2' at the database boundary — this credential
+      cannot read shop1/3/4 rows.  Per-shop roles enable independent revocation
+      without cross-shop blast radius.
+
+      Mercari shop ID: ZaMyGWzp6hUdgDh5E9ADob.
+
+      Deployed 2026-07-17 via CatalogSync VPS release b17bd83-20260717110407.
+      Production cutover 22:00 JST 2026-07-17: 5-SKU canary passed (5/5),
+      first full sync applied 317 mutations (261 stock, 56 product), 0 failures.
+      Legacy Baserow runners disabled (single-writer transition complete).
+
+  # ── CatalogSync Mercari shop3 read projection ─────────────────────────
+  catalogsync_mercari_shop3_read:
+    owner_repo: retailpulses/CatalogSync
+    domain: product_catalog
+    mode: read_only
+    access_path: postgrest
+    credential_class: read_only
+    triggers:
+      - type: cron
+        expression: "*/10 * * * *"
+        mode: full
+      - type: cron
+        expression: "* * * * *"
+        delay_seconds: 30
+        mode: priority
+    status: active
+    kill_switch:
+      method: deploy_rollback
+      identifier: CATALOGSYNC_SHOP3_ENABLED
+    safety_profile:
+      category: scheduled_jobs
+      risk_level: medium
+      description: >
+        Read-only Supabase projection for Mercari shop3 inventory, presale
+        title prefix, and shipping lead time reconciliation. Matches the
+        active shop4 pattern. Does not write Supabase.
+      affected_tables:
+        - platform_accounts
+        - platform_listings
+        - platform_listing_skus
+        - product_variants
+        - product_commercials
+      concurrency_max: 1
+      statement_timeout_ms: 20000
+      max_retries: 3
+      retry_strategy: exponential_backoff_with_jitter
+      request_budget:
+        max_requests_per_invocation: 100
+        max_rows_per_invocation: 25000
+        max_requests_per_1000_input_rows: 5
+        bulk_fetch_strategy: pagination-cursor
+      incident_ref: ""
+      rollback: "Deploy rollback to disable CATALOGSYNC_SHOP3_ENABLED"
+    local_inventory_ref: docs/SYNC_JOB_INVENTORY.md
+    credential_contract:
+      role: catalogsync_shop3_reader
+      service_role_forbidden: true
+      database_writes_forbidden: true
+      rotation_days_max: 90
+      storage: /root/mercari-sync/.env
+      file_mode: "0600"
+    approved_by: "Plan ref: shops-1-3-supabase-wiring-2026-07-17.md"
+    approved_at: "2026-07-17"
+    last_reviewed: "2026-07-17"
+    notes: >
+      Views: catalogsync_mercari_listing_map_v1, catalogsync_mercari_catalog_v1
+      (shared across all four Mercari shops).  Rows include shop_code.
+
+      Role: catalogsync_shop3_reader (NOLOGIN, NOBYPASSRLS).  Security-barrier view role gate
+      enforces shop_code = 'shop3' at the database boundary — this credential
+      cannot read shop1/2/4 rows.  Per-shop roles enable independent revocation
+      without cross-shop blast radius.
+
+      Mercari shop ID: 2JGrmZqojnBMfdWrtP2xk3.
+
+      Deployed 2026-07-17 via CatalogSync VPS release b17bd83-20260717110407.
+      Production cutover 22:00 JST 2026-07-17: 5-SKU canary passed (5/5),
+      first full sync applied 320 mutations (263 stock, 57 product), 0 failures.
+      Legacy Baserow runners disabled (single-writer transition complete).
+
+  # ── Documentation for New Entries ────────────────────────────────────────
+  #
+  # Standard fields (required for every workload):
+  #   workload_id, owner_repo, domain, mode, access_path,
+  #   credential_class, triggers, status, kill_switch,
+  #   local_inventory_ref
+  #
+  # Extended safety_profile (required when: mode=write, high volume,
+  #   frequent cron, privileged credential, destructive ops, large blast
+  #   radius, or prior related incident):
+  #   category, risk_level, description, affected_tables, affected_domains,
+  #   expected_volume_rows_min/max, expected_request_count_min/max,
+  #   concurrency_max, statement_timeout_ms, max_retries, retry_strategy,
+  #   batch_size_min/max, cursor_strategy, request_budget with formula,
+  #   error_recording, rollout_gates, monitoring, incident_ref, rollback
+  #
+  # Optional fields for any entry:
+  #   depends_on, excluded_windows, credential_contract,
+  #   approved_by, approved_at, last_reviewed, notes

@@ -7,7 +7,7 @@
 | 领域 | 权威归属 |
 |---|---|
 | 跨仓库工程标准、组织级基础设施与仓库索引、跨产品 Foundational Reference 导航 | 本仓库；标准的采用状态见各文档 |
-| 当前生效的治理工具、策略、安装器和执行 Workflow | [rp-governance-kit](https://github.com/retailpulses/rp-governance-kit)，直到 #11 验证并批准切换 |
+| 当前生效的治理工具、策略、安装器和执行 Workflow | 本仓库；迁移及消费者切换状态由 [#11](https://github.com/retailpulses/.github/issues/11) 跟踪 |
 | 产品 Design、Architecture、TRD、代码、测试与产品运行手册 | 对应产品仓库；具体权威由该仓库文档声明 |
 | Sprint、工作状态、交付与决策记录 | GitHub Issues / Projects |
 | 实际生产状态、数据、Secret 与运行日志 | 对应运行平台和数据系统；本仓库只收录脱敏资产身份及证据链接 |
@@ -38,7 +38,7 @@
 
 ## Governance & GitHub defaults
 
-GitHub Organization Overview 位于 [profile/README.md](profile/README.md)。Issue / PR 模板和 Security 默认入口保留 GitHub 原生路径；中央 [AGENTS.md](AGENTS.md) 提供默认 Agent 指引，不代表 GitHub 会对所有仓库自动强制执行。Governance 工具权威仍在 `rp-governance-kit`，迁移计划见 [#11](https://github.com/retailpulses/.github/issues/11)。
+GitHub Organization Overview 位于 [profile/README.md](profile/README.md)。Issue / PR 模板和 Security 默认入口保留 GitHub 原生路径；中央 [AGENTS.md](AGENTS.md) 提供默认 Agent 指引，不代表 GitHub 会对所有仓库自动强制执行。治理工具、策略、安装器和 Workflow 的维护权威在本仓库；消费者仍按各自已验证的 immutable ref 运行。迁移与旧 kit 退役证据见 [#11](https://github.com/retailpulses/.github/issues/11)。
 
 ## Active migration / tracking issues
 
