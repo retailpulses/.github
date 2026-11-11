@@ -255,20 +255,20 @@
 | Slot | Basis | SPU1 | item_code | Units | Gross revenue ¥ | Revenue rank | Unit rank | Years |
 |---:|---|---|---|---:|---:|---:|---:|---:|
 | 1 | Revenue | `WF326433` | `WF326433AAA` | 3 | 111,577 | 1 | 7 | 1 |
-| 2 | Revenue | `N512P360687` | `N512P360687W` | 4 | 98,765 | 2 | 4 | 1 |
-| 3 | Revenue | `ES324482` | `ES324482AAA` | 5 | 93,315 | 3 | 1 | 1 |
+| 2 | Revenue | `N512P360687` | `N512P360687W` | 4 | 98,765 | 2 | 4 | 1 |Discontinued
+| 3 | Revenue | `ES324482` | `ES324482AAA` | 5 | 93,315 | 3 | 1 | 1 |Discontinued
 | 4 | Revenue | `WF310742` | `WF310742AAA` | 3 | 79,446 | 4 | 8 | 1 |
 | 5 | Revenue | `N506P339216` | `N506P339216B` | 4 | 69,060 | 5 | 5 | 1 |
-| 6 | Revenue | `N512P295132` | `N512P295132W` | 5 | 61,883 | 6 | 2 | 1 |
+| 6 | Revenue | `N512P295132` | `N512P295132W` | 5 | 61,883 | 6 | 2 | 1 |Discontinued
 | 7 | Revenue | `N511P336633` | `N511P336633W` | 5 | 45,640 | 7 | 3 | 1 |
-| 8 | Revenue | `N512P313079` | `N512P313079W` | 3 | 38,991 | 8 | 9 | 1 |
-| 9 | Revenue | `N512P295132B` | `N512P295132B` | 4 | 38,820 | 9 | 6 | 1 |
+| 8 | Revenue | `N512P313079` | `N512P313079W` | 3 | 38,991 | 8 | 9 | 1 |Discotinued
+| 9 | Revenue | `N512P295132B` | `N512P295132B` | 4 | 38,820 | 9 | 6 | 1 |Discontinued
 | 10 | Revenue | `N515P196885` | `N515P196885W` | 3 | 36,341 | 10 | 10 | 1 |
 | 11 | Quantity fill | `PP293333` | `PP293333CAA` | 3 | 27,880 | 11 | 11 | 2 |
-| 12 | Quantity fill | `MX317937` | `MX317937AAA` | 3 | 25,550 | 12 | 12 | 1 |
+| 12 | Quantity fill | `MX317937` | `MX317937AAA` | 3 | 25,550 | 12 | 12 | 1 |Discontinued
 | 13 | Quantity fill | `TH197100` | `TH197100AAA` | 3 | 23,780 | 13 | 13 | 1 |
-| 14 | Quantity fill | `N512P232188` | `N512P232188G` | 3 | 10,610 | 14 | 14 | 1 |
-| 15 | Quantity fill | `N511P221569` | `N511P221569W` | 3 | 9,120 | 15 | 15 | 1 |
+| 14 | Quantity fill | `N512P232188` | `N512P232188G` | 3 | 10,610 | 14 | 14 | 1 |Discontinued
+| 15 | Quantity fill | `N511P221569` | `N511P221569W` | 3 | 9,120 | 15 | 15 | 1 |Discontinued
 
 ### 12月 — 20 candidates
 
