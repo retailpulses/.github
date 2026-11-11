@@ -1,4 +1,7 @@
 # Mercari Seasonality Intelligence — Item Code / SPU1 Ranking
+
+**Newsletter-ready candidate pool (historical only):** [Monthly Top-20 SPU1 + item_code rankings, including Shop4](monthly-top20-candidates.md). The Top-3 tables below are illustrative previews, **not the full selection pool**. Select up to 10 eligible live listings from the Top-20 after validation.
+
 Status: **HISTORICAL PRODUCT RANKING AVAILABLE; VERIFIED SEASONAL LIFT NOT YET ESTABLISHED** · Evidence PARTIAL · 2026-11-11
 Source: Supabase `public.sales_orders` joined by `b2b_item_code` → `product_variants.item_code` → `product_spus.spu_code`. Dates grouped JST, completed Mercari marketplace order lines, through complete October 2026. Values are gross item-revenue estimates (JPY), not reconciled net sales. See [methodology](seasonality-method.md), [Hero intelligence](hero-products.md).
 
