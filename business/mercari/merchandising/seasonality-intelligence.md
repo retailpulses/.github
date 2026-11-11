@@ -1,6 +1,6 @@
 # Mercari Seasonality Intelligence — Item Code / SPU1 Ranking
 
-**Newsletter-ready candidate pool (historical only):** [Monthly Top-20 SPU1 + item_code rankings, including Shop4](monthly-top20-candidates.md). The Top-3 tables below are illustrative previews, **not the full selection pool**. Select up to 10 eligible live listings from the Top-20 after validation.
+**Newsletter-ready candidate pool (historical only):** [Unified four-shop monthly Top-20 SPU1 + item_code rankings](monthly-top20-candidates.md). The Top-3 tables below are illustrative previews, **not the full selection pool**. Select up to 10 eligible live listings from the Top-20 after validation.
 
 Status: **HISTORICAL PRODUCT RANKING AVAILABLE; VERIFIED SEASONAL LIFT NOT YET ESTABLISHED** · Evidence PARTIAL · 2026-11-11
 Source: Supabase `public.sales_orders` joined by `b2b_item_code` → `product_variants.item_code` → `product_spus.spu_code`. Dates grouped JST, completed Mercari marketplace order lines, through complete October 2026. Values are gross item-revenue estimates (JPY), not reconciled net sales. See [methodology](seasonality-method.md), [Hero intelligence](hero-products.md).
@@ -49,43 +49,12 @@ Source: Supabase `public.sales_orders` joined by `b2b_item_code` → `product_va
 
 **Important:** This is a **revenue leaderboard after preliminary Hero exclusion**, not a validated seasonality ranking. Most winners have sales evidence in only one year. Do not use this alone to assert seasonal demand or to configure discounts.
 
-## Shop4-specific non-Hero SPU1 revenue candidates
-Shop4 confirmed by `platform_accounts`: `source_store_id=2JMLHBxjiFHDr55jMwA7fs`. **Use source_store_id**, not an inner join to `platform_accounts`: many July–October 2026 Shop4 rows have NULL `platform_account_id`, which would silently omit sales.
+## Canonical scope: one four-shop market demand pool
 
-**Shop4 ranking excludes the entire cross-store 25-SPU1 Hero set** (not only Shop4's own Hero). This prevents cross-store evergreen products from leaking into the Shop4 seasonal discovery pool. Shop4 Hero `N515P401211` is included in that global exclusion set.
-
-| Month (2026) | #1 SPU1 / item_code / revenue | #2 SPU1 / item_code / revenue | #3 SPU1 / item_code / revenue |
-|---|---|---|---|
-| Feb | TX311189 / TX311189AAA / ¥22,240 | N509P323410 / N509P323410B / ¥12,810 | N515P266079 / N515P266079S / ¥3,010 |
-| Mar | N515P401190 / N515P401190B / ¥359,320 | N506P339216 / N506P339216A / ¥49,794 | N511P437311 / N511P437311H / ¥41,457 |
-| Apr | W1266S00 / W1266S00005 / ¥163,793 | N515P401190 / N515P401190B / ¥160,920 | N509P379986 / N509P379986A / ¥74,273 |
-| May | N515P401190 / N515P401190B / ¥140,040 | N508P397567 / N508P397567A / ¥89,694 | MX292211 / MX292211BAA / ¥79,130 |
-| Jun | N509P387207 / N509P387207A / ¥73,994 | N515P401190 / N515P401190B / ¥69,729 | WF295683 / WF295683CAA / ¥47,458 |
-| Jul | WF315212 / WF315212BAA / ¥95,726 | N515P401190 / N515P401190B / ¥83,611 | N504P398915 / N504P398915B / ¥78,096 |
-| Aug | N508P397567 / N508P397567A / ¥75,443 | WF315212 / WF315212BAA / ¥57,848 | WF195239 / WF195239FAA / ¥57,294 |
-| Sep | N508P268905 / N508P268905A / ¥59,484 | N508P397567 / N508P397567A / ¥48,972 | N512P360685 / N512P360685W / ¥43,764 |
-| Oct | N515P401190 / N515P401190B / ¥105,492 | N510P371976 / N510P371976B / ¥102,898 | N512P291470S / N512P291470SA / ¥68,800 |
-
-Shop4 had no qualifying completed marketplace orders in January 2026 under this filter. November 2026 is incomplete and excluded. Historical months shown are 2026 only.
-
-## Listing execution readiness — BLOCKED, not hidden
-The historical item_code/SPU1 mapping is **resolved**, but the current Shop4 listing mapping is **not**. Direct joins of sampled winning `product_variants.id` to `platform_listings.variant_id` returned no Shop4 listing for `N515P401190`, `N510P371976`, `N508P397567`, `N508P301428`. Shop4 has 6,204 `platform_listings` rows, but only 996 with `variant_id`, **0 with `product_spu_id`**, **0 with `manage_number`**, and 5,799 with external_listing_id. Therefore **do not invent listing IDs, availability or stock**. This is a canonical mapping/data-lineage gap; resolve with supported catalog linkage or authoritative shop listing matching before execution.
-
-## Shop4 catalog cross-check (read-only, 2026-11-11)
-
-The existing `catalogsync_mercari_shop4_catalog_v1` **does resolve candidate item_code to catalog variant and supplier-side availability**, despite the missing `platform_listings` mapping. This is useful for promotion triage, but it is **not** proof of a live Mercari listing or an approved margin.
-
-| item_code | SPU1 | Inventory status | Supplier available qty | Catalog price incl. shipping | Action |
-|---|---|---|---:|---:|---|
-| N515P401190B | N515P401190 | Restocked | 38 | ¥19,150 | Candidate; resolve live listing and margin |
-| N510P371976B | N510P371976 | Sold out | 0 | ¥5,300 | **Exclude from immediate promotion** |
-| N512P291470SA | N512P291470S | NULL/unknown | 24 | ¥39,800 | Candidate only; verify stock state and listing |
-| N508P397567A | N508P397567 | Restocked | 39 | ¥16,800 | Candidate; resolve live listing and margin |
-
-Do not interpret supplier available quantity as confirmed Mercari stock. The catalog price is a source-side projection, not a live listing price. The **actionable next step** is mapping these item codes to current Shop4 listing IDs and checking live price, margin and campaign eligibility.
+**Do not produce shop-specific bestseller rankings.** The shop-specific tables and catalog triage in earlier revisions were exploratory and are superseded by the [unified four-shop monthly Top-20 market-demand intelligence](monthly-top20-candidates.md). All Shop1–4 sales contribute to the same SPU1-level market demand. Shop availability is a downstream campaign execution check only.
 
 ## Downstream usage
-- **Newsletter Agent:** use the SPU1 and item_code candidates as historical discovery inputs, with Hero exclusion; Campaign Service must resolve current Shop4 listing and validate stock, current price, quota and authorization before scheduling.
+- **Newsletter Agent:** use the SPU1 and item_code candidates as historical discovery inputs, with Hero exclusion; Campaign Service must resolve current target-shop listing and validate stock, current price, quota and authorization before scheduling.
 - **Monthly Promotion:** same candidate pool, but require Effective TCOGS, fee, margin floor and inventory; no discount computed from this historical ranking.
 - **Seasonal qualification:** requires a positive seasonal-lift index, comparable years and listing-day coverage. This file deliberately labels unverified candidates as historical monthly revenue leaders.
 - Supporting category-level aggregate is retained in Git history of PR #101, but is **not** the actionable unit of merchandising.

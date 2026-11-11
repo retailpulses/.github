@@ -1,3 +1,5 @@
+> **Canonical analytical scope:** Aggregate **all four Mercari shops into ONE market-demand dataset** before computing Hero exclusions, monthly rankings and seasonality metrics. Never generate per-shop best-seller rankings. Shop identity is source provenance and downstream promotion eligibility only. See [unified monthly Top 20](monthly-top20-candidates.md).
+
 # Mercari Seasonality Analysis Method — Canonical Knowledge Methodology
 Status: DRAFT / Evidence PARTIAL · As of 2026-11-11 · Owner: Marketplace Operations
 Source: Supabase project `gqeyfhshxdiyhugvmbuk`, `public.sales_orders`. No raw customer/order records copied to Git.
