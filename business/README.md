@@ -9,6 +9,7 @@
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
 | BUS-LOG-001 | [Giga 企业地址批量配送](suppliers/giga/bulk-commercial-delivery.md) | 供应商批量物流询价、订单交接、运费返还；Approved / Evidence PARTIAL |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
+| BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | CSV新規登録字段/枚举/画像/编码、商品身份、Shop4 NPL batch exporter 设计（Draft） |
 
 
 ## 范围边界
