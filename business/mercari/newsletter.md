@@ -65,3 +65,18 @@ Scope: Mercari Shops newsletter campaigns; store-specific eligibility, content, 
 ## Consumers
 
 Store Ops promotion scheduling, Shop4 marketing operations, Commerce Lab campaign drafting, future Newsletter operator assistant. This registry provides shared business semantics only; implementation TRD, tests and runtime proof belong in their product repositories.
+
+
+## Architecture decision — Agent proposal / Campaign Service authority (2026-11-11)
+
+**Decision: APPROVED for design. Not implemented or authorized for live sends.**
+
+- Newsletter Agent may **propose** product selections, product order, Japanese campaign copy, and a recommended delivery slot with rationale and cited source snapshot.
+- A trusted **Campaign Service** owns the definitive shop ID, canonical-to-Mercari product mapping, schedule decision, eligibility/quota validation, approval state, deduplication/idempotency and execution request.
+- Agent output is a versioned **JSON proposal** and must never be interpreted as a direct instruction to send or schedule.
+- The validation/execution boundary must reject expired prices/inventory, draft or cross-shop products, invalid time slots, duplicate campaign executions and missing required approvals.
+- Seller UI remains the initial authorized execution route; switching to an API adapter requires documented Mercari permission and readback evidence.
+- Separate `proposed_delivery_at` from `approved_delivery_at`, and `proposal_status` from `execution_status`; only an execution readback may confirm a scheduled or sent state.
+- Future contract name: `mercari-newsletter.v1`. Executable JSON Schema and product-specific TRD belong to the implementation owner; this business registry records the invariant and decision only.
+
+**Next implementation deliverables (not yet completed):** JSON proposal schema, deterministic validator, explicit shop/product resolution, UI review and a governed Seller UI adapter.
