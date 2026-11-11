@@ -61,3 +61,54 @@ Old source workflows that supplied central files:
 - `post-deploy-governance.yml`, `vps-immutable-release.yml` kit main; central VPS nested closeout pinned to an immutable central SHA in #46
 
 Full history and Sprint scope: #44.
+
+## Issue #11 execution baseline — 2026-11-11 JST
+
+**Authority:** Sponsor-approved 2026-11-11 direction in [#11](https://github.com/retailpulses/.github/issues/11): `.github` is the sole active governance authority; `rp-governance-kit` remains frozen pending retirement. This section records live reads for the first implementation PR and supersedes the 2026-10-27 assessment date above. It does not claim consumer cutover or archive readiness.
+
+### Exact repository and PR baseline
+
+| Repository | Visibility / state | Default branch HEAD (read 2026-11-11 JST) | Open PRs |
+|---|---|---|---|
+| `retailpulses/.github` | public, active, default `main` | `d6384e1c0d5cc0e2b973d4869aab328b5752bb07` | #84, #83, #80, #69, #67, #65, #55, #50 |
+| `retailpulses/rp-governance-kit` | public, active, default `main`, freeze notice present | `3bdf3a5f37bc6308806793713320b4e9cbbf0bf1` | #35, #31, #19 |
+
+Open PR head SHAs and URLs were read from GitHub CLI on this date. Neither repository is archived. The old repository PRs remain open; this PR does not modify them. Open PR head SHAs read: `.github` #84 `c635364dbd123efc2b718de960d015b331fd5ee5`, #83 `e42ccc965452d92440036882e179847cb68b1b68`, #80 `c3ae6a0d7f192d9be8f33c2ab1b250e0da1c83b3`, #69 `640c96e0e9d7dc1c2f665d7ef0a87014af9af582`, #67 `2ec47e764edea1e8b9c01b51ffd88ce58b7355ae`, #65 `0317bd28718af5fef1d74c243fb023ed6a6f5716`, #55 `fa07832cd02c6b302d1fd25f7be0eb5e86fddf40`, #50 `86a45500a3ad5291cbead68c5984442dda2b6d06`; old kit #35 `cd4c00cbb8b7a1ba0baa9666237b5d93d6fc5e64`, #31 `ce4ef4f331d719cbecadc925ae6dcacaa7c14043`, #19 `ae5b7bad731d6dfcf18efcbdaaa193aff6766ecc`. Full active-consumer PR-head and external/dynamic caller scan remains **UNKNOWN_BLOCKED**.
+
+### Current executable evidence and protection readback
+
+- Organization code search for `rp-governance-kit` returned default-branch hits in `.github`, RPagentOS, commerce-ops, CatalogSync, inbox, boutique-listing, retailpulses-tool-services, and OrderMgmt. It also returns historical policy/docs and local installed tool copies; search results alone are not a complete executable census.
+- Current CatalogSync ruleset `23862538` (`CatalogSync required checks`) is active on `refs/heads/main` and requires exact context `governance / Governance Checks`. Preserve this name and blocking behavior until an authorized/evidenced equivalent is live.
+- Latest available CatalogSync Actions run readback returned run `41277913965`, PR event, completed/success, head `df28c77114fee4bff6b44a1526d5733a9187a0cb`, created 2026-11-01. This is one latest-run sample, not a normalized history or evidence of current runner/required-check health.
+- Repository visibility and default branch were verified for `.github` and the old kit. Required checks, rulesets, environments, runner availability, and recent run behavior for every other consumer have not been read back; retain `UNKNOWN_BLOCKED` until verified.
+- Current kit main still has 3 open PRs listed above. No kit rename/archive was attempted.
+
+### Imported source manifest and change boundary
+
+The frozen kit source was read at exact commit `3bdf3a5f37bc6308806793713320b4e9cbbf0bf1`. Its source-to-target SHA-256 and path mapping is recorded in [`GOVERNANCE_KIT_IMPORT_MANIFEST.tsv`](GOVERNANCE_KIT_IMPORT_MANIFEST.tsv). The manifest covers `bin/`, policy and registry documents (target `docs/governance/`), `scripts/`, `templates/`, and `tests/`. Existing central `.github/workflows/` were already staged by merged #45/#46 and were not bulk-overwritten in this import.
+
+- Central workflow implementation files already present in `.github` remain the active reusable workflow entrypoints. The database script required by that workflow is now included at `scripts/database-governance-checks.sh`.
+- The installer now targets `retailpulses/.github`, and requires an explicit full commit SHA with `--ref`; it does not install consumers or switch any existing workflow. Installed wrapper templates target the central reusable workflow.
+- Imported policy content was copied with source/target hashes. Historical Issue/PR citations remain evidence and were not rewritten as though their issue numbers belonged to `.github`.
+- This PR does not change consumer repositories, required-check rulesets, credentials, environments, production runners, or deploy workflows. It does not establish an immutable post-merge release SHA. Create and verify that mapping only after merge, before any consumer is switched.
+
+### S0 disposition and remaining gates
+
+S0 is **PARTIAL**, not complete: repository heads, open PRs, selected code-search results, a current CatalogSync ruleset, and one recent-run sample are recorded. A complete live consumer/branch census, open-PR head scan, nested and dynamic `uses:`/checkout/installer/local-agent search, required contexts and environment settings, all consumer owners, runner/local-agent installation readback, and per-consumer rollback evidence remain outstanding. Do not use this partial inventory as proof of zero dependencies or archive readiness. No consumer migration is authorized by this central import.
+
+### S2 pilot candidate screen — live readback 2026-11-11 JST
+
+The candidate set was rechecked after opening PR A. **No currently evidenced qualifying active, non-production old-kit consumer was selected**, so PR B is not opened. The table records the reason and is not an authorization to change production consumers.
+
+| Candidate | Current default-branch evidence | Risk / pilot disposition |
+|---|---|---|
+| `retailpulses-tool-services` | HEAD `e09c357a9f61aad6a5181760120a7439909b6c1f` dated 2026-09-15; latest Actions sample is Governance Checks run `34949070046` on 2026-09-15; only open PR #7 is a POC last updated 2026-09-05. | Utility-only profile appears lower risk, but recent activity is not evidenced; **not eligible as an active pilot**. Recheck if work resumes. |
+| `homebliss-vpn` | HEAD `d1f1c49f1b0103229a6b8e7aa0ff6e0f89413963` on branch `feat/initial-implementation`; no Actions runs returned. | **Not active / UNKNOWN_BLOCKED**; no real run for pilot evidence. |
+| `boutique-listing` | HEAD `2424b7e0b38cc84e0a404bba555ce6847ec31237`; latest runs include successful Deploy runs `37620351582` and `37620323744` on 2026-10-07. | Has a production publishing/release path and historical broken kit checkout; **not a low-risk non-production pilot**. Preserve until its own fitness/required-context review. |
+| `RPagentOS` | HEAD `010e50038b681298e8655db2d9d509b2f21a53a7`; DB governance run `38254920015` is meaningful failure evidence; production recovery workflows ran on 2026-10-11. | Real DB MUST protection and production recovery path; **not a low-risk pilot**. |
+| `OrderMgmt` | HEAD `7eef5ed7dfa00ba22a6cc31e1430058838445f6c` dated 2026-11-11; active deploy API/relay/worker workflows; PR/database/governance runs on the same date. | Active, but order-management deployment and schema paths make this **production-sensitive**, not a low-risk pilot. |
+| `CatalogSync` | HEAD `4b118f453118a4ee862eaf836deed314b379b5c9`; required ruleset `23862538` requires `governance / Governance Checks`; deploy workflow and production VPS chain are present. | **Excluded** from pilot; preserve exact required context and production release contract. |
+| `inbox` | HEAD `af4658803e776e5805b60a254f2def43e8c6f658` dated 2026-11-10; latest Actions samples are Project 3 Event Intake canaries on 2026-10-20; old-kit post-deploy wrapper is `workflow_call`. | Active repository, but no actual wrapper caller was demonstrated; **not an evidenced active old-kit workflow consumer**. |
+| `commerce-ops` | HEAD advanced 2026-11-11 with open PRs; local governance is app-specific and no direct kit reusable workflow call is present in the workflow census. | Active, but adding a central required gate would violate its existing local safety boundary; **not eligible for a blanket pilot**. |
+
+PR A must be reviewed and merged before any pilot can pin its published merge SHA. B remains pending a future S0 refresh that identifies an active non-production consumer with an actual old-kit call, no production side effect, and a validated owner/required-context/revert path. Do not substitute a stale repo or create a new caller just to produce a green run.

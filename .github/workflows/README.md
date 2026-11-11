@@ -57,3 +57,8 @@ A workflow graduates from Draft → Stable when:
 ## Repo Owners
 
 Do not call these workflows from production repos until they are tagged `@v1.0.0` or higher. Use them as reference templates and copy the parts you need into your own `.github/workflows/`.
+
+
+## Governance workflow migration
+
+The central governance workflows and database-check implementation are maintained here for selective migration tracked by [#11](https://github.com/retailpulses/.github/issues/11). They are not a blanket adoption mandate. Consumer cutover requires an immutable commit ref, matching required-check context, validated path coverage, and per-consumer successful and intentionally failing Actions evidence. The old `rp-governance-kit` remains frozen and available to existing consumers until their individual cutover is verified.
