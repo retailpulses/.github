@@ -11,6 +11,8 @@
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
 | BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | CSV新規登録字段/枚举/画像/编码、商品身份、Shop4 NPL batch exporter 设计（Draft） |
 
+| BUS-MER-NL-001–012 | [Mercari Shops Newsletter](mercari/newsletter.md) | 收件人/频次/排期/内容/经营者披露及 Seller UI 与 API 边界；官方业务规则 VERIFIED，集成 PARTIAL |
+
 
 ## 范围边界
 - Title Copy 的写作质量、SEO、Prompt、审查 UI 和发布工作流属于 Product Content / Canonical Copy 产品设计，不属于本 Registry 的跨产品核心业务定义；仅当出现需统一的业务概念（例如 Claim Provenance、Dimension Semantics）时，再评审是否登记独立 BUS 定义。
