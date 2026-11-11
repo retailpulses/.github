@@ -31,6 +31,14 @@ Rule for this exploratory extraction: **>=8 distinct months with sales AND >=20 
 
 **Exclusion contract:** Seasonal candidate rankings exclude these four SKU IDs, not all top-revenue products. When canonical parent-product mapping is validated, extend exclusion to approved Hero product families and variants to avoid leakage through color codes or listing duplicates. A product can be an all-time revenue leader without being a Hero and can still qualify for a seasonal list *if* seasonality lift is validated.
 
+## B2. SPU1-level exclusion (supersedes SKU-only exclusion for merchandising)
+
+The four-item SKU exclusion above was the original exploratory rule. **Do not use SKU-only exclusion in product-level promotions.** Join `sales_orders.b2b_item_code` → `product_variants.item_code` → `product_spus.spu_code`, aggregate variants into SPU1, and evaluate Hero continuity at that level.
+
+Shop4 independently qualifies `N515P401211` as provisional evergreen Hero: **44 units, ¥1,196,637, 8 distinct sales months** through October 2026. This SPU1 must be excluded from the Shop4 monthly seasonal candidate table, including both `N515P401211B` and `N515P401211W`.
+
+Cross-store SPU1 Hero membership must be recomputed at family granularity, and not inferred by applying the four-SKU list as-is. All-time revenue leaders remain a separate output.
+
 ## C. Business use
 - Newsletter: evergreen Heroes may anchor campaigns separately, while seasonal discovery slots draw exclusively from the non-Hero seasonal candidate pool.
 - Monthly promotion: do not automatically discount Heroes; prioritize incremental lift and margin. Verify listing/stock/Effective TCOGS and promotion history.
