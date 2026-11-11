@@ -39,6 +39,14 @@ Shop4 independently qualifies `N515P401211` as provisional evergreen Hero: **44 
 
 Cross-store SPU1 Hero membership must be recomputed at family granularity, and not inferred by applying the four-SKU list as-is. All-time revenue leaders remain a separate output.
 
+## B3. Cross-store SPU1 Hero candidate set (2026-11-11 recomputation)
+
+The SPU1-based rule (>=20 units and >=8 distinct year-months) returns **25 candidate SPU1 families**, not the four SKU-level rows in the historical section above. These 25 SPU1 codes are the exclusion set used by the corrected cross-store monthly revenue leaderboard:
+
+`N515P401211`, `N509P305801`, `N509P277758`, `N510P240763`, `N508P301428`, `PP298910`, `WF296965`, `PP298908`, `PP195800`, `SI291166`, `PP307878`, `WF194353`, `N504P284384`, `N506P315200`, `WF320581`, `W770P257`, `N509P305802`, `N510P240765`, `N509P305804`, `PP309544`, `TX305052`, `MS187952`, `N509P305800`, `N509P16553`, `N506P315202`.
+
+**Scope:** Mercari four stores, through complete October 2026; Shop3 is included solely as cross-store demand evidence, not company accounting revenue. The first four-SKU list above is superseded as an exclusion source. SPU1-level set is preliminary pending availability-adjusted continuity validation.
+
 ## C. Business use
 - Newsletter: evergreen Heroes may anchor campaigns separately, while seasonal discovery slots draw exclusively from the non-Hero seasonal candidate pool.
 - Monthly promotion: do not automatically discount Heroes; prioritize incremental lift and margin. Verify listing/stock/Effective TCOGS and promotion history.
