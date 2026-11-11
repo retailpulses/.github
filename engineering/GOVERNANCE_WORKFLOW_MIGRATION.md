@@ -115,7 +115,7 @@ PR A must be reviewed and merged before any pilot can pin its published merge SH
 
 ### Post-merge execution readback — 2026-11-11 JST
 
-PR [#92](https://github.com/retailpulses/.github/pull/92) is merged. GitHub resolves immutable central ref `16ddc55f89261ff00081cfd9940037bd517e1e1a`; `main` has advanced to `cbe24169b9e5d79a140cf343916229d96c08cdf6` since that merge. The focused installer hardening and comment cleanup are proposed in a follow-up PR (link added after creation); no consumer repository is changed.
+PR [#92](https://github.com/retailpulses/.github/pull/92) is merged. GitHub resolves immutable central ref `16ddc55f89261ff00081cfd9940037bd517e1e1a`; `main` has advanced to `cbe24169b9e5d79a140cf343916229d96c08cdf6` since that merge. Focused installer hardening and comment cleanup are proposed in [PR #96](https://github.com/retailpulses/.github/pull/96); no consumer repository is changed.
 
 #### Installer hardening evidence
 
@@ -126,7 +126,7 @@ PR [#92](https://github.com/retailpulses/.github/pull/92) is merged. GitHub reso
 
 #### Isolated S2 compatibility harness
 
-An ephemeral private repository `retailpulses/governance-compat-harness-20261111` was created solely for this test and will be deleted after run readback. Actions used default read-only token permissions; the harness contains no secrets, environments, deploy jobs, or write scopes. Its caller pinned the reusable workflow and `governance_ref` to `16ddc55f89261ff00081cfd9940037bd517e1e1a`.
+An ephemeral private repository `retailpulses/governance-compat-harness-20261111` was created solely for this test. Both fixture PRs were closed and their branches deleted after run readback. Repository deletion was attempted but GitHub returned HTTP 403 because the active token lacks `delete_repo`; no token scope was added. The repository remains private until an admin deletes it or grants that scope. Actions used default read-only token permissions; the harness contains no secrets, environments, deploy jobs, or write scopes. Its caller pinned the reusable workflow and `governance_ref` to `16ddc55f89261ff00081cfd9940037bd517e1e1a`.
 
 | Fixture | Run | Result | Evidence |
 |---|---:|---|---|
