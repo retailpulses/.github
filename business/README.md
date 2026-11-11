@@ -1,34 +1,34 @@
-# Canonical Business Definitions Registry（Pilot）
-状态：**Draft / Sponsor Review** · Owner：Retailpulses Business / Product Owners（待确认） · 日期：2026-10-29
+# Canonical Business Definitions & Knowledge Registry
+状态：**Draft / Sponsor Review** · Owner：Retailpulses Business / Product Owners（待确认） · 日期：2026-11-11
 
-本目录为跨产品业务语义和计算契约的统一发现与评审入口。**Draft 不代表已批准、已部署或已通过运行验证。** 不建立运行时数据库、第二套业务规则引擎或独立审批平台。
+本目录是跨产品业务定义与可复用经营知识的统一发现入口。区分 **Definitions / Contracts**（稳定语义、计算契约）与 **Knowledge / Intelligence**（有来源、日期、适用范围和方法的业务事实及分析）。`Draft` 不代表已批准、已部署或已通过运行验证。详细规则见 [GOVERNANCE.md](GOVERNANCE.md)。
 
+## Canonical definitions
 | ID / Domain | Canonical draft | 边界与消费者 |
 |---|---|---|
-| BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU1 / Product Family / Variant / Listing；Mercari/Rakuten platform identity；Product Center、NPL |
-| BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | Standard/Effective TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
-| BUS-LOG-001 | [Giga 企业地址批量配送](suppliers/giga/bulk-commercial-delivery.md) | 供应商批量物流询价、订单交接、运费返还；Approved / Evidence PARTIAL |
-| BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Mercari Product Group / Rakuten Item-SKU |
-| BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | CSV新規登録字段/枚举/画像/编码、商品身份、Shop4 NPL batch exporter 设计（Draft） |
+| BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU / Family / Variant / Listing；Product Center、NPL |
+| BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
+| BUS-LOG-001 | [Giga 企业地址批量配送](suppliers/giga/bulk-commercial-delivery.md) | 供应商物流；Approved / Evidence PARTIAL |
+| BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Product Group |
+| BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | Listing CSV / Shop4 NPL batch exporter；Draft |
+| BUS-MER-NL-001–012 | [Mercari Shops Newsletter](mercari/newsletter.md) | Newsletter 规则；官方业务规则 VERIFIED，集成 PARTIAL |
 
-| BUS-MER-NL-001–012 | [Mercari Shops Newsletter](mercari/newsletter.md) | 收件人/频次/排期/内容/经营者披露及 Seller UI 与 API 边界；官方业务规则 VERIFIED，集成 PARTIAL |
+## Canonical business knowledge
+| Domain | Knowledge topic | Status |
+|---|---|---|
+| Mercari | Sales seasonality and monthly bestsellers | Proposed; source `public.sales_orders`; current entrypoint/methodology to be added after reproducible analysis review |
 
+Knowledge entries need not have BUS IDs. Distinguish observed facts, hypotheses, approved insights and decisions. Preserve source provenance, store scope, dates, method and review cadence. Do not duplicate raw order history or customer data.
 
-## 范围边界
-- Title Copy 的写作质量、SEO、Prompt、审查 UI 和发布工作流属于 Product Content / Canonical Copy 产品设计，不属于本 Registry 的跨产品核心业务定义；仅当出现需统一的业务概念（例如 Claim Provenance、Dimension Semantics）时，再评审是否登记独立 BUS 定义。
+## Authority boundaries
+- Business definitions: reviewed shared semantics and calculations; product-specific Design/TRD links here.
+- Business knowledge: curated, time-bound conclusions; operational source systems remain authoritative for raw data.
+- External facts: [Foundational References](../references/README.md) and official documentation.
+- Executable contracts, implementation, migrations and runtime evidence: owning product repositories.
+- Changes to meaning or formulas require impact review; knowledge updates require traceable evidence and explicit status.
 
-## 权威边界
-- **内部业务定义**：本目录记录跨仓库共识、适用范围、版本和未决事项；业务 Owner 审核后方可标 Approved。
-- **外部平台事实**：[Foundational References](../references/README.md) 索引官方来源、API/字段和验证证据；Mercari Category ID 的合法值由 Mercari 定义。
-- **可执行契约**：实际 schema、计算实现、数据迁移、测试和运行证据保留在 Owner 产品仓库；本目录不声称已经实施。
-- **产品设计**：产品 Design/TRD 引用稳定 BUS ID，并描述产品特有行为；不要复制可独立编辑的平行定义。
-- **现有资产**：[Pricing Review](https://github.com/retailpulses/inbox/issues/379)、[Commerce Lab pricing audit](https://github.com/retailpulses/commerce-lab/blob/main/docs/pricing-margin-review-2026-10-07.md)、[Giga dictionary](../references/giga/data-dictionary-mapping.md) 是现有证据；本 Draft 不自动替换这些资产的已生效权威。
-
-## 最小记录约定
-稳定 ID；术语/定义；粒度和身份；适用范围；Owner；来源及验证状态；消费者；不变量/边界条件；兼容性/迁移影响。语义破坏性变更通过 PR 标记影响的消费者与测试，不回收 ID。简单术语合并写在领域文件，不强制一字段一文件。
-
-## 试点验收
-1. Product Center / Mercari NPL 能从 BUS ID 找到正确业务定义。
-2. Giga 标准价、履约费与 Effective TCOGS 不混用；未核实的字段映射标 UNKNOWN。
-3. 产品文档不重复维护公式；实现/运行状态不因 Registry 存在而被误报。
-4. Sponsor Review 完成前不改变生产价格、API 或数据库。
+## Pilot acceptance
+1. Product Center / Mercari NPL can reference the correct BUS definition without duplicating formulas.
+2. Giga standard price, fulfillment cost and Effective TCOGS are not conflated.
+3. Business knowledge can be discovered and refreshed without creating scattered monthly reports or a second source of truth.
+4. Sponsor Review does not change production prices, APIs, databases, or existing approval statuses.
