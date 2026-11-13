@@ -4,11 +4,15 @@
   "source_kind": "mercari_shops_category_master",
   "provenance": "user_uploaded_official_category_master",
   "official_reference_url": "https://guide.mercari-shops-static.com/category_master_updated.csv",
-  "download_verified_byte_identical": false,
+  "download_verified_byte_identical": true,
   "inspected_at_jst": "2026-11-13",
   "actual_encoding": "UTF-8",
   "filename_encoding_note": "Filename says sjis but byte stream is UTF-8; do not use cp932.",
-  "header": ["カテゴリID", "カテゴリ名", "カテゴリ名（フル）"],
+  "header": [
+    "カテゴリID",
+    "カテゴリ名",
+    "カテゴリ名（フル）"
+  ],
   "sha256": "30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac",
   "size_bytes": 1052296,
   "row_count": 7625,
@@ -17,7 +21,11 @@
   "blank_fields": 0,
   "top_level_category_count": 22,
   "hierarchy_delimiter": " > ",
-  "raw_master_committed_in_repo": false,
-  "status": "USER_SUPPLIED_SCHEMA_VALIDATED_NOT_OFFICIAL_BYTE_VERIFIED",
-  "authority": "Category IDs must be matched against these raw source bytes, pinned version and later current official refresh. This manifest alone is not a substitute for the full ID master."
+  "raw_master_committed_in_repo": true,
+  "status": "OFFICIAL_LIVE_BYTE_VERIFIED",
+  "authority": "Category IDs must be matched against these raw source bytes, pinned version and later current official refresh. This manifest alone is not a substitute for the full ID master.",
+  "verified_official_url": "https://guide.mercari-shops-static.com/category_master_updated.csv",
+  "verified_observation_date_jst": "2026-11-13",
+  "verified_raw_path": "business/mercari/masters/categories/20261113-30f1c9dc/category_master.csv",
+  "notes": "Official HTTP response 200, content-length 1052296, same SHA-256 as user upload and committed raw master."
 }
