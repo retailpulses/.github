@@ -7,8 +7,9 @@ This directory maintains the canonical infrastructure registry for Mac mini exec
 - `runtime-inventory.yaml`: canonical machine-readable registry of runtime identities, execution entrypoints, and local database assets.
 - `workspaces.yaml`: canonical cross-system index of observed host workspaces mapped to runtime IDs; `canonical_status: UNKNOWN` means a checked-out or invoked path has not been approved as the canonical development/deployment workspace.
 - `runtime-inventory-snapshot.md`: timestamped read-only observations of registered runtime IDs and data-asset IDs, including running processes, database instance presence, and outstanding infrastructure checks.
+- [`local-llm-runtime.md`](local-llm-runtime.md): RP Local Model runtime identities, 2026-11-13 Vision restoration, verified synthetic inference, resource risks, and rollback.
 
-The inventory contains **16 runtime/configuration entries** after reconciliation found an additional stopped Time Sale LaunchDaemon outside the initial 15. The five listening services in the earlier snapshot were only a subset, not a different inventory. A configured but stopped entry is not proof of an active service. Database files are listed separately under `data_assets` and are **not counted as running services**.
+The inventory contains **18 runtime/configuration entries** as of 2026-11-13, including the two Mac mini Q4/vision inference runtimes newly recorded after live verification. The prior 16 entries included a stopped legacy Time Sale LaunchDaemon. The five listening services in the earlier snapshot were only a subset, not a different inventory. A configured but stopped entry is not proof of an active service. Database files are listed separately under `data_assets` and are **not counted as running services**.
 
 ## Rules
 
