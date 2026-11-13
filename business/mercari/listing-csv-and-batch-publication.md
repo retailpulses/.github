@@ -2,7 +2,7 @@
 
 **Status:** Sponsor Review / Draft · **Evidence checked:** 2026-11-11 JST · **Business owner:** Mercari Store Operations · **Implementation owner:** `retailpulses/store-ops/apps/mercari/new-products-to-listing` (NPL)
 
-此处定义 Mercari Shops CSV 出品的官方平台约束和跨产品业务语义。**不是可执行 CSV schema、生产发布授权或实际已部署能力**。CSV header/masters 应从当前官方模板或实际 Shop4 后台取得，并保留版本/hash；本文件只记录已经核实的字段语义。Marketplace identity 依 [BUS-MKT-001–004](../marketplace-model.md)，价格成本依 [BUS-PRC](../pricing-contract.md)。NPL Design/TRD 定义产品交互与实现。
+此处定义 Mercari Shops CSV 出品的官方平台约束和跨产品业务语义。**不是可执行 CSV schema、生产发布授权或实际已部署能力**。针对独立通用 Giga XLSX→CSV 产品（store-ops #312），CREATE CSV Header/编码采用 Sponsor 2026-11-13 已提供并批准的固定样本；其他产品可按自己的平台维护规则核验；本文件只记录已经核实的字段语义。Marketplace identity 依 [BUS-MKT-001–004](../marketplace-model.md)，价格成本依 [BUS-PRC](../pricing-contract.md)。NPL Design/TRD 定义产品交互与实现。
 
 ## 官方来源及证据等级
 - **VERIFIED / 官方指南：** [商品を一括登録する際のCSVファイルの作り方](https://support.mercari-shops.com/hc/ja/articles/8859698858649) — 字段、枚举、限制、示例文件/各 master 下载入口、流程。
@@ -11,8 +11,12 @@
 - **VERIFIED / 官方指南：** [商品データの一括登録時に商品カテゴリが反映されていない](https://support.mercari-shops.com/hc/ja/articles/10205928980889) — category must be ID, exact case.
 - **VERIFIED / 官方指南：** [商品データの一括公開・非公開ができない](https://support.mercari-shops.com/hc/ja/articles/10245492721433) — 缺图/类目时草稿限制。
 - **VERIFIED / 官方指南：** [商品を一括変更する際のCSVファイルの作り方](https://support.mercari-shops.com/hc/ja/articles/60017371839513) — UPDATE 使用另一模板，不能混用。
-- **VERIFIED / 用户提供样本原始字节（不是 Seller 导入验证）：** 2026-11-13 Sponsor 上传 `product_import_template_sample.csv`，来源称为 Mercari CREATE 样本；SHA-256 `66be37da22f320151af00bd40b05d64d74118c91be70b1b36952c2427d910829`，大小 2,737 bytes，UTF-8 BOM、CRLF、88 列固定 Header、2 个示例记录，均为 88 列。已将该文件持久化至 ChatGPT Library `/Retailpulses/Giga-Mercari-POC/product_import_template_sample_20261113.csv`。文件名与官方指南的 [样本入口](https://guide.mercari-shops-static.com/product_import_template_sample.csv) 对应，但因联网直接取 CSV 失败，**未独立证明用户文件 bytes 与官网当前在线 bytes 一致**；也未进行 Seller 接受验证。详细证据见 store-ops #314。
+- **VERIFIED / 用户提供样本原始字节（不是 Seller 导入验证）：** 2026-11-13 Sponsor 上传 `product_import_template_sample.csv`，来源称为 Mercari CREATE 样本；SHA-256 `66be37da22f320151af00bd40b05d64d74118c91be70b1b36952c2427d910829`，大小 2,737 bytes，UTF-8 BOM、CRLF、88 列固定 Header、2 个示例记录，均为 88 列。已将该文件持久化至 ChatGPT Library `/Retailpulses/Giga-Mercari-POC/product_import_template_sample_20261113.csv`。**Sponsor 已明确指定此文件作为新产品唯一 CREATE 模板；不需要将线上同名文件的字节比较作为该产品的开发阻断。** 尚未执行 Seller 实际导入。详细证据见 store-ops #314。
 - **UNKNOWN:** Shop4 当前 Seller CSV 导入权限、注册区分与上限、现场 UI、实际 category/brand/shipping masters 版本、CSV 图片 URL 可达性、存量重复数量、NPL 生产待办数，均未现场读取。
+
+## 固定模板的 Sponsor 决定（2026-11-13）
+
+在 store-ops #312/#314 中，上传的 `product_import_template_sample.csv` **就是唯一有效开发/验收 CSV 格式**：88 列、原始 Header 顺序、UTF-8 BOM；不得继续要求用户下载其他版本，也不把官网字节比较列为 P0。只对该模板的商品数据填充、字段合法性、导出测试做工作。与旧 Shop4/NPL 现场流程的其他规定分开。
 
 ## 适用范围澄清（2026-11-13）
 
@@ -40,7 +44,7 @@ BUS-MER 为跨产品的平台规则及其证据，下面部分 Shop4/NPL 历史�
 
 ## 官方 CREATE CSV 字段参考（2026-11-11 直接复核）
 
-**证据：** [Mercari 官方 CREATE 指南](https://support.mercari-shops.com/hc/ja/articles/8859698858649) + Sponsor 2026-11-13 上传的 CSV 原始字节。**已验证上传样本本身的 88 列/Header 顺序/UTF-8 BOM/CRLF/SHA-256**；尚未独立验证上传文件与在线官方样本字节完全相同，也未验证 Seller 当前租户的导入接受结果。样本中 20 张图片列、`商品名`、`商品説明`、SKU1–10 每组 5 列、`ブランドID`、`販売価格`、`カテゴリID` 等字段。**不应再把本次 88 列样本描述为无实物依据的内部候选**。
+**证据：** [Mercari 官方 CREATE 指南](https://support.mercari-shops.com/hc/ja/articles/8859698858649) + Sponsor 2026-11-13 上传的 CSV 原始字节。**已核验并由 Sponsor 选定该样本 88 列/Header/UTF-8 BOM/CRLF/SHA-256 为本产品固定合同**；Seller 实际接受尚未测试。样本中 20 张图片列、`商品名`、`商品説明`、SKU1–10 每组 5 列、`ブランドID`、`販売価格`、`カテゴリID` 等字段。**不应再把本次 88 列样本描述为无实物依据的内部候选**。
 
 ### 下载入口与行语义
 
