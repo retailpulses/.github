@@ -1,5 +1,7 @@
 # Giga supplier category quality — canonical company rule and critical path
 
+**Scope clarification (product-owner correction):** This page defines **only the data-quality exception investigation / containment workstream**. It is **NOT** the critical path for delivering the Giga XLSX→Mercari Shop4 standalone Web product. The **product-wide P0–P5 critical path** is [Store-Ops #312 / delivery-critical-path.md](https://github.com/retailpulses/store-ops/blob/design/giga-mercari-standalone-20261113/docs/products/giga-mercari-listing-web/delivery-critical-path.md). The 30 conflict groups must not globally block CSV delivery for unaffected rows. Follow the product delivery milestones over DQ triage in case of prioritization conflicts.
+
 **State:** ACTIVE BUSINESS CONTROL / OPEN INVESTIGATION · 2026-11-13 JST  
 **Canonical location:** `/.github/business/giga/`  
 **Evidence snapshot:** [30 canonical Product conflicts](../mercari/taxonomy/giga-cross-category-product-conflicts-20261113.csv) and [full 111-category inventory](../mercari/taxonomy/giga-category-inventory-20261113.csv).  
@@ -49,7 +51,7 @@ For every Product in the 30-row register, compare **all member Variant IDs**, Gi
 
 A status of `CLOSED_VERIFIED` requires concrete per-SKU evidence and a signed-off disposition; a business override is not a proof that upstream data is valid.
 
-## 4. Critical path — unblock Shop4 without hiding systemic defects
+## 4. Subordinate DQ investigation path — NOT the overall Shop4 product critical path
 
 | Gate | Owner | Deliverable | Exit condition |
 | --- | --- | --- | --- |
@@ -59,7 +61,7 @@ A status of `CLOSED_VERIFIED` requires concrete per-SKU evidence and a signed-of
 | **CP3 — Standalone Listing CSV preflight** | Store-Ops #312 Product/implementation owner | Row-level `CATEGORY_SOURCE_CONFLICT`, `CATEGORY_UNKNOWN`, `UNVERIFIED_FALLBACK`, `SOURCE_CATEGORY_MISSING` states; resolution provenance, excluded-row manifest; no NPL dependency | CSV contains **only ready/verified rows**; all blocked rows visible; positive and negative replay of 30 conflict groups, including 11 P0 |
 | **CP4 — Prevent recurrence (nonblocking follow-on)** | Canonical/Giga data owner | Audit on source refresh of category changes, conflict counts, new Giga codes, missing categories, false grouping; durable rules/incident update | New cross-family grouping conflicts flagged before downstream reuse; monitoring does not become a Shop4 listing dependency |
 
-**Dependency order:** CP0 → CP1 evidence → CP2 *approved* dictionary → CP3 ready CSV. CP4 is follow-on, not a launch blocker. **CP1 root-cause repair/migration is NOT necessarily a prerequisite for unrelated Shop4 listings**: disputed SKUs are blocked/excluded individually. Source-side remediation (155 missing, 39 registry gap, 2026-10-12 freshness) runs in parallel and may contribute to CP1.
+**DQ workstream-only dependency:** evidence/containment and per-row quarantine are required for affected SKUs. **Do not gate Shop4 product delivery on completing CP1 root-cause triage for all 30 groups**, nor on CP4 monitoring; unrelated CSV-ready SKUs may proceed through the actual product P0–P5 delivery path. Approved Category Mapping for a specific pilot SKU remains a product preflight gate. Any actual source-side remediation or DB regrouping is separately owned and reviewed. Source-side remediation (155 missing, 39 registry gap, 2026-10-12 freshness) runs in parallel and may contribute to CP1.
 
 ## 5. Required evidence schema for closing the 30 cases
 
