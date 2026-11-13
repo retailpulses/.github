@@ -41,7 +41,7 @@ business/mercari/
     mapping-evidence.csv                # Sample-based validation and approval provenance
 ```
 
-Paths are **proposed**; no original 1.3MB binary/CSV has been checked into this PR. Before checking in raw catalogs, inspect source terms, security, update frequency and repository size. Prefer immutable raw snapshot with exact source URL/SHA and commit only approved compact derived indexes if file license/repo cost prohibits raw copy. Never edit a vendor raw file in place. Raw snapshot and derived dictionaries must be separately versioned.
+Paths are proposed for other masters, but the official Category Master original 1,052,296-byte CSV is now committed in this PR. Before checking in raw catalogs, inspect source terms, security, update frequency and repository size. Prefer immutable raw snapshot with exact source URL/SHA and commit only approved compact derived indexes if file license/repo cost prohibits raw copy. Never edit a vendor raw file in place. Raw snapshot and derived dictionaries must be separately versioned.
 
 ## Verified Category Master supplied 2026-11-13 JST (supersedes earlier missing-source status)
 
@@ -54,7 +54,7 @@ Paths are **proposed**; no original 1.3MB binary/CSV has been checked into this 
 - Hierarchy depths: 2 (23), 3 (1,682), 4 (3,922), 5 (1,850), 6 (148); paths separated by ` > `.
 - IDs are case-sensitive alphanumeric strings of lengths 20–22; **do not cast to number** or normalize their case.
 - Distinct from uploaded `catalog_master.csv` (7,646 product catalog IDs).
-- Provenance: **user-provided official Category Master download, source claimed official**. Validation of internal schema and data uniqueness is complete; independent byte-for-byte comparison to live Mercari download is **not yet complete**. The exact raw file is held in conversation upload, not yet committed into GitHub. Store this SHA as snapshot identifier until immutable raw artifact is published.
+- Provenance: **user-provided official Category Master download, source claimed official**. Validation of internal schema and data uniqueness is complete; independent byte-for-byte comparison to the official live Mercari download **PASSED** on 2026-11-13: SHA-256 and byte count identical. The exact raw file is now committed as `masters/categories/20261113-30f1c9dc/category_master.csv` (7,625 IDs); official live downloaded bytes have matching SHA-256. Store this SHA as snapshot identifier until immutable raw artifact is published.
 
 **Useful independently read examples**:
 - `fv7NAWJqfaqqh7GsP7q2dN` — 家具・インテリア > ソファ・ソファベッド > ソファベッド
@@ -62,7 +62,7 @@ Paths are **proposed**; no original 1.3MB binary/CSV has been checked into this 
 - `2ToirC84G3j2fnUezS8Mh` — ペット用品 > 猫用品 > キャットタワー > 据え置き型キャットタワー
 - `UcGCFjG5rAdrqMM88NdkN9` — 家具・インテリア > ベッド・マットレス > ベッドフレーム > シングル
 
-**Next source-governance action:** commit/attach immutable original raw bytes and a JSON manifest under `masters/categories/20261113-30f1c9dc/`, then publish approved Giga mappings keyed to that SHA. The new app can use a versioned local read-only snapshot after release; it must not invent IDs when its snapshot is absent.
+**Next source-governance action:** **completed:** committed immutable original official bytes and a JSON manifest under `masters/categories/20261113-30f1c9dc/`, then publish approved Giga mappings keyed to that SHA. The new app can use a versioned local read-only snapshot after release; it must not invent IDs when its snapshot is absent.
 
 ## Harvest workflow and acceptance
 
@@ -81,3 +81,7 @@ Paths are **proposed**; no original 1.3MB binary/CSV has been checked into this 
 - App reads a versioned, read-only published dictionary from `/.github/business/mercari/taxonomy`, pins mapping/master versions per batch, and records match rule, input facts, reason, selected category ID and fallback flag.
 
 See `taxonomy/category-mapping-policy.md` and standalone app design [store-ops #312](https://github.com/retailpulses/store-ops/issues/312).
+
+## 2026-11-13 Local Giga census and mapping proposals
+
+The full local Supabase census is recorded in [Giga category audit](../taxonomy/giga-category-audit-20261113.md) and the 111-row [inventory](../taxonomy/giga-category-inventory-20261113.csv). It covers 6,309 categorized out of 6,464 active Canonical Variants, with 155 uncategorized and 39 supplier codes missing from the 72-row registry. The initial [one-shot candidate mappings](../taxonomy/giga-category-mapping-candidates-20261113.csv), [virtual subcategory proposals](../taxonomy/giga-virtual-subtype-candidates-20261113.csv) and [disabled fallback candidates](../taxonomy/giga-scoped-fallback-candidates-20261113.csv) are also on this draft branch. [Design and remaining quality gates](../taxonomy/giga-virtual-subcategory-design-20261113.md). **No candidate is approved for production CSV use by these draft files.**
