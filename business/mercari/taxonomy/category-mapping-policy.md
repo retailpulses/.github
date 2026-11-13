@@ -1,13 +1,13 @@
 # Giga → Mercari Category Dictionary and Fallback Contract
 
-**Status: DESIGN REVIEW — no category IDs approved by this document.** Owner: Mercari Store Operations; consumers: standalone Giga→Mercari Web app (#312), future clients by explicit contract. Not an NPL resolver migration.
+**Status: DESIGN REVIEW — official category source snapshot structurally verified; no Giga mapping rules approved yet.** Owner: Mercari Store Operations; consumers: standalone Giga→Mercari Web app (#312), future clients by explicit contract. Not an NPL resolver migration.
 
 ## Decision and business purpose
 For the standalone application, **do not use the existing NPL Category Resolver**. Create a one-time, verified mapping of Giga supplier categories / product-kind qualifiers to actual current Mercari `カテゴリID`, and persist the approved deterministic dictionary here as canonical company business knowledge. Follow with incremental exception review, not ongoing per-item human approval. Never confuse official `catalog_id` with Mercari `カテゴリID`.
 
 ## Three distinct inputs
 1. Official `catalog_master.csv` lists 7,646 product catalog identities across 15 mostly-electronics category *labels*. It is not an ID taxonomy.
-2. Official `category_master_updated.csv` is a **separately downloaded** source of actual Mercari Category IDs; **not yet acquired/verified here**. Exact identity, hierarchy, eligibility and versions must be checked from bytes.
+2. Official `category_master_updated.csv` is a **separately downloaded** source of actual Mercari Category IDs; **now provided and structurally verified:** 7,625 distinct category IDs and complete paths; user-supplied source SHA-256 `30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac`; original bytes still need immutable repository publication and independent official live-byte comparison. Exact identity, hierarchy, eligibility and versions must be checked from bytes.
 3. Giga downloaded XLSX supplier categories and product facts are *source taxonomy*, not Mercari taxonomy.
 
 ## Proposed records
@@ -23,7 +23,7 @@ Prefer exact Giga stable category ID + path when present, rather than display na
 Fallback must be **scoped to a semantically suitable supplier family/type**, validated as an active allowed Mercari category ID. It must not be a single global Shop4 ID applied to furniture/pet/garden/electronics indiscriminately. If Sponsor wants a single fallback, restrict to a demonstrably homogeneous explicit batch scope and show every affected row before export; never invent an ID. Unknown category remains a row-level exception, not automatically incorrect listing.
 
 ## Deterministic one-shot mapping strategy
-1. Acquire and freeze official **Category Master**; validate exact header and IDs, hierarchy/leaf eligibility, case, SHA/version and scope.
+1. Freeze the **already uploaded and verified Category Master** (7,625 IDs, UTF-8 despite filename) under `masters/categories/20261113-30f1c9dc/`; manifest is committed but raw bytes are not yet in GitHub. Independently verify against official current downloadable source and review official eligibility semantics before treating as current.
 2. From the Giga XLSX/source category inventory, enumerate distinct Giga category IDs/paths and item counts. Prefer **all available historical Giga category labels** if source inventory is accessible; otherwise label the one-shot dictionary as explicitly scoped to supplied file, not global. Generate candidate Mercari leaf categories by Japanese name/path and product facts; do not automatically approve suggestions based on similarity alone.
 3. Review candidate mappings **once per category rule**, with representative product samples, contradiction cases and approval record. Product-kind-specific split rules for heterogeneous categories. Do not require per-SKU routine approval.
 4. Save approved versioned dictionary + evidence in /.github; pin official master SHA and mapping version; fail preflight on invalid/retired category ID.
@@ -60,3 +60,9 @@ Every ID must be present and eligible in the pinned official Category Master. An
 Company business dictionary + official source manifest are owned by `/.github/business/mercari`; standalone application only consumes released version and records applied evidence. Changes via reviewable GitHub PR and tests, with protected historical versions and rollback. Different business meaning across source and marketplace is explicit. Parent Commerce Catalog & Listing may read this approved company mapping in future but is not a precondition or a writer. Existing #306/#307 remain their own scopes.
 
 References: [Official Mercari CSV guide](https://support.mercari-shops.com/hc/ja/articles/8859698858649), [Master registry](../masters/README.md), [Standalone issue #312](https://github.com/retailpulses/store-ops/issues/312).
+
+## 2026-11-13 source verification and first Giga sample
+
+Input `ProductsInfo_All 20261112(1).xlsx`: 32 product rows representing **14 distinct supplier category paths** (one row is `Part`, requiring independent identification). This supports generating a pilot mapping of exact source paths and optional product-kind rules. The uploaded official category source has 7,625 uniquely identified paths. Example eligible candidate IDs from raw byte lookup include sofa bed `fv7NAWJqfaqqh7GsP7q2dN`, floor jack `br6qGALYUhkjvTNDkgBzqK`, single bed frame `UcGCFjG5rAdrqMM88NdkN9`, and loft bed `TH4acvDBAupdG2TnrVGVuC`. **These are real IDs in supplied master but are not yet approved business mapping rules.** Categories such as `Furniture>>Primary Living Space>>Sofas` mix sofa bed and sofa so a generic one-to-one path mapping would be materially inaccurate. A tool cabinet category also cannot simply assume an exact `工具キャビネット` leaf, which does not appear under that name in uploaded master.
+
+A one-shot categorization pass must combine supplier category + product title/facts, assign confidence/error class, produce proposed distinct category rules and fallback cohorts, then test all 32 records before approving a dictionary. Do not apply single broad fallback to mixed products.
