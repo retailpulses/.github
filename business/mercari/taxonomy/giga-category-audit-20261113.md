@@ -22,24 +22,26 @@
 
 ## Distribution by Giga top family
 
-| Giga top family | Distinct Variants | Observed supplier codes |
-| --- | ---: | ---: |
-| Furniture | 4,034 | 31 |
-| Travel | 676 | 3 |
-| Garden & Outdoor | 584 | 17 |
-| Toys | 367 | 7 |
-| Pet Supplies | 183 | 5 |
-| Fitness & Sports | 155 | 14 |
-| Household Supplies & Décor | 67 | 7 |
-| Electrical Appliances | 67 | 6 |
-| Mobility & Daily Living Aids | 56 | 3 |
-| Tools & Tool Organizers | 40 | 6 |
-| Kitchen | 29 | 2 |
-| Bath & Faucets | 28 | 5 |
-| Other | 15 | 1 |
-| Commercial | 5 | 2 |
-| Auto Parts & Transport | 3 | 2 |
-| **TOTAL** | **6,309** | **111** |
+Grouped by `level_1_category` (the first segment of `giga_category_path`); ranked by sum of `active_variant_count` descending. Ties use category name ascending. This is a snapshot of **categorized** Active Variants only; the 155 without a category observation are not assigned to any family.
+
+| Rank | Giga level 1 category | Distinct Variants | Observed supplier codes |
+| ---: | --- | ---: | ---: |
+| 1 | Furniture | 4,034 | 31 |
+| 2 | Travel | 676 | 3 |
+| 3 | Garden & Outdoor | 584 | 17 |
+| 4 | Toys | 367 | 7 |
+| 5 | Pet Supplies | 183 | 5 |
+| 6 | Fitness & Sports | 155 | 14 |
+| 7 | Electrical Appliances | 67 | 6 |
+| 8 | Household Supplies & Décor | 67 | 7 |
+| 9 | Mobility & Daily Living Aids | 56 | 3 |
+| 10 | Tools & Tool Organizers | 40 | 6 |
+| 11 | Kitchen | 29 | 2 |
+| 12 | Bath & Faucets | 28 | 5 |
+| 13 | Other | 15 | 1 |
+| 14 | Commercial | 5 | 2 |
+| 15 | Auto Parts & Transport | 3 | 2 |
+| | **TOTAL** | **6,309** | **111** |
 
 ## Coverage and priority
 
@@ -49,7 +51,7 @@ Top ten supplier categories: Desks & Work Surfaces 786; Hard Case Luggage 669; C
 
 ## Evidence files and source governance
 
-- [Complete 111-code count snapshot](giga-category-inventory-20261113.csv) — fields `code,name,path,active_variant_count,latest_category_observation_date,registry_state`.
+- [Complete 111-code count snapshot](giga-category-inventory-20261113.csv) — fields `giga_category_code,giga_category_name,giga_category_path,level_1_category,active_variant_count,latest_category_observation_date,registry_state`. Rows are grouped by descending level-1 total Variant count, then by descending individual category count within each family.
 - [Verified official Category Master](../masters/categories/20261113-30f1c9dc/category_master.csv): 7,625 IDs, official live download SHA-256 **matches supplied file**, `30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac`.
 - [Mapping policy](category-mapping-policy.md) — canonical business rule rather than NPL resolver.
 - Store-Ops [#312](https://github.com/retailpulses/store-ops/issues/312) — independent listing Web app scope.
@@ -70,6 +72,7 @@ SELECT
   l.category_code,
   l.category_name,
   l.category_path,
+  split_part(l.category_path, '>>', 1) AS level_1_category,
   COUNT(*) AS active_variant_count,
   MAX(l.observed_at)::date AS latest_category_observation_date,
   CASE WHEN r.category_code IS NULL THEN 'OBSERVED_ONLY'
@@ -79,7 +82,10 @@ JOIN canonical_product.variants v ON v.id = l.variant_id
   AND v.status = 'active'
 LEFT JOIN mercari.giga_category_registry r ON r.category_code = l.category_code
 GROUP BY l.category_code, l.category_name, l.category_path, r.category_code
-ORDER BY active_variant_count DESC, l.category_code;
+ORDER BY SUM(COUNT(*)) OVER (PARTITION BY split_part(l.category_path, '>>', 1)) DESC,
+         split_part(l.category_path, '>>', 1) ASC,
+         active_variant_count DESC,
+         l.category_code;
 ```
 
 To identify missing category observations (including recent items), anti-join `canonical_product.variants` against distinct `source_category_observations.variant_id`. **Do not label these 155 as a Giga 'Other' category; they are source facts not yet observed.** Current-state refresh must use new Giga category capture to close coverage, with source-date and denominator recorded.
