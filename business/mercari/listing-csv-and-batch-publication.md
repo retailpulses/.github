@@ -11,8 +11,12 @@
 - **VERIFIED / 官方指南：** [商品データの一括登録時に商品カテゴリが反映されていない](https://support.mercari-shops.com/hc/ja/articles/10205928980889) — category must be ID, exact case.
 - **VERIFIED / 官方指南：** [商品データの一括公開・非公開ができない](https://support.mercari-shops.com/hc/ja/articles/10245492721433) — 缺图/类目时草稿限制。
 - **VERIFIED / 官方指南：** [商品を一括変更する際のCSVファイルの作り方](https://support.mercari-shops.com/hc/ja/articles/60017371839513) — UPDATE 使用另一模板，不能混用。
-- **PARTIAL:** 官方样例文件确有下载链接 `https://guide.mercari-shops-static.com/product_import_template_sample.csv`，但此轮未成功读取 CSV 原始字节/完整 header；应通过 Seller 后台下载且做精确 header fixture，不自造字段名或默认列序。
+- **VERIFIED / 用户提供样本原始字节（不是 Seller 导入验证）：** 2026-11-13 Sponsor 上传 `product_import_template_sample.csv`，来源称为 Mercari CREATE 样本；SHA-256 `66be37da22f320151af00bd40b05d64d74118c91be70b1b36952c2427d910829`，大小 2,737 bytes，UTF-8 BOM、CRLF、88 列固定 Header、2 个示例记录，均为 88 列。已将该文件持久化至 ChatGPT Library `/Retailpulses/Giga-Mercari-POC/product_import_template_sample_20261113.csv`。文件名与官方指南的 [样本入口](https://guide.mercari-shops-static.com/product_import_template_sample.csv) 对应，但因联网直接取 CSV 失败，**未独立证明用户文件 bytes 与官网当前在线 bytes 一致**；也未进行 Seller 接受验证。详细证据见 store-ops #314。
 - **UNKNOWN:** Shop4 当前 Seller CSV 导入权限、注册区分与上限、现场 UI、实际 category/brand/shipping masters 版本、CSV 图片 URL 可达性、存量重复数量、NPL 生产待办数，均未现场读取。
+
+## 适用范围澄清（2026-11-13）
+
+BUS-MER 为跨产品的平台规则及其证据，下面部分 Shop4/NPL 历史运营与 Seller 查重/回执要求只适用于该历史流程，**不应自动延伸到独立通用 Giga XLSX→CSV 产品（store-ops #312）**。#312 已经排除 Seller 查询、回执/发布状态、Shop-specific Settings 和 Canonical 迁移。通用产品仍须遵守 CREATE 格式和必填校验，但不提供 Seller 读写功能。这里不是废除 Shop4 已有运营决定。
 
 ## Canonical rules
 | ID | 平台事实 / 内部规则 | 实现与验收 |
@@ -22,7 +26,7 @@
 | **BUS-MER-003** | CSV 的官方必需/条件必需字段按**注册**模板决定；header 含首行，不得凭 GraphQL payload 推断列。可省略任意字段，但先采用完整受版本约束模板。 | 固定当前样例 headers、来源、hash、编码、有效 master；严格检查 BOM/CSV quotes/行数/编码，差异 fail closed。 |
 | **BUS-MER-004** | 商品名 `商品名` 必填 <=130 字符；`商品説明` 任意 <=3000；`販売価格` 必填 ¥300–¥9,999,999，所有 SKU 共享同一售价；`カテゴリID` 正式注册必需，必须是 master ID，不是类别名称。 | 输出最终采用的 title/description/shop boilerplate/price/taxonomy snapshot。现有 NPL GraphQL title 120 上限是**当前代码规则**，CSV 官方上限 130，不擅自改变其他发布通道。 |
 | **BUS-MER-005** | `商品画像名` 可为预上传 filename 或可访问的 image URL，最多 20；无图片可草稿、不能完成正式批量注册。jpg/jpeg/png，单图 <=8MB；本地批量上传总量 <=1GB。 | 保留 canonical 选图顺序；校验 URL 能被平台获取，或按官方流程先上传文件并引用实际文件名；不能将本地私有路径直接写进 CSV。 |
-| **BUS-MER-006** | `SKU1_在庫数` 必填；`SKU1_同時購入可能数` 官方表中必填、允许 1–9999且未填按未设置；`SKU1_商品管理コード` 可选，<=50，ASCII alnum/-/_；`SKU1_JANコード` 可选 <=14；最多 SKU1–10。 `ブランドID` 可选，使用 brand master ID。 | 一 Variant 一商品为 NPL MVP 的建议，不自行将 SPU1 聚为多 SKU；用稳定 Item Code 管理映射（长度/字符需检查），库存不能用伪造的 0/1 补全未知事实。 |
+| **BUS-MER-006** | `SKU1_在庫数` 必填；用户提供的 2026-11-13 CREATE 样本（88 列）**不包含** `SKU1_同時購入可能数`；当前官网 CREATE 页面字段表也未列该字段，早先关于此字段必填的表述撤销，后续若平台模板改变需重新核验；`SKU1_商品管理コード` 可选，<=50，ASCII alnum/-/_；`SKU1_JANコード` 可选 <=14；最多 SKU1–10。 `ブランドID` 可选，使用 brand master ID。 | 一 Variant 一商品为 NPL MVP 的建议，不自行将 SPU1 聚为多 SKU；用稳定 Item Code 管理映射（长度/字符需检查），库存不能用伪造的 0/1 补全未知事实。 |
 | **BUS-MER-007** | `商品の状態` 1–6，`配送方法` 1–6，`発送元の地域` 如东京 `jp13`，`発送までの日数` 1–5，`商品ステータス` 1=非公開 / 2=公開，`配送料の負担` 1=卖家 / 2=买家；买家承担运费时 `送料ID` 必填。另有 Biz 冷链、预约商品日期等条件字段。 | UI 显示标签，adapter 输出官方代码；不盲拷 GraphQL enum，如 `UNOPENED`/ `SELLER`。运费ID是 Seller 配送配置标识，并非金额；按对应 master/Shop4 实际设置取值。 |
 | **BUS-MER-008** | 缺图片或 category 的导入可成为 draft，不能视为完成上架；历史上传记录仅保留 7 天。Windows 推荐 Shift-JIS，非 Windows UTF-8（官方错误指南）。 | 将 `CSV_READY`, `DRAFT_ONLY`, `BLOCKED` 分开；保存原始 CSV、manifest、hash、Seller 导入结果和 reconciliation evidence 到持久存储；无回读不得标 `PUBLISHED`。 |
 
@@ -36,7 +40,7 @@
 
 ## 官方 CREATE CSV 字段参考（2026-11-11 直接复核）
 
-**证据：** [Mercari Shops 官方 CSV 新品注册指南](https://support.mercari-shops.com/hc/ja/articles/8859698858649)。本节是官方网页的字段及条件参考，不是经原始文件逐字节验证的完整 CSV Header；生成时必须从 Seller/官方样例取得真实文件。该指南的 [CSV 样例](https://guide.mercari-shops-static.com/product_import_template_sample.csv) 与 [Excel 模板](https://guide.mercari-shops-static.com/product_import_template_sample_excel.xlsx) 确有链接，但本次运行环境未成功下载原始内容，所以完整列顺序、编码和原始字节仍为 **UNVERIFIED**。
+**证据：** [Mercari 官方 CREATE 指南](https://support.mercari-shops.com/hc/ja/articles/8859698858649) + Sponsor 2026-11-13 上传的 CSV 原始字节。**已验证上传样本本身的 88 列/Header 顺序/UTF-8 BOM/CRLF/SHA-256**；尚未独立验证上传文件与在线官方样本字节完全相同，也未验证 Seller 当前租户的导入接受结果。样本中 20 张图片列、`商品名`、`商品説明`、SKU1–10 每组 5 列、`ブランドID`、`販売価格`、`カテゴリID` 等字段。**不应再把本次 88 列样本描述为无实物依据的内部候选**。
 
 ### 下载入口与行语义
 
@@ -55,7 +59,7 @@
 | `商品説明` | 可选 | 最多 3,000 字符；换行保留 |
 | `SKU1_種類` | 可选 | 同商品的種類名称 |
 | `SKU1_在庫数` | 必填 | 无论是否填写種類均须填写；不得捏造库存 |
-| `SKU1_同時購入可能数` | 官方标注必填 | 1–9,999；但说明又注明空白按未设置处理，存在表述张力；按当前模板和 Seller 校验，不凭此默认填 1 |
+| `SKU1_同時購入可能数` | **当前样本不存在** | 2026-11-13 上传样本 88 列与当前网页字段表均无此字段；不得凭历史猜测新增该列。未来模板变化需重新核实。 |
 | `SKU1_商品管理コード` | 可选 | 最多 50 字符，仅 ASCII 英数字及 `-`、`_` |
 | `SKU1_JANコード` | 可选 | 最多 14 字符；官网说明支持英数字及 `-`、`_` |
 | `SKU1_catalog_id` | 可选 | Catalog Master/检索中确认的 13 位英数字 |
