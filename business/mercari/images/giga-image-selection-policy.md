@@ -1,8 +1,8 @@
 # Giga Images → Mercari Listing: Source URL and Image Selection Policy
 
-**Scope:** Shop4 standalone Giga XLSX → Mercari Shops CREATE Web app ([Store-Ops #312](https://github.com/retailpulses/store-ops/issues/312)).  
+**Scope:** 通用（店铺无关）Giga ProductsInfo XLSX → Mercari Shops CREATE CSV 的图片选择业务知识与运营证据；当前产品见 [Store-Ops #312](https://github.com/retailpulses/store-ops/issues/312)。此文仍为候选政策，不是已批准跨产品强制规则。  
 **Status:** Sponsor-directed operating policy proposal, 2026-11-13. Image source reuse and filtering first; no Canonical Images writes, no new public URL/CDN as MVP.  
-**Detailed feature design:** [Image Preparation & Selection](https://github.com/retailpulses/store-ops/blob/design/giga-mercari-standalone-20261113/docs/products/giga-mercari-listing-web/image-preparation-and-selection.md).
+**Implementation details:** [Image Preparation & Selection](https://github.com/retailpulses/store-ops/blob/design/giga-mercari-standalone-20261113/docs/products/giga-mercari-listing-web/image-preparation-and-selection.md).
 
 ## Business rule
 
@@ -12,7 +12,7 @@ Giga original image URL and order are **supplier source evidence**; the standalo
 2. **Automatically omit oversized images from the listing batch.** The sponsor's primary root-cause hypothesis is large (>10MB) lifestyle/scene images. However **the actual Mercari official limit is 8MB per image**, so apply conservative internal `bytes < 8,000,000` for READY CSV. A >10MB image is necessarily excluded; 8–10MB is also excluded. The omission affects **this listing image selection only**, never Giga source content or Canonical assets. Keep original URL and exclusion evidence.
 3. **Retain useful images and an identifiable cover.** Per Mercari product, <=20 selected images in effective order; no selected image -> cannot be READY. Do not automatically assume every large scene photo is useless beyond the objective byte-limit rule.
 4. **Optional ranking:** product operator can choose lead image and reorder remaining selected images (source order default); possible later Agent suggestions for hero/angle/spec/dimensions/lifestyle are advisory and never override accepted manual order.
-5. **Audit and handoff:** For each supplier image, keep source index, original URL, measured bytes/method where known, selection/rejection reason, accepted effective rank/cover and operator/time/version, source item code and optional verified Canonical Variant association. Store per-batch Image Selection Manifest in the app's artifacts, **not** in this company rules directory. Future Canonical Images/Product ingestion consumes these as proposals through owner-controlled review; never write accepted Canonical facts directly from this app.
+5. **Audit and handoff:** For each supplier image, keep source index, original URL, measured bytes/method where known, selection/rejection reason, accepted effective rank/cover and operator/time/version, source item code and optional verified Canonical Variant association. Store per-batch Image Selection Manifest in the app's artifacts, **not** in this company rules directory. 本产品不实现 Canonical Images/Product/Listing 的输入、Proposal、Outbox 或迁移；如未来需要，另行建立数据迁移项目及独立审批。
 6. **Partial-success behavior:** Exclude individually invalid/oversized images; valid remaining images allow the item to continue. A zero-image product is blocked/excluded with a reason. Accepted Mercari import result remains the final operational check, and fetch failures among below-limit images are preserved for targeted follow-up.
 
 ## Facts vs assumptions
