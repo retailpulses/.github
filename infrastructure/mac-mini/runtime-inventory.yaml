@@ -4,6 +4,40 @@ timezone: Asia/Tokyo
 
 status_note: "Reconciliation observed 2026-10-25; see runtime-inventory-snapshot.md and workspaces.yaml. Effective runtime commits remain UNKNOWN unless specifically verified. The explicitly retired Time Sale staging cron was removed from the user crontab on 2026-10-25; no service or other scheduler was changed."
 runtimes:
+  - id: rp-local-model-fast-q4
+    product: RP Local Model
+    execution_mode: wrapper_managed_llama_server
+    execution_owner: retailpulses/commerce-lab/packages/rp-local-model
+    entrypoint: /opt/homebrew/Cellar/ollama/0.34.3/libexec/lib/ollama/llama-server
+    listen: "127.0.0.1:11437"
+    model_profile: fast
+    model_tag: "qwen3.5:9b"
+    model_quantization: Q4_K_M
+    parallel_slots: 2
+    total_context_tokens: 32768
+    persistent_launch_owner: UNKNOWN
+    git_commit: UNKNOWN
+    notes: "Existing single Q4 shared text-only runtime. Live HTTP and short inference verified 2026-11-13. No lifecycle change under Vision repair. See local-llm-runtime.md."
+  - id: rp-local-model-vision-ollama
+    product: RP Local Model
+    execution_mode: launchagent
+    launch_label: com.retailpulses.rp-local-model-vision
+    launch_config: /Users/agent/Library/LaunchAgents/com.retailpulses.rp-local-model-vision.plist
+    entrypoint: /opt/homebrew/bin/ollama
+    entrypoint_args: ["serve"]
+    listen: "127.0.0.1:11434"
+    model_profile: vision
+    model_tag: "qwen3.5:9b"
+    model_quantization: Q4_K_M
+    environment_non_secret:
+      OLLAMA_HOST: "127.0.0.1:11434"
+      OLLAMA_KEEP_ALIVE: "0"
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_NO_CLOUD: "1"
+    source_owner: retailpulses/commerce-lab/packages/rp-local-model
+    git_commit: UNKNOWN
+    notes: "2026-11-13 restored local-only on-demand image inference. Synthetic image + wrapper shadow smoke verified; memory/swap risk and reboot recovery remain unverified. See local-llm-runtime.md."
   - id: storeops-portal
     product: StoreOPS Portal
     execution_mode: launchagent

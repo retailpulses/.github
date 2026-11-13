@@ -184,3 +184,19 @@ The inbox `system/mac-mini/SNAPSHOT.md` is dated **2026-09-29** and is historica
 - `GET http://127.0.0.1:8765/mercari/timesale` returned HTTP 200 after the cron removal.
 - Time Sale's current operation is Manual Job. No old Runner was restored; no LaunchDaemon, running service, or other scheduler was changed.
 - Earlier snapshot observations that the cron was configured and the entrypoint was absent remain historical evidence, not current state.
+
+
+---
+
+## 增量现场观察：本地 LLM / Vision 恢复（2026-11-13 11:49–12:00 JST）
+
+**注意：** 本节为新增时点观察，不改写 2026-10-22/25 原始快照。此前 16 个 Runtime ID 于本次增加 `rp-local-model-fast-q4` 和 `rp-local-model-vision-ollama` 两项；最新共有 18 项。长期定义以 [runtime-inventory.yaml](runtime-inventory.yaml) 为准；操作证据与风险见 [local-llm-runtime.md](local-llm-runtime.md)。
+
+| Runtime ID | 观察状态（2026-11-13） | 一次性 PID | 可证明的能力 |
+| --- | --- | --- | --- |
+| `rp-local-model-fast-q4` | `127.0.0.1:11437` LISTEN、`GET /health` 200 | 96236 | text `READY` 短推理成功（0.36s）；服务 `modalities.vision=false` |
+| `rp-local-model-vision-ollama` | 新 LaunchAgent `com.retailpulses.rp-local-model-vision` running；`127.0.0.1:11434` LISTEN；`/api/tags` 200，profile `vision healthy=true` | 12384（最终重载后） | 合成红色 PNG 通过 Ollama API (`red` / 3.48s) 与 `rp-local-model infer --profile vision` (`Red` / exit 0 / 8.81s) |
+
+**资源/风险：** 在 24 GiB 机器上，现有 Q4 模型 `vmmap` footprint 15.0 GiB（峰值 16.9 GiB）；Vision 临时加载期间 swap 使用一度约 25 GiB。Vision 采用 `OLLAMA_KEEP_ALIVE=0`、`OLLAMA_NUM_PARALLEL=1`、`OLLAMA_MAX_LOADED_MODELS=1`、`OLLAMA_NO_CLOUD=1`，只监听 loopback。不允许从本次一次性验收推断高并发稳定性或重启后恢复已实测。原有 fast runtime 未重启。配置重载时首次 bootstrap 因旧进程尚未退出返回 5，确认旧进程终止后再次 bootstrap 成功。
+
+**后续事项：** 验证重启后的自动启动、持续高 swap 的根因与资源边界、实际商品图的质量/时延与故障回退。无需把 Vision 变为 Listing CSV 的强制依赖。
