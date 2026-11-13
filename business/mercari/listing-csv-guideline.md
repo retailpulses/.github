@@ -15,7 +15,8 @@ Distinguish clearly:
 
 - **Platform requirements:** Mercari-specified schema, enums, required fields and upload restrictions.
 - **Company-wide operating rules:** common validation, safe export and evidence practices.
-- **Shop/batch configuration:** shop identity, permitted delivery methods, publication choice, pricing and local defaults; resolve explicitly at run time, not by copying another shop's settings.
+- **Company-wide CSV defaults:** the approved standard values below apply to **every company Mercari Shop**, unless a product-specific condition, platform restriction, or explicitly approved batch override requires a different value.
+- **Shop/batch configuration:** target shop identity, actual Seller eligibility, valid shipping IDs and product-specific pricing must still be resolved at runtime; these do not change the company-wide standard defaults.
 
 ## Canonical sources and evidence status
 
@@ -40,7 +41,7 @@ Official [CSV sample](https://guide.mercari-shops-static.com/product_import_temp
 | **BUS-MER-004** | `商品名` required, at most 130 characters; `商品説明` optional, at most 3,000; `販売価格` required, ¥300–¥9,999,999, common to all SKUs in one product; `カテゴリID` required for publishable registration and must use the current category master ID. | Validate final rendered copy, price, approved category mapping and any batch-specific copy policy. Do not substitute category labels or legacy numeric category values. Other publishing channel limits may differ. |
 | **BUS-MER-005** | Up to 20 images per product; `商品画像名` accepts an uploaded filename or a platform-accessible URL. jpg/jpeg/png, per-image limit 8 MB; local bulk image upload total at most 1 GB (as reviewed). Missing images may permit draft handling but not completed publication. | Preserve approved image order; verify type, size, naming/upload evidence and URL accessibility. Never export local/private image paths. |
 | **BUS-MER-006** | `SKU1_在庫数` required. `SKU1_同時購入可能数` is labeled required but guidance also describes blank as unset; applicable range 1–9,999. Item management code is optional, ≤50 ASCII letters/digits/`-`/`_`; JAN optional ≤14. Up to SKU1–SKU10; optional brand uses master ID. | Validate each SKU field and actual stock; do not invent inventory or silently default unknown values. Treat the simultaneous-purchase ambiguity as template/Seller validation, not grounds to fabricate 1. |
-| **BUS-MER-007** | Official condition, delivery method, ship-from region, dispatch lead time, visibility, shipping payer and conditional fields use platform codes, not API enums. Buyer-paid shipping requires `送料ID` from the selected shop's configuration. | Resolve shipping settings and optional/conditional fields **for the target shop and batch**. No implicit shop defaults. |
+| **BUS-MER-007** | Official condition, delivery method, ship-from region, dispatch lead time, visibility, shipping payer and conditional fields use platform codes, not API enums. Buyer-paid shipping requires `送料ID` from the selected shop's configuration. | Apply the **company-wide defaults** below to every shop, then validate eligibility and conditional fields for the target shop. Record any authorized exception explicitly. |
 | **BUS-MER-008** | Missing images or category can result in a draft-only outcome; it does not represent a completed public listing. Platform upload history retains CSV files for only 7 days (as reviewed). | Separate `CSV_READY`, `DRAFT_ONLY`, `BLOCKED`, `UNKNOWN_OUTCOME`, and `PUBLISHED`. Persist export and import evidence; mark `PUBLISHED` only after reconciliation. |
 
 ## Official field reference (not an exact header fixture)
@@ -78,17 +79,32 @@ The current official template may include additional fields. The actual CSV head
 - `配送方法`: `1` 未定（出品者手配）; `2` クール便; `3` らくらくメルカリ便; `4` クールメルカリ便（冷蔵）; `5` クールメルカリ便（冷凍）; `6` メルカリBiz配送. Eligibility and active configuration must be checked per shop.
 - `発送までの日数`: `1` 1–2日; `2` 2–3日; `3` 4–7日; `4` 90日以内; `5` 8–14日.
 - `配送料の負担`: `1` 送料込み（出品者負担）; `2` 送料別（購入者負担）.
-- `商品ステータス`: `1` 非公開; `2` 公開. **Neither code is a company-wide default**; the batch's approved publication choice determines the export.
+- `商品ステータス`: `1` 非公開; `2` 公開. **Company-wide default: `2` (公開)**, unless an explicitly approved batch exception calls for non-public registration.
 - `発送元の地域`: use current prefecture master code, not display name.
 
 For Biz cold-chain, m department and reservation-specific enumerations, consult the applicable current official template and eligibility rules. Windows guidance historically recommends Shift-JIS and other platforms UTF-8; verify that the selected Seller import accepts the actual encoded file.
+
+## Company-wide default CREATE CSV policy (all shops)
+
+The values below originated from the existing operational listing CSV policy and are **approved for all company-operated Mercari Shops**, not merely one shop. They are company choices, not mandatory Mercari platform defaults.
+
+| CSV field | Company-wide default | Meaning / handling |
+|---|---|---|
+| `商品ステータス` | `2` | 公開; export only fully validated publish-ready rows |
+| `商品の状態` | `1` | 新品、未使用; do not misrepresent a product that is not new |
+| `配送方法` | `1` | 未定（出品者手配）; check that the destination Seller supports this method |
+| `発送元の地域` | `jp13` | 東京; verify fulfillment origin for products shipped elsewhere |
+| `発送までの日数` | `2` | 2–3日; override when the actual fulfillment promise is different |
+| `配送料の負担` | `1` | 送料込み（出品者負担）; sale price must follow the approved shipping-inclusive pricing policy |
+
+Apply these defaults consistently across shops. Only override a value for a documented product fact, a current Seller/platform restriction, or an explicitly approved shop/batch policy exception. Record the effective values and exception reason in the run manifest; do not silently substitute one shop's configurations for another. Pricing, inventory, categories and images remain product- or shop-resolved facts, not universal defaults.
 
 ## Shop-agnostic batch preparation and export
 
 1. **Select target:** Explicitly record shop identity, operator, date, CREATE intent and approved batch scope. Resolve seller permissions, available delivery options and shipping IDs in that shop.
 2. **Load source data:** Reuse existing authoritative product/copy/image/variant/price/stock/category data and any approved edits. Record source versions. Do not silently regenerate or overwrite reviewed content.
 3. **Pin template and masters:** Retrieve actual CREATE CSV sample plus required category/brand/catalog masters, save original versions and hash; generate from the real header.
-4. **Resolve batch configuration:** Publication state, condition, dispatch origin, lead time, delivery method, shipping payer, pricing policy, product grouping and optional fields require explicit validated input. A shop-specific precedent is not a company-wide rule.
+4. **Apply shared policy and resolve exceptions:** Use the company-wide CREATE defaults above for publication state, condition, dispatch origin, lead time, delivery method and shipping payer; verify real product facts and target Seller eligibility, documenting justified overrides. Resolve pricing, product grouping and conditional fields from authoritative inputs.
 5. **Validate candidates:** Check duplicate listings and previous imports; title/description, accurate stock, price range, category master, image limit/accessibility, SKU characters, conditional fields and CSV encoding.
 6. **Export ready rows only:** The operator-uploadable CREATE CSV contains only `CSV_READY` entries. Missing image, category, price, stock or other mandatory condition means **exclude from final upload CSV** and record in manifest/gaps. `DRAFT_ONLY` may be supplied as a **separate, clearly labeled draft artifact** only when intentionally requested; never mix it into a publish-ready file.
 7. **Review and upload:** Operator validates destination shop and final preview before initiating import. CSV generation alone does not authorize platform publication.
@@ -115,4 +131,4 @@ For Biz cold-chain, m department and reservation-specific enumerations, consult 
 - This is a **shared business guideline**, not an instruction to build an exporter, database, UI, migration, API publication pathway, or shop-specific workflow.
 - Existing applications or one-off agents may implement this contract using approved read-only sources and offline export. Implementation requirements, sprint ownership and deployment evidence stay in their respective repository issues/design packs; do not embed a single shop's sprint as the canonical process.
 - Changes to platform facts require fresh evidence and revision of the affected BUS-MER rule. Changes to operating defaults require explicit business approval and a clear scope (company-wide, shop or batch).
-- Any historic shop-specific defaults or batch decisions should remain in their own issue/run record. They are **not** silently inherited by subsequent runs for other shops.
+- The approved company-wide CSV defaults in this guideline apply to **all shops**. Historical shop-specific exceptions and batch decisions remain in their own issue/run record and do not override the shared policy for other runs.
