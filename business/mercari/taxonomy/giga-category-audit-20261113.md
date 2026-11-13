@@ -9,6 +9,8 @@
 | Active Canonical Variants | **6,464** | `canonical_product.variants.status='active'` |
 | Variants with at least one Giga category observation | **6,309** | Distinct latest `source_category_observations.variant_id` |
 | Variants with no Giga category observation | **155** | Active Variant anti-join; **141** have current Giga SKU external identity |
+| Distinct Canonical Product IDs among categorized Variants | **3,161** | Product groups globally distinct across the 6,309 categorized Variants |
+| Sum of per-category distinct Canonical Product IDs | **3,191** | Each category counted independently; **30 Product IDs span two source categories**, so not additive |
 | Distinct Giga categories on latest variant observations | **111** | Distinct `category_code`; distinct `category_path` also 111 |
 | Existing `mercari.giga_category_registry` | **72** | 72 distinct registered category codes |
 | Actually observed codes missing from registry | **39** | Do not use registry alone as enumeration SSOT |
@@ -18,7 +20,7 @@
 | Latest category observation | **2026-10-12** | Classification snapshot is **stale for recent arrivals** |
 | Latest Giga OpenAPI source observation | 2026-11-13 | Primarily list/price/inventory; latest product_list payloads do not include Giga category; not evidence that 155 are categorized |
 
-**Check:** 6,309 + 155 = 6,464. The 111 Giga inventory rows sum to exactly 6,309 distinct active Variants. Counts are per **Canonical Variant**, not SPU group, Giga raw record or Seller Listing.
+**Check:** 6,309 + 155 = 6,464. The 111 Giga inventory rows sum to exactly 6,309 distinct active Variants. The inventory additionally contains `distinct_canonical_product_count` per source category. Counts labeled `active_variant_count` are per **Canonical Variant / SKU**, not Seller Listing, while the new Product count is per distinct `canonical_product.variants.product_id`. Product per-category totals are **not additive** because 30 Product IDs occur in two Giga categories.
 
 ## Distribution by Giga top family
 
@@ -42,6 +44,10 @@ Grouped by `level_1_category` (the first segment of `giga_category_path`); ranke
 | 14 | Commercial | 5 | 2 |
 | 15 | Auto Parts & Transport | 3 | 2 |
 | | **TOTAL** | **6,309** | **111** |
+
+## Product-group granularity and cross-category quality
+
+Among the 6,309 categorized active Variant IDs there are **3,161 globally distinct Product IDs**. Across 111 categories, summing distinct Product IDs per category yields **3,191**, a 30-ID duplication due to groups spanning two different source Category IDs (maximum observed two per Product). This matters both for factual reporting and virtual subtype rule design: do not unify or merge categories based solely on shared canonical Product ID. The published inventory provides **both** `active_variant_count` and `distinct_canonical_product_count` per Giga category.
 
 ## Coverage and priority
 
