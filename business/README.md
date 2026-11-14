@@ -13,6 +13,10 @@
 | BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | Listing CSV / Shop4 NPL batch exporter；Draft |
 | BUS-MER-NL-001–012 | [Mercari Shops Newsletter](mercari/newsletter.md) | Newsletter 规则；官方业务规则 VERIFIED，集成 PARTIAL |
 
+## Operational SOPs (draft)
+
+| Mercari Shops | [Buyer receipt & invoice request SOP](mercari/buyer-receipt-invoice-sop.md) | DRAFT; official buyer-side records first; no shop-issued documents as routine policy; statutory requests escalated |
+
 ## Canonical business knowledge
 | Domain | Knowledge topic | Status |
 |---|---|---|
