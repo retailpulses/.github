@@ -320,21 +320,34 @@ Giga 表示仓库备货 **1–3 工作日**，实际约车、出库和运输耗�
 
 **重要的新排除：**有 2 条订单的收货名称为本公司「リテルパルス合同会社」，金额 Proxy 合计 **¥7,705**。这些不是外部 B2B 客户。排除后外部线索池最多 **139 条**，Basket Proxy 合计 **¥2,194,884**、平均约 **¥15,791**；仍包括取消状态及未确认企业交易。按完全相同的原始收货名称+地址组合计算，141 条只有 **135 个不同文本组合**，即 6 条是额外重复组合记录；不等于 135 家唯一企业，需对同一主体跨店不同写法单独核验。
 
-### 已通过公开资料交叉核对的机构实例（不是已核实的买方付款主体）
+### 已通过公开资料交叉核对的机构实例：实际购买商品（不是已核实的买方付款主体）
 
-| 机构（公开商号） | 地区/行业 | 比对公开来源 | 本轮可信结论 |
-|---|---|---|---|
-| 株式会社未来生活 | 大阪・介护福祉用具 | [官网](https://miraiseikatsu.jp/companydata/) / [厚劳省](https://www.kaigokensaku.mhlw.go.jp/27/index.php?JigyosyoCd=2779105812-00&ServiceCd=170&action_kouhyou_detail_019_kihon=true) | 企业名称与所在地一致 |
-| 療育センターエコルド はぐみのおうち かすがい | 爱知・儿童发育支持 | [设施官网](https://portal.ecold.group/facility/5) | 机构名称与地址一致 |
-| 山本運輸株式会社 | 兵库・物流 | [官网](https://www.yamamoto-unyu.jp/company_profile/) / [gBizINFO](https://info.gbiz.go.jp/hojin/ichiran?hojinBango=1140001046630) | 企业名称与总部地址一致 |
-| 株式会社エスエスオート | 兵库・汽车相关 | [gBizINFO](https://info.gbiz.go.jp/hojin/ichiran?hojinBango=8140001080887) | 企业名称与法人地址一致；行业仍需独立验证 |
-| 株式会社OTOGINO | 大分・电商及商品企划 | [官网](https://www.otogino.co.jp/company/company2.html) / [gBizINFO](https://info.gbiz.go.jp/hojin/ichiran?hojinBango=9320001010239) | 企业名称与总部地址一致；候选数据中出现重复订单 |
-| 渡辺エコサービス株式会社 | 福岛・废弃物收运 | [磐城市政府名单](https://www.city.iwaki.lg.jp/www/contents/1001000002056/simple/080312_ippai_syuuun.pdf) | 企业名称与公开地址一致 |
-| わかくさデイトレセンター | 香川・日间护理 | [高松市政府](https://www.city.takamatsu.kagawa.jp/kurashi/kurashi/nenkin/kaigohoken/ichiran/tsushokaigo/wakakusa.html) | 介护机构名称与地址一致 |
-| 東京都済生会中央病院 | 东京・医疗 | [医院官网](https://www.saichu.jp/access/) | 医疗设施地址一致 |
-| 三沢市立三沢病院 | 青森・医疗 | [厚劳省](https://www.iryou.teikyouseido.mhlw.go.jp/znk-web/juminkanja/S2430/initialize?kikanCd=0210000116&kikanKbn=1&prefCd=02) | 医疗设施地址一致 |
+商品来自 2026-11-14 对 Hosted Supabase `public.sales_orders` 的只读逐笔查询，使用原始 `product_name` 缩写说明；**不根据企业名称臆测商品**。表内金额为 `product_price + shipping_price`（Basket Proxy，未验证最终实付），全部列示订单为 `COMPLETED`，不等于企业付款身份已核实。对于 `shipping_name` 为个人、公司/医院只写于 `shipping_address_2` 的记录，标明**场所收货、付款方未知**。
 
-这些公开来源核对的是**营业场所或企业登记位置**。医院、学校和写有公司名称的建筑收货地址也可能接收个人订单；不能推断机构付款或用于商业经营。此表为有公开证据的样例，**不表示其他 132 条已完成同等级外部验证**。
+| 机构（公开商号） | 地区／行业 | 本次订单实际购买商品 | Basket Proxy | 比对公开来源 | 本轮可信结论 |
+|---|---|---|---:|---|---|
+| 株式会社未来生活 | 大阪・介护福祉用具 | 带置物架的白色电脑桌／办公桌 | ¥7,975 | [官网](https://miraiseikatsu.jp/companydata/) / [厚劳省](https://www.kaigokensaku.mhlw.go.jp/27/index.php?JigyosyoCd=2779105812-00&ServiceCd=170&action_kouhyou_detail_019_kihon=true) | 企业名称与收货地址一致，付款者待核实 |
+| 療育センターエコルド はぐみのおうち かすがい | 爱知・儿童发育支持 | 金属儿童攀爬架／滑梯组合（室内游具） | ¥24,932 | [设施官网](https://portal.ecold.group/facility/5) | 机构名称与收货地址一致；**Shop3 交易，非本公司自营商品收入** |
+| 山本運輸株式会社 | 兵库・物流 | 户外藤编风格折叠庭院桌椅三件套 | ¥16,240 | [官网](https://www.yamamoto-unyu.jp/company_profile/) / [gBizINFO](https://info.gbiz.go.jp/hojin/ichiran?hojinBango=1140001046630) | 公司名在地址附注中，个人姓名收货；付款者未知 |
+| 株式会社エスエスオート | 兵库・汽车相关 | 灰色座面／深棕脚 Eames 风格餐椅，**商品标注 4 脚套装** | ¥21,760 | [gBizINFO](https://info.gbiz.go.jp/hojin/ichiran?hojinBango=8140001080887) | 企业名称与法人地址匹配，商品为四椅套装而非 `quantity=4` |
+| 株式会社OTOGINO | 大分・EC及商品企划 | 黑色 PU 餐椅 **2 脚套装、3 脚套装**；对应两条不同订单 | **¥8,062、¥10,480** | [官网](https://www.otogino.co.jp/company/company2.html) / [gBizINFO](https://info.gbiz.go.jp/hojin/ichiran?hojinBango=9320001010239) | 企业名称/地点一致，两次购买可核查，但企业付款仍待证实 |
+| 渡辺エコサービス株式会社 | 福岛・废弃物收运 | 大型户外钢制储物棚／物置 | ¥30,710 | [磐城市政府名单](https://www.city.iwaki.lg.jp/www/contents/1001000002056/simple/080312_ippai_syuuun.pdf) | 公司名与地址匹配 |
+| わかくさデイトレセンター | 香川・日间护理 | 四轮可折叠步行辅助车（歩行車／シルバーカー） | ¥15,682 | [高松市政府](https://www.city.takamatsu.kagawa.jp/kurashi/kurashi/nenkin/kaigohoken/ichiran/tsushokaigo/wakakusa.html) | 机构名称与地址匹配，商品与护理场景相符但付款仍未知 |
+| 東京都済生会中央病院 | 东京・医疗 | 折叠式介护轮椅（自走／介助兼用） | ¥13,896 | [医院官网](https://www.saichu.jp/access/) | 医院仅在配送地址附注中；**个人姓名收货，不得视为院方已采购** |
+| 三沢市立三沢病院 | 青森・医疗 | 国际规格可折叠乒乓球桌 | ¥34,253 | [厚劳省](https://www.iryou.teikyouseido.mhlw.go.jp/znk-web/juminkanja/S2430/initialize?kikanCd=0210000116&kikanKbn=1&prefCd=02) | 医院医局为配送地点、个人姓名收货；**可能是员工个人购买** |
+| 仲宗根病院 | 大分・医疗 | 单人电动躺椅／带脚托电动沙发 | ¥32,796 | [厚劳省医疗机构公开系统](https://www.iryou.teikyouseido.mhlw.go.jp/) | 医院为配送地点、个人姓名收货；**可能是员工或其他个人购买** |
+
+**核对限制：**以上购买商品均来自对应订单的商品名称，不是机构需求的用途确认。套餐中“2 脚、3 脚、4 脚”是**一件商品的套装内容**，不代表数据库 `quantity` 大于 1。特别是医院的轮椅、躺椅、乒乓球桌不应仅因配送至医院就解释为医院采购行为。表中多为一笔订单，不能推算行业客单价。
+
+#### 介护／医疗／疗育场景的商业线索
+
+- **疗育机构**：儿童攀爬架/滑梯，可能对应活动或感统训练场景；真实用途未确认。
+- **日间护理设施**：步行辅助车，商品与高龄者移动辅助有关；尚未确认属于机构设备采购还是个人收货。
+- **医院地址**：轮椅、电动躺椅、乒乓球桌，需求呈现功能差异；但三条医院地址中均有个人收货线索，需**优先归类为「机构地点收货／付款主体未知」**，不可计入已核实的院方采购。
+- **介护相关企业**：购买电脑桌等办公室家具，意味着不应把医疗/护理行业潜在需求限制在医疗器械，亦不能因企业经营护理用品就认定订单属于护理项目。
+- **市场验证思路（Hypothesis）**：护理与疗育领域值得单独作为 B2B 需求发现方向，包括活动设施、室内家具与辅助用品；但是仅凭这些个案不足以声称该行业具有较高 B2B 成交率。需要验证付款主体、真实设备用途、可开票要求、业务交期和复购。
+
+这些公开来源核对的是营业场所或企业登记位置。学校、医院和写有公司名称的建筑收货地址可能接收个人订单；不推断机构付款，也不把收货到医院的商品自动判为医疗器械采购。表格包含公开商号与商品类别的调查汇总，没有记录个人收货姓名、具体门牌、电话或订单号。
 
 ### 行业、区域与后续行动
 
