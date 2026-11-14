@@ -80,3 +80,19 @@ Do not autonomously publish unreviewed promotional content or assert unsupported
 **Mercari-specific adaptations in this document:** Shop4-first experiment, exact live-listing routing, one-SKU-per-listing policy, hero-product candidate prioritization and minimal deployment gate. These are strategic operating recommendations, not claims of implemented capability.
 
 Keep the original draft as historical design/POC evidence; use this document as the business-level strategy and update it with verified POC outcomes.
+
+## 9. First POC product shortlist (2026-11-14)
+
+Source: [Mercari Hero Intelligence](https://github.com/retailpulses/.github/blob/main/business/mercari/merchandising/hero-products.md), four-store historical completed order lines through October 2026. Figures are cross-store gross-item-revenue proxies, **not Shop4-specific**, not finance-reconciled, and do not establish current availability.
+
+| Priority | Product / SKU | Historical units | Gross item revenue | Sales months | T0 hypotheses |
+| --- | --- | ---: | ---: | ---: | --- |
+| 1 | 大型屋外物置 290cm / `N508P301428B` | 32 | ¥1,365,868 | 7 | Garden clutter solution; capacity/dimensions; fit/installation considerations |
+| 2 | 屋外収納ボックス170L / `N509P305801A` | 47 | ¥261,819 | 13 | Balcony organization; 170L capacity; before/after concept (only with truthful visual evidence) |
+| 3 | Lサイズスーツケース / `PP307878AAA` | 23 | ¥134,156 | 8 | Trip-length sizing; packing capacity; features verified against actual specs |
+
+**Selection rationale:** deliberately compare high-ticket consideration, accessible household storage and travel-use-case content. These are candidates, not approved publication SKUs. The hero file's SPU1 aggregation rules prevent confusing variant-level counts with distinct product-family demand.
+
+**Publish gate:** confirm exact live Shop4 listing URL and SKU mapping, availability, current price, margin/Effective TCOGS, canonical imagery, claim support and mobile TikTok→Mercari linking feasibility. If a candidate is absent from Shop4, choose a verified in-stock alternative or explicitly approve another destination; never invent a Shop4 listing.
+
+**Batch:** 3 distinct T0 creative hypotheses per approved product (target 9 videos), each with content ID, approved script, source images, CTA, link and measured clicks. No T1/T2 production until initial signals justify it.
