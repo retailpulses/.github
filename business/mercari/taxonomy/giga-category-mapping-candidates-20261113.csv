@@ -1,0 +1,112 @@
+giga_category_code,giga_category_name,giga_category_path,active_variant_count,mapping_strategy,suggested_ja_leaf,candidate_mercari_category_id,candidate_mercari_full_path,lookup_result,approval_status,fallback_category_id,official_master_snapshot
+10689,Desks & Work Surfaces,Furniture>>Office>>Desks & Work Surfaces,786,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10830,Hard Case Luggage,Travel>>Luggage>>Hard Case Luggage,669,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10671,Chairs & Accent Seating,Furniture>>Primary Living Space>>Chairs & Accent Seating,570,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10657,"Beds, Frames & Bases","Furniture>>Bedroom Furniture>>Beds, Frames & Bases",531,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10669,Sofas,Furniture>>Primary Living Space>>Sofas,497,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10698,"Youth, Kids & Baby Furniture","Furniture>>Youth, Kids & Baby Furniture",278,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10687,Office Chairs,Furniture>>Office>>Office Chairs,248,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10681,Cabinets,Furniture>>Primary Living Space>>Cabinets,175,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10929,Sheds,Garden & Outdoor>>Sheds,165,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10670,Tables,Furniture>>Primary Living Space>>Tables,156,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10648,Kids Bikes & Riding Toys,Toys>>Kids Bikes & Riding Toys,135,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10688,File Cabinets & Storage Cabinets,Furniture>>Office>>File Cabinets & Storage Cabinets,132,SINGLE_CATEGORY_CANDIDATE,キャビネット・書庫,BBNL9nX5CDLhkFcXFPMtPe,家具・インテリア > 事務・店舗用品 > オフィス家具 > オフィス収納 > キャビネット・書庫,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10653,Kids Slides,Toys>>Kids Slides,127,SINGLE_CATEGORY_CANDIDATE,滑り台,wyiuMnT6h7u3YRyyMBeq3G,ゲーム・おもちゃ・グッズ > おもちゃ > 大型遊具・室内遊具 > 滑り台,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10679,Recliners & Massage Chairs,Furniture>>Primary Living Space>>Recliners & Massage Chairs,118,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10643,Pens & Hutches,Pet Supplies>>Pens & Hutches,107,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10811,Garden Pots & Planters,Garden & Outdoor>>Garden Supplies>>Garden Pots & Planters,87,SINGLE_CATEGORY_CANDIDATE,プランター,6A6bRsiG3F9UrAZG65esuQ,フラワー・ガーデニング > 園芸用品 > 鉢・プランター > プランター,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10685,"Display,Shelving & Etageres","Furniture>>Primary Living Space>>Display,Shelving & Etageres",73,LEAF_NAME_RESEARCH,オープンシェルフ,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10692,Seating for Dining,Furniture>>Dining Furniture>>Seating for Dining,72,SINGLE_CATEGORY_CANDIDATE,ダイニングチェア,uCmnfJGdXF7HAhN2A9Ab7L,家具・インテリア > 椅子・チェア > ダイニングチェア,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10952,Deck Boxes & Patio Storage,Garden & Outdoor>>Outdoor & Patio Furniture>>Deck Boxes & Patio Storage,62,LEAF_NAME_RESEARCH,屋外収納ボックス,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10805,Umbrellas & Shades,Garden & Outdoor>>Canopies & Gazebos>>Umbrellas & Shades,59,SINGLE_CATEGORY_CANDIDATE,ガーデンパラソル,rfCtNnTpNLLHWhaVgv2eog,フラワー・ガーデニング > 園芸用品 > ガーデンファニチャー > ガーデンパラソル,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10694,Dining and Kitchen Sets,Furniture>>Dining Furniture>>Dining and Kitchen Sets,57,LEAF_NAME_RESEARCH,ダイニングセット,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10801,Patio Furniture Sets,Garden & Outdoor>>Outdoor & Patio Furniture>>Patio Furniture Sets,46,SINGLE_CATEGORY_CANDIDATE,ガーデンチェア・テーブル,h778MNmfSUDumqASTGu5GX,フラワー・ガーデニング > 園芸用品 > ガーデンファニチャー > ガーデンチェア・テーブル,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10754,Mattresses,Furniture>>Bedroom Furniture>>Mattresses,44,LEAF_NAME_RESEARCH,マットレス,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10644,Trees & Condos,Pet Supplies>>Trees & Condos,40,REQUIRES_VIRTUAL_SUBTYPE,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10672,Bean Bag Chairs & Lazy Sofa Chair,Furniture>>Primary Living Space>>Bean Bag Chairs & Lazy Sofa Chair,39,SINGLE_CATEGORY_CANDIDATE,ビーズクッション・クッションソファ,TBN4fG4457XbMwJgJHrrQH,家具・インテリア > ソファ・ソファベッド > ビーズクッション・クッションソファ,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10676,Trash Cans,Furniture>>Primary Living Space>>Trash Cans,39,LEAF_NAME_RESEARCH,ゴミ箱,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10729,Other Exercise Equipment,Fitness & Sports>>Fitness>>Other Exercise Equipment,39,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10666,Bedroom Storage,Furniture>>Bedroom Furniture>>Bedroom Storage,38,SINGLE_CATEGORY_CANDIDATE,チェスト・タンス,FLDJNR2Ztsu32JrPWGg6i,家具・インテリア > 洋服タンス・押入れ収納 > チェスト・タンス,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10817,Accessories,Garden & Outdoor>>Accessories,38,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10823,Dryers,Electrical Appliances>>Dryers,34,LEAF_NAME_RESEARCH,衣類乾燥機,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10654,Soft Play,Toys>>Soft Play,33,LEAF_NAME_RESEARCH,室内遊具,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10695,Dining Tables,Furniture>>Dining Furniture>>Dining Tables,33,SINGLE_CATEGORY_CANDIDATE,ダイニングテーブル,bWUDWGgbAARJKEV2KsLkBg,家具・インテリア > 机・テーブル > ダイニングテーブル,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11211,Wheelchairs & Accessories,Mobility & Daily Living Aids>>Mobility Aids & Equipment>>Wheelchairs & Accessories,33,LEAF_NAME_RESEARCH,車椅子,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10747,Full Length Mirrors,Household Supplies & Décor>>Mirrors>>Full Length Mirrors,32,SINGLE_CATEGORY_CANDIDATE,姿見・スタンドミラー,4EjrW8H4pEGHrgWUSs37v,家具・インテリア > インテリア小物 > 鏡 > 姿見・スタンドミラー,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10806,Carports,Garden & Outdoor>>Canopies & Gazebos>>Carports,30,LEAF_NAME_RESEARCH,カーポート,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10650,Swing Sets,Toys>>Swing Sets,27,SINGLE_CATEGORY_CANDIDATE,ブランコ,Vxxkirq6mor5tc3vnc2MCY,ゲーム・おもちゃ・グッズ > おもちゃ > 大型遊具・室内遊具 > ブランコ,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10696,"Servers, Sideboards & Buffets","Furniture>>Dining Furniture>>Servers, Sideboards & Buffets",27,SINGLE_CATEGORY_CANDIDATE,キャビネット・サイドボード,nrCpawxs5bctcfDGwjS7Qf,家具・インテリア > リビング収納 > キャビネット・サイドボード,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10933,Washer,Electrical Appliances>>Washer,27,LEAF_NAME_RESEARCH,洗濯機,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10721,Trampolines,Fitness & Sports>>Fitness>>Trampolines,26,SINGLE_CATEGORY_CANDIDATE,トランポリン,zyxKbHFU2Zzmsb3teX9dqk,スポーツ > トレーニング・エクササイズ > エクササイズグッズ > トランポリン,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10723,Treadmills,Fitness & Sports>>Fitness>>Treadmills,25,LEAF_NAME_RESEARCH,ルームランナー・ランニングマシン,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10735,Basketball Hoops,Fitness & Sports>>Sports>>Basketball Hoops,25,LEAF_NAME_RESEARCH,バスケットゴール,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10651,Outdoor Sports,Toys>>Outdoor Sports,24,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10661,Makeup Vanities,Furniture>>Bedroom Furniture>>Makeup Vanities,24,SINGLE_CATEGORY_CANDIDATE,ドレッサー・鏡台,FcWVKYRnweW4pQtvaUhDRV,家具・インテリア > リビング収納 > ドレッサー・鏡台,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10673,TV & Entertainment Furniture,Furniture>>Primary Living Space>>TV & Entertainment Furniture,23,SINGLE_CATEGORY_CANDIDATE,テレビ台,b5CQvm7At4c6xmfcX2xMeS,家具・インテリア > リビング収納 > テレビ台,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10702,Massage Tables,Furniture>>Game & Recreation>>Massage Tables,23,LEAF_NAME_RESEARCH,マッサージベッド,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10646,Pet Beds & Furniture,Pet Supplies>>Pet Beds & Furniture,21,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10944,Tool Carts,Tools & Tool Organizers>>Tool Carts,21,LEAF_NAME_RESEARCH,ツールワゴン,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11212,"Walkers, Rollators & Accessories","Mobility & Daily Living Aids>>Mobility Aids & Equipment>>Walkers, Rollators & Accessories",19,SINGLE_CATEGORY_CANDIDATE,歩行器,EPnSSfSd4DWSKyvrTaocda,ダイエット・健康 > 看護・介護用品 > 歩行器,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11238,Greenhouses,Garden & Outdoor>>Garden Supplies>>Greenhouses,19,LEAF_NAME_RESEARCH,ビニールハウス,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10652,Kids Kitchen Playsets,Toys>>Kids Kitchen Playsets,18,LEAF_NAME_RESEARCH,おままごとキッチン,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10766,Kitchen Sinks,Kitchen>>Kitchen Sinks,17,LEAF_NAME_RESEARCH,流し台・シンク,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10781,Dryers,Bath & Faucets>>Washer & Dryers>>Dryers,17,LEAF_NAME_RESEARCH,衣類乾燥機,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10808,BBQ Grills & Utensils,Garden & Outdoor>>BBQ Grills & Utensils,17,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10810,Garden Carts,Garden & Outdoor>>Garden Supplies>>Garden Carts,17,LEAF_NAME_RESEARCH,ガーデンカート,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10682,Ottomans,Furniture>>Primary Living Space>>Ottomans,15,LEAF_NAME_RESEARCH,オットマン,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10800,Patio Seating,Garden & Outdoor>>Outdoor & Patio Furniture>>Patio Seating,15,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10832,Other,Other,15,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10733,Table Tennis Tables,Fitness & Sports>>Sports>>Table Tennis Tables,14,SINGLE_CATEGORY_CANDIDATE,卓球台,Z4RxUMdRndHiP4oM2pDDd8,スポーツ > 卓球 > 卓球台,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10744,Christmas Trees,Household Supplies & Décor>>Christmas Trees,13,SINGLE_CATEGORY_CANDIDATE,クリスマスツリー,arA2zQonZvWz26XgntGPeb,キッチン・日用品・その他 > 季節・年中行事 > クリスマス > クリスマスツリー,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10765,Refrigerators,Kitchen>>Refrigerators,12,LEAF_NAME_RESEARCH,冷蔵庫・冷凍庫,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11241,Pet Strollers,Pet Supplies>>Pet Strollers,12,LEAF_NAME_RESEARCH,ペットカート,,,MULTIPLE_OFFICIAL_CATEGORY_PATHS,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10724,Exercise Bikes,Fitness & Sports>>Fitness>>Exercise Bikes,10,SINGLE_CATEGORY_CANDIDATE,フィットネスバイク,E2NhqASxmXxE58cTf8ZicF,スポーツ > トレーニング・エクササイズ > フィットネスマシン > フィットネスバイク,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10752,Flowers & Plants,Household Supplies & Décor>>Flowers & Plants,10,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10664,Sofa Beds,Furniture>>Bedroom Furniture>>Sofa Beds,8,SINGLE_CATEGORY_CANDIDATE,ソファベッド,fv7NAWJqfaqqh7GsP7q2dN,家具・インテリア > ソファ・ソファベッド > ソファベッド,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10678,Loveseats,Furniture>>Primary Living Space>>Loveseats,8,SINGLE_CATEGORY_CANDIDATE,2人掛け・3人掛けソファ,bu4k39KtD6mrGamRsyNfHB,家具・インテリア > ソファ・ソファベッド > 2人掛け・3人掛けソファ,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10812,Garden Arch & Trellis,Garden & Outdoor>>Garden Supplies>>Garden Arch & Trellis,8,LEAF_NAME_RESEARCH,ガーデンアーチ,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10835,Ventilation Fans,Tools & Tool Organizers>>Ventilation Fans,8,LEAF_NAME_RESEARCH,換気扇,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10761,Privacy Screens,Household Supplies & Décor>>Privacy Screens,7,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10803,Fences,Garden & Outdoor>>Outdoor & Patio Furniture>>Fences,6,SINGLE_CATEGORY_CANDIDATE,ガーデンフェンス,ygq8RLRYRaB4SrHFU222R3,フラワー・ガーデニング > 園芸用品 > ガーデンファニチャー > ガーデンフェンス,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11274,Gazebos,Garden & Outdoor>>Canopies & Gazebos>>Gazebos,6,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10665,Bedroom Sets,Furniture>>Bedroom Furniture>>Bedroom Sets,5,LEAF_NAME_RESEARCH,ベッドフレーム,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10813,Pools,Garden & Outdoor>>Pools,5,LEAF_NAME_RESEARCH,家庭用プール,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11214,Shower Chairs,Bath & Faucets>>Shower Chairs,5,LEAF_NAME_RESEARCH,シャワーチェア,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10700,Game Tables,Furniture>>Game & Recreation>>Game Tables,4,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10701,Seating/Chairs,Furniture>>Game & Recreation>>Seating/Chairs,4,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10722,Step Machines,Fitness & Sports>>Fitness>>Step Machines,4,SINGLE_CATEGORY_CANDIDATE,ステッパー,3qYRjdheqRCYymcDkojXx9,スポーツ > トレーニング・エクササイズ > フィットネスマシン > ステッパー,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10788,Bathroom Sink Faucets,Bath & Faucets>>Bathroom Sink Faucets,4,LEAF_NAME_RESEARCH,洗面水栓,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10794,Air Compressors,Commercial>>Air Compressors,4,LEAF_NAME_RESEARCH,エアーコンプレッサー,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10831,Backpacks,Travel>>Backpacks,4,LEAF_NAME_RESEARCH,リュック・バックパック,,,MULTIPLE_OFFICIAL_CATEGORY_PATHS,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10837,Ladders,Tools & Tool Organizers>>Ladders,4,LEAF_NAME_RESEARCH,脚立,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+11210,Care Beds，Electric & Reclining Beds,Mobility & Daily Living Aids>>Bedroom Aids & Accessories>>Care Beds，Electric & Reclining Beds,4,SINGLE_CATEGORY_CANDIDATE,介護用ベッド,xMLviTiMc4GL8uEiYPzJLY,ダイエット・健康 > 看護・介護用品 > 介護用ベッド・寝具 > 介護用ベッド,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10645,Grooming,Pet Supplies>>Grooming,3,LEAF_NAME_RESEARCH,トリミング用品,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10649,Rockers,Toys>>Rockers,3,LEAF_NAME_RESEARCH,バウンサー,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10680,Rocking Chairs,Furniture>>Primary Living Space>>Rocking Chairs,3,LEAF_NAME_RESEARCH,ロッキングチェア,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10739,Inflatable Paddle Boards,Fitness & Sports>>Sports>>Inflatable Paddle Boards,3,LEAF_NAME_RESEARCH,SUPボード,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10749,Accessories,Household Supplies & Décor>>Accessories,3,LEAF_NAME_RESEARCH,生活雑貨,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10802,Outdoor Tables,Garden & Outdoor>>Outdoor & Patio Furniture>>Outdoor Tables,3,SINGLE_CATEGORY_CANDIDATE,ガーデンチェア・テーブル,h778MNmfSUDumqASTGu5GX,フラワー・ガーデニング > 園芸用品 > ガーデンファニチャー > ガーデンチェア・テーブル,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10829,Soft Case Luggage,Travel>>Luggage>>Soft Case Luggage,3,LEAF_NAME_RESEARCH,キャリーケース,,,MULTIPLE_OFFICIAL_CATEGORY_PATHS,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10836,Wire Fencing,Tools & Tool Organizers>>Wire Fencing,3,SINGLE_CATEGORY_CANDIDATE,ガーデンフェンス,ygq8RLRYRaB4SrHFU222R3,フラワー・ガーデニング > 園芸用品 > ガーデンファニチャー > ガーデンフェンス,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10840,Snow Removal Tools,Tools & Tool Organizers>>Snow Removal Tools,3,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10660,Nightstands,Furniture>>Bedroom Furniture>>Nightstands,2,LEAF_NAME_RESEARCH,サイドテーブル・ナイトテーブル,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10667,"Dressers, Chests & Wardrobes","Furniture>>Bedroom Furniture>>Dressers, Chests & Wardrobes",2,SINGLE_CATEGORY_CANDIDATE,チェスト・タンス,FLDJNR2Ztsu32JrPWGg6i,家具・インテリア > 洋服タンス・押入れ収納 > チェスト・タンス,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10709,Mobility Scooters,Auto Parts & Transport>>Mobility Scooters,2,SINGLE_CATEGORY_CANDIDATE,電動車椅子,AxoCDoaYKaSQhRKFYMLypm,ダイエット・健康 > 看護・介護用品 > 車椅子 > 電動車椅子,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10718,Elliptical Trainers,Fitness & Sports>>Fitness>>Elliptical Trainers,2,SINGLE_CATEGORY_CANDIDATE,クロストレーナー,2upAFyu2uGrWXvvv3JmPHW,スポーツ > トレーニング・エクササイズ > フィットネスマシン > クロストレーナー,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10726,Weight Benches,Fitness & Sports>>Fitness>>Weight Benches,2,SINGLE_CATEGORY_CANDIDATE,トレーニングベンチ,q5pV6VHKTwNXduHhqEAouW,スポーツ > トレーニング・エクササイズ > ウエイトトレーニング > トレーニングベンチ,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10734,Gym Mats,Fitness & Sports>>Sports>>Gym Mats,2,LEAF_NAME_RESEARCH,トレーニングマット,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10819,Vacuums & Floor Cleaning Machines,Electrical Appliances>>Vacuums & Floor Cleaning Machines,2,LEAF_NAME_RESEARCH,掃除機,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10820,Air Conditioners,Electrical Appliances>>Air Conditioners,2,LEAF_NAME_RESEARCH,エアコン,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10714,Car Jacks,Auto Parts & Transport>>Car Jacks,1,SINGLE_CATEGORY_CANDIDATE,フロアジャッキ,br6qGALYUhkjvTNDkgBzqK,車・バイク・自転車 > 車 > 工具 > ジャッキ > フロアジャッキ,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10720,Rowers,Fitness & Sports>>Fitness>>Rowers,1,LEAF_NAME_RESEARCH,ローイングマシン,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10728,Weight Racks,Fitness & Sports>>Fitness>>Weight Racks,1,LEAF_NAME_RESEARCH,ダンベルラック,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10731,Outdoor Bikes,Fitness & Sports>>Sports>>Outdoor Bikes,1,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10746,Bathroom Mirrors,Household Supplies & Décor>>Mirrors>>Bathroom Mirrors,1,LEAF_NAME_RESEARCH,洗面鏡,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10750,Rugs,Household Supplies & Décor>>Rugs,1,SINGLE_CATEGORY_CANDIDATE,ラグ・カーペット,3VcQQGfYUh6Y9i2Yh44kQi,家具・インテリア > ラグ・カーペット・マット > ラグ・カーペット,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10785,Bathroom Vanities,Bath & Faucets>>Bathroom Vanities,1,LEAF_NAME_RESEARCH,洗面台,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10790,Bathroom Storage,Bath & Faucets>>Bathroom Storage,1,LEAF_NAME_RESEARCH,洗面所収納,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10795,Display Freezers & Refrigerators,Commercial>>Display Freezers & Refrigerators,1,LEAF_NAME_RESEARCH,業務用冷蔵庫,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10815,Weed Barrier Fabric,Garden & Outdoor>>Power & Lawn Equipment>>Weed Barrier Fabric,1,SINGLE_CATEGORY_CANDIDATE,防草シート,3Z9eHyabBfzmsHh8nwhHYB,フラワー・ガーデニング > 園芸用品 > 園芸養土・薬品 > 防草シート,EXACT_LEAF_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10822,Home Cleaning,Electrical Appliances>>Home Cleaning,1,HETEROGENEOUS_REVIEW,,,,NO_DIRECT_SUGGESTION,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10824,Dehumidifiers,Electrical Appliances>>Dehumidifiers,1,LEAF_NAME_RESEARCH,除湿機,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
+10844,Blowers,Tools & Tool Organizers>>Blowers,1,LEAF_NAME_RESEARCH,ブロワー,,,EXACT_LEAF_NOT_FOUND,DRAFT_NOT_APPROVED,,20261113-30f1c9dc
