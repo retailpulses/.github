@@ -1,175 +1,182 @@
-# Rakuten Business Strategy — Homebliss
+# Rakuten 业务战略 — Homebliss
 
-> Owner: Retailpulses / E-commerce Business · Status: Approved direction, execution evidence pending · Updated: 2026-11-14 JST
-> Scope: 楽天市場「ホムブリス」 (homebliss). This is the business strategy, not the RMS technical contract or promotion runbook.
+> 负责人：リテルパルス合同会社／电商业务 · 状态：经营方向已确认，执行证据待补全 · 更新：2026-11-14 JST
+> 范围：楽天市場「ホムブリス」（homebliss）。本文是业务战略，不替代 RMS 技术契约或促销操作手册。
 
-## 1. Decision and business thesis
+## 1. 经营决策与战略逻辑
 
-**Decision:** Continue operating Rakuten into the second contract year. Do not plan an exit merely because of plan fee changes. The first-year ¥100,000 sales requirement has **already been met** (business-owner confirmation, 2026-11-14). This assertion should be reconciled to RMS sales/contract evidence before being used in an external eligibility filing; do not infer that it proves all renewal terms are satisfied.
+**已确认决策：**继续经营 Rakuten 店铺并进入第二个合同年度，不因套餐费用变化而直接决定退店。第一年度 ¥100,000 销售额门槛**已经达到**（业务负责人于 2026-11-14 确认）。对外作为续约资格证据之前，仍须与 RMS 销售记录及合同核对；不能据此推断所有续约条件都已满足。
 
-**Thesis:** Grow Homebliss through (1) low-friction, high-quality catalog expansion using CSV and existing integrations, and (2) disciplined, measurable participation in Rakuten promotion mechanisms. In parallel, accumulate transferable operating capabilities for a possible future owned ecommerce channel (Strategic Option / Bet 3, **not an approved storefront launch**). Scale profitable revenue, not gross listing count or promotional spend alone.
+**战略逻辑：**通过两项重点发展 Homebliss：（1）利用 CSV 和已有集成能力，以低操作成本扩大高质量商品目录；（2）有纪律、可衡量地利用 Rakuten 促销机制。同时，为未来可能建立的自营独立站积累可迁移的运营能力（战略选择权／Bet 3，**并非已批准建设独立站**）。优先增长可盈利收入，而不是仅追求上架数量或促销投入。
 
-The shop began operations in 2026-04. Current RMS plan: **がんばれ！プラン** (observed 2026-11-14). Confirm contract renewal date, second-year fee schedule and any action/notice requirements directly from the current RMS contract before acting; this strategy is not a legal interpretation of the contract.
+店铺于 2026-04 开始经营。当前 RMS 套餐为 **がんばれ！プラン**（2026-11-14 观察）。具体续约日期、第二年度费用及通知／操作义务须以 RMS 当前合同为准；本文不构成合同法律解释。
 
-## 2. Key bet 1 — CSV-enabled listing scale
+## 2. 核心战略 Bet 1 — 利用 CSV 扩大上架规模
 
-**Business assumption to verify:** CSV bulk listing becomes free/available for our account from **January 2026** (owner-stated strategy assumption; confirm exact start date, entitlement, limits and whether this is CSV upload, option fee waiver or another change in the Rakuten contract/RMS). As of this document's date January 2026 is in the past: do not represent the feature as a future launch. Check the account's present CSV entitlement.
+**待核实的业务假设：**从 **2026 年 1 月**起，我们的账户可以免费使用 CSV 批量上架功能（业务负责人提出的战略前提）。需要核实确切生效日期、账户权限、数量限制，以及究竟是 CSV 上传功能开放、选项费用免除还是其他合同变更。2026 年 1 月已经过去，不应将其描述为尚未发生的未来政策；应检查当前账户的实际 CSV 权益。
 
-Use CSV-first batch listing/update where supported, complemented by existing RMS APIs for bounded readback and ongoing inventory operations. Avoid building a new listing stack before assessing current assets.
+在支持的范围内优先采用 CSV 批量创建／更新商品，结合现有 RMS API 执行受控回读和日常库存操作。完成现有能力盘点前，不另起炉灶开发全新的 Listing 系统。
 
-- Expand the sellable assortment based on category demand, unit economics, source-data quality, inventory reliability and operational throughput.
-- Batch pipeline: source product/variant facts -> Rakuten-specific title/copy, image/variation/SEO mapping -> SKU/manage-number and duplicate checks -> price/inventory/prohibited-claim checks -> CSV validation/preview -> bounded upload -> RMS readback and discrepancy reconciliation.
-- Never equate a successful generated CSV with published, purchasable listings.
-- Prioritize improvements to existing catalog quality before indiscriminate expansion; avoid duplicate listings sharing the same physical stock without sound inventory mapping.
-- Measure active/purchasable SKU growth, publish pass rate, per-listing contribution, traffic, conversion, inventory exceptions and operator time per batch. Quantitative growth targets remain open until a current baseline is verified.
+- 依据品类需求、单品经济性、来源数据质量、库存可靠性和运营吞吐量扩充可售商品。
+- 批量流程：来源商品／Variant 数据 → 乐天专用标题、文案、图片、规格及 SEO 映射 → SKU／管理番号与重复检查 → 价格、库存及违规描述校验 → CSV 验证和预览 → 有界批量上传 → RMS 回读与差异核对。
+- CSV 文件生成成功不等于商品已经发布并可购买。
+- 在盲目扩品前，先解决现有商品内容质量问题；同一实物库存涉及多个 Listing 时，必须具备可靠的库存映射。
+- 指标：有效可购 SKU 增长、发布成功率、单品贡献利润、流量、转化率、库存异常以及每批次人工工时。完成当前基线核实后再设定量化目标。
 
-## 3. Key bet 2 — Promotion as a repeatable growth engine
+## 3. 核心战略 Bet 2 — 将促销发展为可复用的增长机制
 
-Promotion is a **portfolio of tested mechanisms**, not blanket discounting. Distinguish **event** (Super SALE, お買い物マラソン), **mechanism** (points, coupons, Super DEAL, RPP, SALEサーチ), and **campaign instance** (our approved participation and assets).
+促销是**经过测试的机制组合**，而非全面降价。区分三层概念：**平台活动**（Super SALE、お買い物マラソン）、**促销机制**（ポイント、クーポン、Super DEAL、RPP、SALEサーチ）和**具体活动实例**（经公司批准的参与计划及素材）。
 
-- Maintain a rolling calendar of deadlines and eligible opportunities, informed by RMS announcements and the existing historical email archive.
-- For each proposed campaign: hypothesis, nominated SKUs, contribution economics (including platform/points/DEAL fees, coupon overlaps and supply costs), inventory gate, submission deadline, approval, asset/published readback, and post-campaign sales/traffic/conversion review.
-- Start with narrow tests and reinvest only where incremental contribution is credible. Do not buy nominal GMV with negative contribution.
-- Example opportunity: RMS announcement 2026-11-04 offers a trial subsidy of **10% of DEAL points cost** for up to two eligible selling products per month across Nov-Dec 2026, with Nov 30 check deadline; it is **not** a 10% GMV subsidy, and DEAL's separately stated 10% listing fee remains. Participation is optional and requires separate application and product approval.
-- Existing promotion POC already emphasizes read-only RMS inspection, overlap/margin gates, actual banner publication verification, and campaign outcomes.
+- 维护滚动促销日历，结合 RMS 官方通知与现有历史邮件资料，追踪报名期限及适用机会。
+- 每次活动记录：假设、候选 SKU、贡献利润计算（平台／积分／DEAL 费用、优惠叠加、供应成本）、库存门槛、报名截止、审批、素材及上线回读、活动后的销售／流量／转化复盘。
+- 从范围有限的实验开始，仅在增量贡献利润有可信证据时追加投入；不能用负贡献利润换取表面 GMV。
+- 机会示例：2026-11-04 RMS 通知提及 2026 年 11–12 月每月最多两款符合条件商品，可试用 **DEAL 积分成本的 10% 补助**，11 月 30 日为指定核对期限。这**不是 GMV 的 10% 补助**；DEAL 另外列明的 10% 刊载费用仍适用。参与属可选事项，需另行申请并通过商品审批。
+- 现有促销 POC 已强调 RMS 只读核查、叠加与毛利门槛、Banner 实际上线验证及活动结果记录，应继续复用。
 
-## 4. Operating prerequisites and risks
+## 4. 运营前提与风险
 
-1. **Shop status/compliance:** On 2026-11-14 RMS showed `改装中`; resolve the root cause and confirm store reopening eligibility before scaling campaigns. Track regulatory/compliance case in [inbox #443](https://github.com/retailpulses/inbox/issues/443); do not assume the reason for remodeling mode without case evidence.
-2. **Catalog quality:** Existing listing imagery/copy issues and Catalog 2.0 backlog should be part of the scale gate, not deferred indefinitely.
-3. **Inventory:** Duplicate seller SKU/manage-number relationships have previously caused missed sync and oversell. Batch creation must not bypass inventory controls.
-4. **Promotion economics:** Distinguish platform fees, optional advertising/point subsidies, and product contribution; do not double-count fees or rely on unverified subsidy eligibility.
-5. **Contract:** Confirm renewal window, annual/plan fee changes, CSV fee schedule, and any mandatory threshold from primary contract material.
-6. **Execution safety:** Production RMS writes and paid campaigns require deliberate narrow approval and readback. Strategy approval does not authorize promotions or mass publication.
+1. **店铺状态／合规：**2026-11-14 RMS 显示 `改装中`。扩大促销前须查明原因并确认恢复营业条件；相关违规／合规事项见 [inbox #443](https://github.com/retailpulses/inbox/issues/443)。未看到案件证据前，不擅自认定改装状态的直接原因。
+2. **商品质量：**现有图片、文案问题及 Catalog 2.0 待办，应纳入扩品门槛，不应长期推迟。
+3. **库存：**历史上商品管理码／SKU 关联重复曾造成同步遗漏和超卖。批量创建不得绕过库存控制。
+4. **促销经济性：**分开计算平台费用、可选广告／积分补助及商品贡献利润；避免手续费重复扣减或默认补助资格成立。
+5. **合同：**从原始合同确认续约窗口、年费／套餐价格变化、CSV 收费政策及任何强制门槛。
+6. **执行安全：**生产 RMS 写入及付费促销须按具体范围审批并回读验证。批准本战略不等于授权大量发布或开展付费活动。
 
-## 5. Execution priorities and evidence gates
+## 5. 执行优先级与验收证据
 
-| Priority | Work | Completion evidence |
+| 优先级 | 工作 | 完成证据 |
 | --- | --- | --- |
-| P0 | Resolve RMS 改装中 / regulatory status | RMS status and storefront independently verified; open case disposition |
-| P0 | Read current contract/CSV entitlement | RMS contract, billing and CSV option readback; annual cost and renewal action recorded |
-| P1 | Inventory current listing/export/quality stack | Ownership, actual deployed capability, gaps, duplicate risk and readback documented |
-| P1 | Establish listing throughput baseline and first bounded batch | CSV and live RMS counts, quality gate, discrepancy log, observed contribution |
-| P1 | Establish promotion test cadence | Campaign brief, per-SKU economics, submission and published evidence, postmortem |
-| P2 | Scale successful catalog categories and repeatable promotion mechanisms | Incremental contribution, conversion and operational load trend |
+| P0 | 解除 RMS `改装中`／合规阻碍 | 独立验证 RMS 状态、公开店铺及相关案件处理结论 |
+| P0 | 核实合同及 CSV 使用权限 | RMS 合同、账单及 CSV 选项回读；记录年度成本与续约操作 |
+| P1 | 盘点现有上架／导出／质量工具链 | 明确归属、实际部署能力、缺口、重复风险与回读证据 |
+| P1 | 建立上架吞吐量基线并进行首批受控上传 | CSV 与 RMS 实际数量、质量门槛、差异日志、实际贡献 |
+| P1 | 建立促销实验节奏 | 活动 Brief、各 SKU 经济性、报名与上线证据、复盘 |
+| P2 | 扩大已验证品类及可复用促销机制 | 增量贡献利润、转化率和运营负担的趋势证据 |
 
-## 6. Existing GitHub assets to harvest (references, not duplication)
+## 6. 可复用的既有 GitHub 资产（引用而非复制）
 
-### Business and promotion sources
-- [inbox/promotion/README.md](https://github.com/retailpulses/inbox/blob/main/promotion/README.md): existing canonical promotion domain, taxonomy, lifecycle, economics and campaign artifacts. **Reuse as promotion SSOT.**
-- [inbox/promotion/calendar/2026/rakuten.md](https://github.com/retailpulses/inbox/blob/main/promotion/calendar/2026/rakuten.md): historic 105-message calendar evidence. **Use as historical signal, not presumed future dates.**
-- [store-ops Rakuten promotion POC](https://github.com/retailpulses/store-ops/blob/main/docs/poc/2026-10-13-rakuten-promotion.md) and [#209](https://github.com/retailpulses/store-ops/issues/209): calendar/readback/queue observations. **Harvest validated operating gates to implementation docs.**
-- [inbox #34](https://github.com/retailpulses/inbox/issues/34): older keyword/paid-ad experiment. **Review outcome before treating as validated acquisition playbook.**
+### 业务及促销资料
 
-### Listing, integration and safety
-- [inbox #170](https://github.com/retailpulses/inbox/issues/170) and [#179](https://github.com/retailpulses/inbox/issues/179): existing Rakuten catalog quality upgrade and execution backlog. **Continue/measure; do not reset completion tracking.**
-- [inbox #64](https://github.com/retailpulses/inbox/issues/64): images and listing quality debt; [#205](https://github.com/retailpulses/inbox/issues/205): Rakuten-specific copy/listing adapter design.
-- [store-ops listing CSV provider](https://github.com/retailpulses/store-ops/blob/main/packages/listing_review/providers/rakuten_catalog_csv.py): actual RMS-download-backed read-only CSV provider, **not evidence of bulk-upload implementation**.
-- [boutique-listing Rakuten adapter](https://github.com/retailpulses/boutique-listing/blob/main/src/platforms/rakuten/index.js): explicitly labels CSV draft export as not implemented in retrieved code; **verify HEAD/deployment before assigning implementation**.
-- [RPagentOS Rakuten import](https://github.com/retailpulses/RPagentOS/blob/main/src/packages/listing-import/import-rakuten.ts): existing import logic; distinguish internal data import from RMS upload.
-- [CatalogSync #233](https://github.com/retailpulses/CatalogSync/issues/233) and [RPagentOS #137](https://github.com/retailpulses/RPagentOS/issues/137): duplicate listing/SKU identity and oversell risk. **Treat as safety gate.**
-- [.github Rakuten RMS reference](https://github.com/retailpulses/.github/blob/main/references/rakuten/rms-api.md): foundational API reference index; **do not duplicate API dictionary here**.
-- [store-ops #191](https://github.com/retailpulses/store-ops/issues/191): canonical Rakuten integration/promotion discovery.
+- [inbox/promotion/README.md](https://github.com/retailpulses/inbox/blob/main/promotion/README.md)：现有促销业务域、分类、生命周期、经济性及活动资料的规范来源。**继续作为促销 SSOT。**
+- [inbox/promotion/calendar/2026/rakuten.md](https://github.com/retailpulses/inbox/blob/main/promotion/calendar/2026/rakuten.md)：历史 105 封消息的日历证据。**可用于历史规律研究，不代表未来日期已经确定。**
+- [store-ops 乐天促销 POC](https://github.com/retailpulses/store-ops/blob/main/docs/poc/2026-10-13-rakuten-promotion.md) 与 [#209](https://github.com/retailpulses/store-ops/issues/209)：活动日历、回读与队列观察。**把经过验证的执行门槛纳入实施文档。**
+- [inbox #34](https://github.com/retailpulses/inbox/issues/34)：旧有关键词／付费广告实验。**核实实验结果后，才能认定其为有效获客经验。**
 
-## 7. Rakuten GOLD — promotion content infrastructure (research, not a third growth bet)
+### 上架、集成与安全
 
-**Recommendation (2026-11-14):** Use Rakuten GOLD selectively as a no-license-fee HTML/asset hosting option for campaign landing pages and product/category navigation content. It is an *enabler of Key Bet 2 (promotion)* and, secondarily, Key Bet 1 (listing discovery), **not** a standalone investment thesis or justification for an elaborate custom storefront.
+- [inbox #170](https://github.com/retailpulses/inbox/issues/170) 与 [#179](https://github.com/retailpulses/inbox/issues/179)：乐天商品质量改进及执行待办。**继续原有工作并衡量结果，不重置完成状态。**
+- [inbox #64](https://github.com/retailpulses/inbox/issues/64)：图片及 Listing 质量问题；[#205](https://github.com/retailpulses/inbox/issues/205)：乐天专用文案／上架适配器设计。
+- [store-ops Listing CSV Provider](https://github.com/retailpulses/store-ops/blob/main/packages/listing_review/providers/rakuten_catalog_csv.py)：基于 RMS 下载数据的只读 CSV Provider，**不能据此认定已实现批量上传**。
+- [boutique-listing 乐天适配器](https://github.com/retailpulses/boutique-listing/blob/main/src/platforms/rakuten/index.js)：所检索代码中 CSV 草稿导出被标注为未实现；**分配开发任务前须核实当前 HEAD 和部署情况**。
+- [RPagentOS 乐天导入](https://github.com/retailpulses/RPagentOS/blob/main/src/packages/listing-import/import-rakuten.ts)：现有导入逻辑；应区分内部数据导入与 RMS 上传。
+- [CatalogSync #233](https://github.com/retailpulses/CatalogSync/issues/233) 与 [RPagentOS #137](https://github.com/retailpulses/RPagentOS/issues/137)：Listing／SKU 身份重复及超卖风险，**作为安全门槛处理**。
+- [.github 乐天 RMS 参考资料](https://github.com/retailpulses/.github/blob/main/references/rakuten/rms-api.md)：基础 API 参考索引，**本战略不重复维护 API 字典**。
+- [store-ops #191](https://github.com/retailpulses/store-ops/issues/191)：乐天集成与促销的既有梳理入口。
 
-### What is currently feasible vs retired
+## 7. Rakuten GOLD — 促销内容基础设施（研究结论，而非单独的第三增长战略）
 
-| Area | 2026 assessment | Business implication |
+**建议（2026-11-14）：**有限度地使用 Rakuten GOLD 作为无需单独托管许可费用的 HTML／素材空间，用于活动落地页以及商品／品类导购内容。它主要**支持 Bet 2（促销）**，其次支持 Bet 1（商品发现），**不应成为独立投入大型自定义店铺前端的理由**。
+
+### 当前可用能力与已退出能力
+
+| 领域 | 2026 年评估 | 业务含义 |
 | --- | --- | --- |
-| GOLD hosting | Free optional RMS hosting for HTML and related files; public references indicate initial 100 MB, expandable in increments to a 1 GB limit (verify our account entitlement) | Low recurring hosting cost; operator/developer maintenance still costs time |
-| Campaign/category/feature landing pages | GOLD remains usable for pages other than store top; subject to Rakuten marketplace rules and mobile rendering | Candidate for curated sale collections, seasonal home/living themes, and themed category navigation |
-| Store top page (smartphone and PC) | Legacy GOLD store-top capability ended; smartphone transitioned earlier and PC was unified to RMS new store-top by late 2025 | **Do not build the store homepage on GOLD.** Use RMS 新店舗トップページ and link to suitable internal feature pages |
-| Product detail, SKUs, inventory, prices | Remain owned by RMS catalog and existing integrations; GOLD does not replace normal product publishing or commerce APIs | No second product/inventory source of truth |
-| Scripted widgets/external services | Vary by placement, security rules and current RMS policies | Do not assume unrestricted JS, iframe, cross-domain calls or third-party pixels |
+| GOLD 托管 | RMS 可选的免费 HTML 等文件托管；公开资料称初始 100 MB，可逐步扩至 1 GB（须核实本账户权限） | 托管费用低，但运营及开发维护仍耗费人力 |
+| 活动／品类／专题落地页 | 非店铺首页的页面仍可使用 GOLD，需遵守乐天规则并适配移动端 | 适合精选促销商品、季节家居主题和品类导航 |
+| 店铺首页（手机及 PC） | 旧 GOLD 首页功能已退出；手机端此前迁移，PC 端截至 2025 年末已统一转向 RMS 新店铺首页 | **不在 GOLD 上建设店铺首页**；使用 RMS `新店舗トップページ`，通过站内链接连接专题页 |
+| 商品详情、SKU、库存及价格 | 由 RMS 商品目录及现有集成管理；GOLD 不替代商品发布或交易 API | 不建立第二套商品／库存 SSOT |
+| JS 组件及外部服务 | 能力取决于放置位置、安全规则及当前 RMS 政策 | 不默认允许任意 JS、iframe、跨域调用或第三方追踪像素 |
 
-**Sources / verification date (2026-11-14):**
-- [2026 GOLD functionality and end of top-page support](https://www.5springs.co.jp/blog/rakutengold/) (specialist account; validate any consequential restriction against logged-in RMS help).
-- [New RMS store top implementation context](https://www.5springs.co.jp/blog/%E3%80%90%E6%A5%BD%E5%A4%A9%E3%80%91%E6%96%B0%E5%BA%97%E8%88%97%E3%83%88%E3%83%83%E3%83%97%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E5%9B%9E%E9%81%8A%E7%8E%87%E3%82%92%E9%AB%98%E3%82%81%E3%82%8B%E6%A7%8B/) (2026-01-06).
-- [RMS Service Square page-production provider](https://service.rms.rakuten.co.jp/product/0061-0001/1) (Rakuten-hosted provider FAQ distinguishes RMS top page from GOLD-hosted scripts/assets).
-- [2026-11-01 GOLD cost/capacity summary](https://markenote.jp/article/2849) (secondary source; account-specific contractual conditions prevail).
+**参考来源／核实日期（2026-11-14）：**
+- [2026 年 GOLD 功能与首页支持终止说明](https://www.5springs.co.jp/blog/rakutengold/)（专业服务商资料；重要限制仍须以登录后的 RMS 官方帮助核实）。
+- [RMS 新店铺首页实施背景](https://www.5springs.co.jp/blog/%E3%80%90%E6%A5%BD%E5%A4%A9%E3%80%91%E6%96%B0%E5%BA%97%E8%88%97%E3%83%88%E3%83%83%E3%83%97%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E5%9B%9E%E9%81%8A%E7%8E%87%E3%82%92%E9%AB%98%E3%82%81%E3%82%8B%E6%A7%8B/)（2026-01-06）。
+- [RMS Service Square 页面制作服务商](https://service.rms.rakuten.co.jp/product/0061-0001/1)（乐天平台托管的服务商 FAQ，区分 RMS 首页与 GOLD 素材／脚本）。
+- [2026-11-01 GOLD 费用及容量概览](https://markenote.jp/article/2849)（第三方资料；以账户实际合同为准）。
 
-### Suggested operating model
+### 建议运营模式
 
-1. **RMS is the transactional storefront / SSOT.** Continue managing product pages, variants, price, images where relevant, stock, and the new responsive top page through RMS and existing product integrations. Use GOLD only to present navigational/marketing content and link back to approved Rakuten product/category URLs; do not redirect shoppers outside Rakuten.
-2. **One reusable campaign-page template**, not a bespoke website or page builder: hero banner, date/eligibility text, curated category blocks, product tiles with valid Rakuten links, compliance footer. Make the layout mobile-first, fast-loading, accessible, and readable without unsupported embeds.
-3. **Data ownership:** campaign selection, offer economics, approved copy, asset version, active window, and status remain with the promotion workflow in `inbox/promotion/`. Product availability and price must be sourced from live RMS/catalog readback. If static prices are displayed, define publication and withdrawal checks to prevent stale/misleading claims.
-4. **Publishing safety:** draft -> internal preview -> legal/offer/stock check -> explicit operator approval -> publish/upload -> browser validation on mobile and desktop -> campaign-end withdrawal/expiry. Keep prior version/rollback path. FTP credentials must remain in secrets management, never GitHub Markdown.
-5. **Reuse existing assets:** link campaign scheduling and banner evidence from [commerce-lab Rakuten daily routine](https://github.com/retailpulses/commerce-lab/blob/main/services/rakuten/docs/RAKUTEN_DAILY_ROUTINE.md), [store-ops Rakuten promotion POC](https://github.com/retailpulses/store-ops/blob/main/docs/poc/2026-10-13-rakuten-promotion.md), and the [promotion SSOT](https://github.com/retailpulses/inbox/blob/main/promotion/README.md). The daily-routine evidence notes banners must match the actual configured points multiplier and must be removed after the promotion.
+1. **RMS 是交易店铺与商品交易数据来源。**继续通过 RMS 及现有集成管理商品详情、Variant、价格、相关图片、库存以及新版响应式首页。GOLD 仅提供导购／营销内容并链接到允许的乐天商品／品类 URL，不引导消费者跳转到乐天以外的网站交易。
+2. **只建设一套可复用的活动页面模板**，不建设定制网站或页面搭建器：主视觉 Banner、活动日期及资格说明、精选品类区块、带有效乐天链接的商品卡片、合规声明。移动端优先、加载迅速、便于阅读与访问，不依赖不受支持的嵌入组件。
+3. **数据归属：**选品、优惠经济性、核准文案、素材版本、活动时段及状态继续由 `inbox/promotion/` 的活动工作流管理。商品可售性及价格以实时 RMS／Catalog 回读为准；如页面显示静态价格，必须配置上线及撤回检查，防止过期或误导性描述。
+4. **发布安全：**草稿 → 内部预览 → 法规／优惠／库存检查 → 运营人员明确批准 → 上传／发布 → 手机及 PC 浏览器验证 → 活动结束撤回／过期处理。保留上一版本及回滚方式；FTP 凭证存放于密钥管理系统，不能写入 GitHub Markdown。
+5. **复用现有资产：**参考 [commerce-lab 乐天日常例行工作](https://github.com/retailpulses/commerce-lab/blob/main/services/rakuten/docs/RAKUTEN_DAILY_ROUTINE.md)、[store-ops 乐天促销 POC](https://github.com/retailpulses/store-ops/blob/main/docs/poc/2026-10-13-rakuten-promotion.md) 及[促销 SSOT](https://github.com/retailpulses/inbox/blob/main/promotion/README.md)。日常操作证据特别强调：Banner 所示积分倍率必须与实际设置一致，并须在促销结束后撤下。
 
-### Priority and experiment
+### 优先级与试验
 
-- **P0 prerequisite:** Resolve current `改装中`/compliance blocker before live public campaign pages.
-- **P1 validation:** In RMS confirm GOLD is enabled or can be requested, account storage/quota and upload method, current allowed content placement, no off-platform links, and what can be embedded in current RMS new top page. Verify public URL, image behavior, mobile rendering and analytics availability without production changes.
-- **P1 trial:** Build **one** seasonal or sale feature page, with a small curated set of in-stock, positive-contribution products. Link it from an approved RMS module/banner during a single campaign. Use approved copy; no assumed discount, point multiplier or inventory guarantee.
-- **Success criteria:** Published page and links render correctly on mobile/PC; no stale offer after end date; operator update/rollback is feasible; attributed visits/clickthrough and downstream orders/contribution can be measured sufficiently to compare with the same promotion without the page.
-- **Kill/pause criterion:** If page creation requires recurring manual updates without measurable incremental contribution, revert to RMS-native banners/product modules. Listing quality and campaign economics rank above decorative complexity.
-- **Deferred:** Rich custom homepages, fully automated GOLD deployment, broad dynamic product feeds, third-party page-builder subscriptions, and customer-facing custom shop software.
+- **P0 前提：**公开促销页面上线前先解决 `改装中`／合规阻碍。
+- **P1 核实：**在 RMS 中确认 GOLD 是否已启用或可申请、账户容量与上传方式、允许放置内容的位置、禁止站外引流的规则，以及新版 RMS 首页可嵌入的内容。在不修改生产配置的前提下，检查页面 URL、图片、移动端呈现及可用分析指标。
+- **P1 试验：**仅制作**一页**季节或促销专题，精选少量有库存、贡献利润为正的商品，在单次活动中从经批准的 RMS 模块／Banner 导入访问。使用核准文案，不默认承诺折扣、积分倍率或库存。
+- **成功标准：**移动端／PC 页面及链接正常；活动结束后没有过期优惠；运营人员能够更新和回滚；能在合理程度上衡量访客、点击及下游订单／贡献利润，并与未设置专题页的活动进行比较。
+- **暂停标准：**如果页面需要持续大量人工维护，却无法证明增量利润，应退回 RMS 原生 Banner／商品模块；Listing 质量及促销经济性优先于装饰复杂度。
+- **延后事项：**复杂定制首页、全自动 GOLD 部署、大规模动态商品 Feed、付费第三方页面构建服务以及面向客户的定制商城软件。
 
-**Key distinction:** GOLD is free hosting, **not free development, guaranteed ranking improvement, or an alternative to RMS API/CSV.** Do not implement any new automation until the first manual/template trial demonstrates value.
+**关键区分：**GOLD 免费托管**不等于开发免费、自然搜索排名保证，也不能替代 RMS API／CSV**。第一个人工／模板化试验尚未证明价值之前，不开发新的自动化系统。
 
-## 8. Strategic Option / Bet 3 — Owned ecommerce capability incubation (独立站)
+## 8. 战略选择权 Bet 3 — 孵化独立站经营能力
 
-**Status (2026-11-14): Strategic option / research direction, NOT an approved investment, build, launch, or commitment to a 2027 schedule.** Rakuten's second year is an operating laboratory to acquire transferable capabilities. The investment thesis for an independent D2C/B2B storefront must be validated independently.
+**状态（2026-11-14）：战略选择权／研究方向，尚未批准投资、建设、上线或承诺 2027 年执行时间表。**将 Rakuten 第二年度经营作为积累可迁移能力的试验场。独立站 D2C／B2B 的投资逻辑必须另外验证。
 
-### Channel roles and what transfers
+### 渠道定位及能力迁移
 
-| Channel | Role | Key limitation |
+| 渠道 | 主要角色 | 核心限制 |
 | --- | --- | --- |
-| Mercari Shops (especially Shop4 for B2B discovery) | Validate demand, products, service requests and operational repeatability | Platform-controlled customer relationship and merchandising |
-| Rakuten / Homebliss | Practice larger catalog operations, storefront content, promotion economics, conversion and fulfillment | Platform search/promotion traffic is not owned acquisition |
-| Potential owned shop | Control brand, consented first-party customer relationships, SEO/ads, B2B inquiry and repeat purchase experience | Must fund acquisition and own payments, privacy, compliance, fraud, customer service and site operations |
+| Mercari Shops（尤其 Shop4 的 B2B 探索） | 验证需求、商品、特殊服务需求及运营可重复性 | 客户关系及商品展示受平台控制 |
+| Rakuten／Homebliss | 实践大规模商品管理、店铺内容、促销经济性、转化与履约 | 平台搜索及活动流量不属于公司自有获客 |
+| 潜在独立站 | 自主经营品牌、获得合法同意的第一方客户关系、SEO／广告、B2B 咨询及复购体验 | 需自行承担获客成本、支付、隐私、合规、欺诈、客服及站点运营 |
 
-**Transferable assets to deliberately harvest:**
-1. **Canonical product/content assets:** attributes, copy, imagery, category taxonomy, buying guides, FAQs and product-family/variant mappings owned by the company, with platform-specific projections. Do not treat Rakuten item/SKU identifiers as canonical product identity; see [marketplace model](../marketplace-model.md).
-2. **Storefront & CRO learning:** use RMS 新店舗トップ and bounded GOLD campaign/feature pages to test navigation, trust, copy, product selection and mobile UX. Reuse content, component specifications and experiment evidence later; do not assume GOLD HTML or legacy top-page support is portable or still available.
-3. **Promotion playbooks:** seasonal selections, campaign lifecycle, coupon/point economics, attributed traffic and incremental contribution. Keep execution evidence in [inbox promotion SSOT](https://github.com/retailpulses/inbox/blob/main/promotion/README.md).
-4. **Customer problem knowledge:** aggregate and de-identify legitimate inquiries, fit/compatibility questions, return reasons and B2B requirements into product guides, FAQ and service SOP. Platform customer lists are **not** a transferable CRM asset.
-5. **Cross-channel operations:** catalog/listing adapters, inventory identity and sync, order lifecycle, supplier fulfillment, returns and monthly P&L. Extend existing owners rather than fork business databases or recreate a parallel commerce backoffice.
-6. **Compliance and reliability:** product-claim approval, publishing/readback, promotion expiry/rollback, consumer disclosures, payment reconciliation and incident recovery. New owned-shop responsibilities require separate legal/operational assessment.
+**应有意识沉淀的六类资产：**
 
-### Hard boundary — no Rakuten customer migration or off-platform diversion
+1. **公司自有的规范商品／内容资产：**商品属性、文案、图片、分类体系、选购指南、FAQ、Product Family／Variant 映射，以平台专用适配层发布。不可将乐天 Item／SKU 标识直接当作公司的规范商品身份；参见[跨平台业务实体模型](../marketplace-model.md)。
+2. **店铺页面与 CRO（转化率优化）经验：**利用 RMS `新店舗トップページ` 及小规模 GOLD 促销／专题页测试导航、可信度、文案、选品及移动端 UX；将内容、组件规范与实验结果复用于未来独立站。不假设 GOLD HTML 可以原样迁移，也不假设旧版首页能力仍可使用。
+3. **促销 Playbook：**季节性选品、活动生命周期、优惠券／积分经济性、可归因流量及增量贡献利润。执行证据继续留在 [inbox 促销 SSOT](https://github.com/retailpulses/inbox/blob/main/promotion/README.md)。
+4. **客户需求知识：**在适用规则允许的范围内，对合法取得的咨询、规格适配问题、退货原因及 B2B 需求进行汇总和去标识化，沉淀为导购、FAQ 和服务 SOP。**平台客户名单不是可迁移的 CRM 资产。**
+5. **跨渠道运营能力：**Catalog／Listing 适配器、库存身份映射及同步、订单生命周期、供应商履约、退货与 Monthly P&L。应扩展现有产品负责人管理的系统，不复制业务数据库，也不另建重复的电商后台。
+6. **合规与可靠性：**商品描述审批、发布回读、促销到期撤回／回滚、消费者信息披露、支付对账及事故恢复。独立站新增责任须另行进行法律及运营评估。
 
-Do **not** plan to extract RMS buyer details for independent-site email marketing, redirect Rakuten shoppers to an external checkout, insert off-platform solicitation into Rakuten pages or customer/order communications, or use packaging inserts to circumvent applicable marketplace rules. Check current official RMS rules for each contemplated tactic. Independent-site email/CRM acquisition requires its **own** lawful collection, consent and privacy purpose. Customer-service insights may be summarized without personal information where permitted. This constraint means **Rakuten GMV growth does not validate our ability to acquire independent-site traffic**.
+### 明确边界：不得迁移 Rakuten 客户资料或违规站外引流
 
-### Target architecture and build-vs-buy
+不得将 RMS 购买者信息导出用于独立站邮件营销，不得把乐天买家引导至站外结账，不得在乐天商品页、客户／订单沟通中进行站外购买招揽，也不得通过包裹宣传物规避适用的平台规则。任何具体做法都须核查当时有效的 RMS 官方规则。独立站邮件营销及 CRM 客户获取必须有**独立且合法的数据收集、同意与使用目的**。在规则允许时，可使用不包含个人信息的客服需求总结。
 
-**Business principle:** Company-owned canonical catalog/content + channel-specific publication adapters (Mercari, Rakuten, future owned storefront). Shared stock/supplier fulfillment and finance/reconciliation continue under their existing product owners; actual source-of-truth and current implementation coverage must be audited before claiming integration readiness.
+因此，**Rakuten GMV 增长不等于独立站获客能力已经得到验证**。
 
-**Default candidate, not a vendor decision:** Evaluate Shopify as the initial hosted storefront/payment platform rather than writing cart, checkout and payment processing ourselves. Compare fees, Japanese payment methods, tax and legal disclosure support, data exportability, integrations, operational burden and B2B quote/ordering needs. An owned channel is **not** part of the current product delivery scope.
+### 目标架构及自建／采购选择
 
-Potential higher-value niche: B2B/specialized procurement with searchable specifications, request-for-quotation, bulk ordering and service terms, informed by [B2B opportunity research](https://github.com/retailpulses/.github/blob/main/business/research/b2b-customer-opportunity-20261114.md) and Shop4 experience. This is an opportunity to **test**, not evidence of proven demand or permission to commingle other entities' sales.
+**业务原则：**公司自有的规范 Catalog／内容资产 + 各渠道专用发布适配器（Mercari、Rakuten、未来独立站）。共享库存、供应商履约、财务及对账继续由既有产品负责；在声明可集成之前，必须审核实际 SSOT 及现有功能完成程度。
 
-### Sequenced learning plan (illustrative 2027 windows, not commitments)
+**默认评估候选，而非供应商决策：**优先评估 Shopify 作为托管商城及支付平台，而不是自行开发购物车、结账与支付。比较服务费、日本支付方式、税务与法律披露支持、数据导出、集成、运营成本以及 B2B 报价／采购流程适配。独立站**不属于当前产品交付范围**。
 
-| Stage | Illustrative window | Deliverable and evidence gate |
+**值得测试的细分机会：**B2B／专业采购，以可检索的产品规格、RFQ（报价请求）、批量采购及特殊服务条款形成差异化。依据 [B2B 机会研究](https://github.com/retailpulses/.github/blob/main/business/research/b2b-customer-opportunity-20261114.md) 与 Shop4 经验制定实验。**这是待验证机会，不代表需求已被证明，也不允许混入其他法人销售数据。**
+
+### 分阶段学习路线（2027 年仅为示例窗口，并非承诺）
+
+| 阶段 | 示例时间 | 交付内容及证据门槛 |
 | --- | --- | --- |
-| 1. Catalog scale and unit economics | 2027 Q1 | Reusable catalog records, reliable publishing/readback, active-sellable assortment and per-order contribution baseline |
-| 2. Promotion and content experimentation | 2027 Q2 | At least one approved, measurable promotion/feature-page experiment; reusable content/design/CRO findings and rollback |
-| 3. Optional tiny owned-site demand test | 2027 Q3, conditional | Defined niche, external acquisition experiment, legitimate paid orders, full variable-cost and CAC tracking; separate approval before spend/public launch |
-| 4. Go/no-go decision | 2027 Q4, conditional | Compare cohort contribution, CAC, returns, repeat rate, SEO/paid traffic dependence, operational load and sustainable differentiation |
+| 1. 商品扩品与单品经济性 | 2027 Q1 | 可复用 Catalog、可靠发布及回读、有效可购商品数量和订单贡献利润基线 |
+| 2. 促销及内容实验 | 2027 Q2 | 至少一个经批准、可测量的促销／专题页实验；可复用的内容、设计与 CRO 结论及回滚能力 |
+| 3. 可选的小规模独立站需求验证 | 2027 Q3，视条件而定 | 明确细分市场、站外获客实验、真实付费订单、完整变动成本与 CAC 跟踪；支出／公开上线须另行批准 |
+| 4. 继续／终止决策 | 2027 Q4，视条件而定 | 比较客户群贡献利润、CAC、退货、复购率、SEO／付费流量依赖、运营负担与可持续差异化 |
 
-**Investment gate:** Never justify a standalone site by the absence of Rakuten fees alone. Evaluate net per-order contribution after COGS, delivery, payment processing, platform/app fees, marketing acquisition, discounts, fraud/returns and attributable incremental operations. For example, hypothetical ¥10,000 sales with ¥6,000 procurement/fulfillment and Rakuten fees ¥1,200 yield ¥2,800 contribution before extra acquisition; an owned site with ¥350 payment fees plus ¥1,000 CAC yields only ¥2,650. **Illustrative assumptions, not actual Homebliss pricing or P&L.** Prefer an external-acquisition experiment and contribution-positive repeat purchase before expanding.
+**投资门槛：**不能仅因为独立站没有 Rakuten 商城费用就认为其值得投资。必须计算扣除 COGS、配送、支付、平台／应用费、获客、折扣、欺诈／退货及可归属增量运营成本后的订单净贡献利润。
 
-**Guardrails:** No custom checkout build; no duplicate catalog/inventory SSOT; no commitment to developer-heavy storefront themes; no platform-customer data export for owned-site marketing; no spend or production deployment authorized by this strategy. Stop if paid traffic/retention cannot support incremental profitability.
+**仅作示例的假设：**售价 ¥10,000、采购／履约成本 ¥6,000。若 Rakuten 费用为 ¥1,200，则额外获客成本前贡献利润 ¥2,800；独立站即使支付费用只有 ¥350，如果 CAC 为 ¥1,000，贡献利润也仅 ¥2,650。**这些不是 Homebliss 的实际价格或 P&L。**扩大投入前，应优先取得站外获客与贡献利润为正的复购证据。
 
-### Measures, ownership and next research
+**边界：**不自建结账系统；不建立重复的 Catalog／库存 SSOT；不承诺开发工作量大的独立站主题；不将平台客户数据导出用于独立站营销；本战略不授权任何支出或生产部署。若付费获客及客户留存无法支撑增量盈利，则停止扩大。
 
-- **Transferability:** percent of publishable products with company-owned reusable content, valid images and documented platform mappings; listing update effort across channels.
-- **Rakuten learning:** campaign traffic/clickthrough, mobile conversion signals where available, attributed incremental contribution, offer-expiry errors and operator effort.
-- **Owned-channel validation (future only):** attributable acquisition CAC, first-order contribution after CAC, repeat contribution and purchase frequency by consented cohort, B2B lead-to-quote-to-order conversion.
-- **Business owner:** ecommerce strategy decides whether/when to fund a pilot. **Existing product owners:** catalog, channel connectors, order/stock/finance contracts. **Promotion owner:** campaigns/results in inbox/promotion. No new product or repository mandated now.
-- **Open research:** choose one niche; document externally reachable demand sources (Google organic/ads, independent content and legitimate opt-in); assess applicable Japanese 通信販売 / 特定商取引法, consumer/returns, privacy and payment obligations; benchmark hosted commerce costs; check whether cross-channel analytics and order profitability can be measured reliably.
+### 指标、责任归属和后续研究
 
-**Strategic distinction:** Rakuten teaches storefront merchandising and marketing under a marketplace traffic umbrella; an owned shop must demonstrate economically sustainable **off-platform acquisition and retention** on its own.
+- **能力可迁移性：**具备公司自有可复用内容、合规图片及明确平台映射的可发布商品占比；跨平台 Listing 更新工作量。
+- **Rakuten 学习成果：**活动流量／点击、可获得的移动端转化指标、可归因增量贡献利润、优惠过期异常及运营工时。
+- **独立站验证（仅未来）：**可归因 CAC、扣除 CAC 后首单贡献利润、获得同意的客户群复购利润／频次、B2B 线索 → 报价 → 订单转化率。
+- **业务负责人：**由电商战略负责人决定是否及何时为试点拨款。**既有产品负责人：**负责 Catalog、渠道适配器、订单／库存／财务契约。**促销负责人：**继续在 inbox/promotion 维护活动及结果。当前不强制新增产品或仓库。
+- **待研究：**选定一个细分品类；明确 Google 自然搜索／广告、自有内容及合法订阅等站外获客渠道；评估日本 `通信販売`／`特定商取引法`、消费者／退货、隐私及支付责任；比较托管商城成本；验证跨渠道分析及订单盈利是否可可靠测量。
 
-## 9. Open questions (not decisions)
+**战略区别：**Rakuten 可以在平台流量环境下训练商品陈列和营销能力；独立站必须另外证明**站外获客与客户留存具备可持续经济性**。
 
-- Confirm the precise second-year renewal terms and any explicit action required in RMS.
-- Confirm January 2026 CSV entitlement and fee waiver from account-specific primary evidence; availability alone does not guarantee practical batch-publish capability.
-- Verify shop status and compliance case outcome; verify current active catalog counts and monthly P&L baseline before setting numerical targets.
-- Decide initial promotion investment budget and experiment-level minimum contribution rule after actual fee reconciliation.
+## 9. 未解决问题（不是已确定决策）
 
-**Ownership boundary:** This strategy is canonical under `.github/business/rakuten/`. Campaign schedules/results stay in `inbox/promotion/`; engineering delivery and runtime evidence stay in their owner repositories. Harvest by links and tightly scoped decisions, not copying entire operational histories.
+- 以 RMS 原始合同确认第二年度续约条款，以及是否需要主动操作。
+- 从账户的一手证据确认 2026 年 1 月 CSV 权限及费用减免；功能开放不等于已经具备可用的批量发布能力。
+- 确认店铺状态与合规案件结论；核实当前有效商品数量及 Monthly P&L 基线后再制定量化目标。
+- 在实际费用对账后，确定初期促销投资预算及每个实验的最低贡献利润要求。
+
+**信息归属边界：**本文是 `.github/business/rakuten/` 下的规范战略记录。活动日历及结果保存在 `inbox/promotion/`；工程交付和运行证据保存在各自负责的仓库。通过引用链接及明确决策进行知识沉淀，不复制整个运营历史。
