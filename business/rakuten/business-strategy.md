@@ -7,7 +7,7 @@
 
 **Decision:** Continue operating Rakuten into the second contract year. Do not plan an exit merely because of plan fee changes. The first-year ¥100,000 sales requirement has **already been met** (business-owner confirmation, 2026-11-14). This assertion should be reconciled to RMS sales/contract evidence before being used in an external eligibility filing; do not infer that it proves all renewal terms are satisfied.
 
-**Thesis:** Grow Homebliss through (1) low-friction, high-quality catalog expansion using CSV and existing integrations, and (2) disciplined, measurable participation in Rakuten promotion mechanisms. Scale profitable revenue, not gross listing count or promotional spend alone.
+**Thesis:** Grow Homebliss through (1) low-friction, high-quality catalog expansion using CSV and existing integrations, and (2) disciplined, measurable participation in Rakuten promotion mechanisms. In parallel, accumulate transferable operating capabilities for a possible future owned ecommerce channel (Strategic Option / Bet 3, **not an approved storefront launch**). Scale profitable revenue, not gross listing count or promotional spend alone.
 
 The shop began operations in 2026-04. Current RMS plan: **がんばれ！プラン** (observed 2026-11-14). Confirm contract renewal date, second-year fee schedule and any action/notice requirements directly from the current RMS contract before acting; this strategy is not a legal interpretation of the contract.
 
@@ -110,7 +110,62 @@ Promotion is a **portfolio of tested mechanisms**, not blanket discounting. Dist
 
 **Key distinction:** GOLD is free hosting, **not free development, guaranteed ranking improvement, or an alternative to RMS API/CSV.** Do not implement any new automation until the first manual/template trial demonstrates value.
 
-## 8. Open questions (not decisions)
+## 8. Strategic Option / Bet 3 — Owned ecommerce capability incubation (独立站)
+
+**Status (2026-11-14): Strategic option / research direction, NOT an approved investment, build, launch, or commitment to a 2027 schedule.** Rakuten's second year is an operating laboratory to acquire transferable capabilities. The investment thesis for an independent D2C/B2B storefront must be validated independently.
+
+### Channel roles and what transfers
+
+| Channel | Role | Key limitation |
+| --- | --- | --- |
+| Mercari Shops (especially Shop4 for B2B discovery) | Validate demand, products, service requests and operational repeatability | Platform-controlled customer relationship and merchandising |
+| Rakuten / Homebliss | Practice larger catalog operations, storefront content, promotion economics, conversion and fulfillment | Platform search/promotion traffic is not owned acquisition |
+| Potential owned shop | Control brand, consented first-party customer relationships, SEO/ads, B2B inquiry and repeat purchase experience | Must fund acquisition and own payments, privacy, compliance, fraud, customer service and site operations |
+
+**Transferable assets to deliberately harvest:**
+1. **Canonical product/content assets:** attributes, copy, imagery, category taxonomy, buying guides, FAQs and product-family/variant mappings owned by the company, with platform-specific projections. Do not treat Rakuten item/SKU identifiers as canonical product identity; see [marketplace model](../marketplace-model.md).
+2. **Storefront & CRO learning:** use RMS 新店舗トップ and bounded GOLD campaign/feature pages to test navigation, trust, copy, product selection and mobile UX. Reuse content, component specifications and experiment evidence later; do not assume GOLD HTML or legacy top-page support is portable or still available.
+3. **Promotion playbooks:** seasonal selections, campaign lifecycle, coupon/point economics, attributed traffic and incremental contribution. Keep execution evidence in [inbox promotion SSOT](https://github.com/retailpulses/inbox/blob/main/promotion/README.md).
+4. **Customer problem knowledge:** aggregate and de-identify legitimate inquiries, fit/compatibility questions, return reasons and B2B requirements into product guides, FAQ and service SOP. Platform customer lists are **not** a transferable CRM asset.
+5. **Cross-channel operations:** catalog/listing adapters, inventory identity and sync, order lifecycle, supplier fulfillment, returns and monthly P&L. Extend existing owners rather than fork business databases or recreate a parallel commerce backoffice.
+6. **Compliance and reliability:** product-claim approval, publishing/readback, promotion expiry/rollback, consumer disclosures, payment reconciliation and incident recovery. New owned-shop responsibilities require separate legal/operational assessment.
+
+### Hard boundary — no Rakuten customer migration or off-platform diversion
+
+Do **not** plan to extract RMS buyer details for independent-site email marketing, redirect Rakuten shoppers to an external checkout, insert off-platform solicitation into Rakuten pages or customer/order communications, or use packaging inserts to circumvent applicable marketplace rules. Check current official RMS rules for each contemplated tactic. Independent-site email/CRM acquisition requires its **own** lawful collection, consent and privacy purpose. Customer-service insights may be summarized without personal information where permitted. This constraint means **Rakuten GMV growth does not validate our ability to acquire independent-site traffic**.
+
+### Target architecture and build-vs-buy
+
+**Business principle:** Company-owned canonical catalog/content + channel-specific publication adapters (Mercari, Rakuten, future owned storefront). Shared stock/supplier fulfillment and finance/reconciliation continue under their existing product owners; actual source-of-truth and current implementation coverage must be audited before claiming integration readiness.
+
+**Default candidate, not a vendor decision:** Evaluate Shopify as the initial hosted storefront/payment platform rather than writing cart, checkout and payment processing ourselves. Compare fees, Japanese payment methods, tax and legal disclosure support, data exportability, integrations, operational burden and B2B quote/ordering needs. An owned channel is **not** part of the current product delivery scope.
+
+Potential higher-value niche: B2B/specialized procurement with searchable specifications, request-for-quotation, bulk ordering and service terms, informed by [B2B opportunity research](https://github.com/retailpulses/.github/blob/main/business/research/b2b-customer-opportunity-20261114.md) and Shop4 experience. This is an opportunity to **test**, not evidence of proven demand or permission to commingle other entities' sales.
+
+### Sequenced learning plan (illustrative 2027 windows, not commitments)
+
+| Stage | Illustrative window | Deliverable and evidence gate |
+| --- | --- | --- |
+| 1. Catalog scale and unit economics | 2027 Q1 | Reusable catalog records, reliable publishing/readback, active-sellable assortment and per-order contribution baseline |
+| 2. Promotion and content experimentation | 2027 Q2 | At least one approved, measurable promotion/feature-page experiment; reusable content/design/CRO findings and rollback |
+| 3. Optional tiny owned-site demand test | 2027 Q3, conditional | Defined niche, external acquisition experiment, legitimate paid orders, full variable-cost and CAC tracking; separate approval before spend/public launch |
+| 4. Go/no-go decision | 2027 Q4, conditional | Compare cohort contribution, CAC, returns, repeat rate, SEO/paid traffic dependence, operational load and sustainable differentiation |
+
+**Investment gate:** Never justify a standalone site by the absence of Rakuten fees alone. Evaluate net per-order contribution after COGS, delivery, payment processing, platform/app fees, marketing acquisition, discounts, fraud/returns and attributable incremental operations. For example, hypothetical ¥10,000 sales with ¥6,000 procurement/fulfillment and Rakuten fees ¥1,200 yield ¥2,800 contribution before extra acquisition; an owned site with ¥350 payment fees plus ¥1,000 CAC yields only ¥2,650. **Illustrative assumptions, not actual Homebliss pricing or P&L.** Prefer an external-acquisition experiment and contribution-positive repeat purchase before expanding.
+
+**Guardrails:** No custom checkout build; no duplicate catalog/inventory SSOT; no commitment to developer-heavy storefront themes; no platform-customer data export for owned-site marketing; no spend or production deployment authorized by this strategy. Stop if paid traffic/retention cannot support incremental profitability.
+
+### Measures, ownership and next research
+
+- **Transferability:** percent of publishable products with company-owned reusable content, valid images and documented platform mappings; listing update effort across channels.
+- **Rakuten learning:** campaign traffic/clickthrough, mobile conversion signals where available, attributed incremental contribution, offer-expiry errors and operator effort.
+- **Owned-channel validation (future only):** attributable acquisition CAC, first-order contribution after CAC, repeat contribution and purchase frequency by consented cohort, B2B lead-to-quote-to-order conversion.
+- **Business owner:** ecommerce strategy decides whether/when to fund a pilot. **Existing product owners:** catalog, channel connectors, order/stock/finance contracts. **Promotion owner:** campaigns/results in inbox/promotion. No new product or repository mandated now.
+- **Open research:** choose one niche; document externally reachable demand sources (Google organic/ads, independent content and legitimate opt-in); assess applicable Japanese 通信販売 / 特定商取引法, consumer/returns, privacy and payment obligations; benchmark hosted commerce costs; check whether cross-channel analytics and order profitability can be measured reliably.
+
+**Strategic distinction:** Rakuten teaches storefront merchandising and marketing under a marketplace traffic umbrella; an owned shop must demonstrate economically sustainable **off-platform acquisition and retention** on its own.
+
+## 9. Open questions (not decisions)
 
 - Confirm the precise second-year renewal terms and any explicit action required in RMS.
 - Confirm January 2026 CSV entitlement and fee waiver from account-specific primary evidence; availability alone does not guarantee practical batch-publish capability.
