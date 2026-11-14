@@ -1,84 +1,144 @@
-# Mercari Time Sale 业务策略（Shop1–Shop4）
+# Mercari Shops — Time Sale Strategy
 
-> 状态：业务规则归档；2026-11-14 从 [store-ops Time Sale DESIGN](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/DESIGN.md)、[README](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/README.md)、[CURRENT_STATE](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/CURRENT_STATE.md) 和 [ADR-0002](https://github.com/retailpulses/store-ops/blob/main/docs/decisions/ADR-0002-timesale-v2-commercial-fallback.md) harvest。
->
-> **权威边界**：本文是跨产品可复用的商业政策与运营 SOP，不是产品设计、部署报告或 Seller 平台规则的替代品。具体计算/CSV 契约以 StoreOps DESIGN/TRD 为准；实际线上版本必须读 runtime 证据。V2.1 是获批目标策略，不代表已经上线。
+> 类型：Business Strategy / 逆向工程提炼（2026-11-14）
+> 范围：Shop1–Shop4；Shop4 为优先运营分析对象。
+> 来源：从 [StoreOps Time Sale 产品业务规则](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/DESIGN.md)、[商业成本决策](https://github.com/retailpulses/store-ops/blob/main/docs/decisions/ADR-0002-timesale-v2-commercial-fallback.md)、[公司价格契约](../pricing-contract.md) 和既有 Mercari 运营约定反推经营策略。
+> 目的：解释**为什么**采用这些规则、如何配置促销组合、如何衡量业务成效。产品文件继续维护公式、CSV、技术验收。本文不是部署说明、系统需求书或 Seller 自动执行授权。
+> 证据等级：**[既有规则]** = 可直接从业务决策/文件追溯；**[策略推导]** = 从规则抽象出的经营逻辑，尚非已验证销售因果；**[待验证]** = 需要运营数据/实验确认。
 
-## 1. 商业目标与适用范围
+## 1. 战略定位：以毛利约束驱动的需求转化
 
-- 适用于 Mercari Shops Shop1–Shop4；运营分析与候选排序可以 Shop4 优先，但基础定价和成本治理不按店铺分别制定。
-- Time Sale 的作用是提高合格 Listing 的曝光和转化，在保障**实际直接毛利底线**的前提下尽可能扩大可参加商品池；不是全店一刀切降价，更不能为了促销牺牲硬性毛利要求。
-- 采用 **Shop 级别、Operator Human-in-the-Loop** 运行：选择商品/店铺 → 价格与风险预览 → 生成并审核 CSV → 人工上传 Seller → 检查 Seller 结果并留证。不存在经本文授权的自动上传或自动生效。
-- 商品选择中的市场需求信号（近期销量、浏览、いいね、季节性）应用于**运营优先级**，不能替代成本、毛利和官方价格约束。仅凭本策略不自动触发促销。
+**核心命题**：Time Sale 不是“全店打折”工具，而是对已经存在或有迹象的商品需求，利用成本优势与短期价格刺激提高转化、销量及绝对毛利贡献的一种可重复运营手段。[策略推导]
 
-## 2. 商业定价口径（获批 V2 规则，V2.1 继续保留）
+目标按优先级：
+1. 在不突破每个商品的最低直接毛利约束前提下，提升**增量直接毛利额**（而不只追求 GMV 或促销覆盖率）。
+2. 增强高需求商品的价格竞争力，促进有效需求转化。
+3. 让有浏览/收藏但低成交的商品获得受控转化测试机会。
+4. 通过定期复盘确认哪些品类、价格带和折扣水平真正有效。
 
-**成本权威**：
+不以“生成 CSV 的商品数”“最大折扣”“最大销售额”作为单独成功标准。促销造成的原价订单替代、履约风险和无增量折价均可能使活动无效。[策略推导]
 
-1. 优先有效 **Effective TCOGS**；否则回退有效 **Standard TCOGS** = Giga 商品 Unit Price + Unit Fulfillment Fees。
-2. 成本包含对应履约费，**不能重复计入运费**。不得把历史订单的 Monthly P&L 成本分配作为当前定价成本。
-3. 两种成本均无有效数值时标记 `COST_UNAVAILABLE`，不得估算或填零。
-4. Mercari commission 使用 10% 进行 Time Sale 定价；买家另外支付的运费须遵守现行计佣与运费口径，详情以 [pricing-contract](../pricing-contract.md) 为准。SELLER payer 对买家运费收入 S=0；未知 payer **不能**当作零。
+## 2. 从现有规则反推经营策略
 
-**三分段默认政策**（可在单次运行中由 Operator 修改 margin floor 与 discount soft cap；修改应保留审计证据）：
+| 现有规则或事实 | 隐含商业意图（推导） | 对运营的策略含义 |
+| --- | --- | --- |
+| Effective TCOGS 优先，Standard TCOGS 回退；成本侧履约费用包含在 TCOGS | 以当期可获得的采购经济性而非历史/标价利润来定价 | 优先利用确实存在的采购成本改善，不根据未经验证的采购优惠降价 |
+| NO_DISCOUNT / HIGH_DISCOUNT / OTHERS 三分段，分别采用不同 Margin Floor 和偏好折扣 | 对成本改善幅度不同的商品实行差异化促销 | 不统一全店折扣；成本优势是折扣空间的重要输入 |
+| Margin Floor 是硬底线；Discount Soft Cap 是价格偏好，可在合规和毛利安全时超出 | 保护最低单位经济性，同时避免偏好折扣机械阻止有利交易 | 先判断价格在经济上能否成立，再决定该不该投放 |
+| Preview 比较默认/调整政策的得失、售价和实际毛利 | 促销本质是可权衡的商业决策而非批量机械执行 | 运行前比较候选、毛利和折扣分布；保留经营判断 |
+| V2.1 将已知零库存、过时库存/观测等视为 advisory 而非内部商业资格排除 | 候选识别与实时可履约性是不同问题 | 广义商业候选池可以大；实际对外投放必须单独做供货/预售审查 |
+| Seller 平台数字规则与毛利约束继续有效 | 平台有效性是开展促销的边界而非需求策略 | 不为追求覆盖率突破平台或经济约束 |
+| Seller Create 与 Cancel 都是人工核验的业务环节 | 最终价格动作需要运营人员掌握控制权 | 建立可复盘的每轮运营闭环，而非只关注自动产物 |
 
-| Segment | 归类 | Direct Margin Floor（硬底线） | Discount Soft Cap（偏好） |
+上述映射是**业务逆向推导**；原始业务规则并不能证明折扣必然提高转化。
+
+## 3. 促销商品组合：需求优先，经济性约束
+
+### 3.1 三类优先商品 [策略推导]
+
+**A. 已验证需求的畅销商品（Sales accelerator）**：近 30 日有持续销量、当前仍有需求且折后单位直接毛利可靠。目的是争取销量提升，同时监测原价订单被折扣替代的风险。不能只因为过去全时期累计热销就持续占用促销位置。
+
+**B. 高意向、低转化商品（Conversion opportunity）**：近 30 日有较高閲覧数/いいね数，但成交相对较弱。它们可能存在价格阻力，也可能是商品图、文案、送料或品类匹配问题；先排除明显非价格问题，再以小批量促销验证价格敏感度。
+
+**C. 季节机会商品（Seasonal demand）**：结合日本季节、最近销售变化与品类供需，提前测试即将进入需求窗口的商品。优先使用四店合并的品类需求信息，实际促销选择仍需店铺级别核验价格与供货事实。
+
+**低优先级**：缺乏近期销量、浏览和收藏证据的商品；折后贡献额很低且没有明确测试假设的商品；仅因算法判断可导出而进入候选的商品。
+
+### 3.2 将“可促销”与“值得促销”分离
+
+**第一层，经济性候选**：由有效 TCOGS、费率、对应分段最低毛利和 Seller 数字价格约束确定。这回答“能否安全地给出促销价格”。
+
+**第二层，需求优先级**：使用近期订单件数、销售额、閲覧数、いいね数、趋势和季节性。这回答“为什么应该把折扣机会给这个商品”。查看窗口内 Listing 成立时间，避免刚上架商品因累计浏览少被误判。
+
+**第三层，实际投放审查**：确认当前可交付库存、预售承诺、到货风险、重复活动和客户体验。这回答“是否现在对外促销”。**零库存可以保留在经济候选池，不意味着应向客户提供不能履约的现货承诺。**
+
+**Shop4 优先**：将 Shop4 作为先行观察与优化对象，再把有效分类、折扣策略和测量方法复用到其余店铺；不是制定四套不同的成本定价原则。
+
+## 4. 折扣与利润策略
+
+### 4.1 既有分段默认值 [既有规则]
+
+| Segment | 成本改善特征 | 最低直接毛利率 | 偏好折扣 |
 | --- | --- | ---: | ---: |
-| NO_DISCOUNT | Effective 与 Standard TCOGS 相等 | 8% | 5% |
-| HIGH_DISCOUNT | Standard - Effective 的成本差额相对 Standard >=10% | 13% | 8% |
-| OTHERS | 正差额 <10%，或分段输入缺失/无效/矛盾 | 11% | 5% |
+| NO_DISCOUNT | 有效成本与标准成本相同 | 8% | 5% |
+| HIGH_DISCOUNT | 成本改善幅度至少 10% | 13% | 8% |
+| OTHERS | 小幅改善或分段信息不可靠 | 11% | 5% |
 
-分段阈值按**未四舍五入比例**判断；归类失败落入 OTHERS **不意味着**允许缺失定价成本。Discount Soft Cap 是折扣倾向，**不是**硬性资格拒绝条件。当 Seller 价格上限使首选折扣不可行、但更深折扣仍满足毛利及官方约束时允许 `SOFT_CAP_OVERRIDDEN`，必须记录实际折扣与毛利。不得为了恢复资格降低 Margin Floor。
+这是 **StoreOps Time Sale 的获批默认定价政策**，并不是市场实验得到的最优折扣结论。归类信息缺失可落入 OTHERS；定价成本真正缺失仍不能凭空定价。佣金按现有 10% 口径；有效成本已含成本侧履约费，不能重复扣除。详见 [定价权威](../pricing-contract.md)。
 
-**公式与边界**：设候选价 P、已含成本侧履约费的 C、买家支付运费收入 S、分段硬底线 m、偏好折扣 d，则最低毛利安全售价为 `ceil(C / (0.90 - m) - S)`（遵从 StoreOps 当前严格字段语义）。候选还须符合 Seller 提供的最低/严格最高价格，以及 Mercari 促销实际数字条件：促销价至少 ¥300、比当前价低至少 ¥100、处在折前价的 10%–99% 范围。不得突破平台规则强行导出。实现中其余字段 H/I/E 等解释见 [DESIGN TS-REQ-05](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/DESIGN.md)。
+### 4.2 对上述分段的战略解释 [策略推导]
 
-## 3. 资格策略：区分 V2 现状与获批 V2.1 目标
+- **NO_DISCOUNT**：成本没有改善，适合轻度刺激转化，避免无依据的激进降价。
+- **HIGH_DISCOUNT**：采购优势使促销更有弹性，但 13% 的更高 Margin Floor 也意味着**不必然**比其它分段给出更大实际折扣。真实价格取决于 Seller 价格边界与成本。
+- **OTHERS**：信息不足或成本改善有限时采取中性方案；不是让它承担可疑成本商品的激进折扣测试。
+- **Soft Cap** 是偏好而非绝对上限。即使定价引擎允许更深折扣，运营层仍应对增量盈利和品牌/消费者预期进行判断，不自动把“可行最大折扣”视作推荐折扣。
 
-### V2（已有 2026-11-02 生产发布证据）
+### 4.3 Shop4 促销上限与待核对的口径
 
-原 V2 将库存为零、库存观测过旧及部分 shipping/source 状态作为资格拒绝条件，同时维持毛利、身份、成本、官方数字限制等硬约束。它是历史实装基线，不应再被描述为目标策略。
+既有运营约定：一般 Time Sale 折扣上限 **10%**，Shop4 **9%**；每周一轮，约凌晨 **03:00 JST** 运营。此处属于运营层约定，**不可直接等同于** StoreOps 三分段 5%/8%/5% 的 Soft Cap，也不能声称现有生成器已经强制执行 Shop4 9% 或 03:00。策略上应明确决定运营限制是否绝对、以及它与 Soft Cap override 的优先级；未确认前不得假装系统已经保证一致。
 
-### V2.1（2026-11-06 Sponsor 批准的 Margin-first 目标；部署待核验）
+现有 Builder 默认结束时间为下周一 02:00 JST，活动起止可由运营显式设定。每周运营的 03:00 与系统默认窗口并非同一个概念，需在运营日程中区分**准备/上传时间、活动生效时间、结束时间**。[既有规则 + 待验证映射]
 
-- **唯一内部商业硬门槛是可证明的 Direct Margin Floor。** 已确认零库存、库存未知/过时、来源覆盖/复制年龄、Seller/Promotion 观测未知及**运费观测时间过旧**属于非阻断 advisory，不是因为风险标签存在就剔除候选。
-- **计算与导出前提仍为硬条件**：有效 Create CSV、无歧义商品身份、可计算正数成本、需要时真实可用的运费金额、官方 CSV/数字/折扣上下限。未知买家运费金额或 payer 令毛利无法计算时不得声称 PASS。未知 Seller 状态不等于 Seller 已认可。
-- 资格分为 `commercial_candidate`（能算毛利且满足对应分段最低值）和 `exportable_candidate`（前者且满足官方结构、身份与价格限制）；advisory 与阻断原因独立显示。一个商品可同时具备多个 advisory。
-- 已知零库存仍可成为候选或可导出，**不等于能即时履约**；实际上传前的供货及预售/交付判断仍属 Operator 的商业运营责任。不得因为候选资格扩大而宣称库存已补齐。
-- 对 stale shipping 可以在来源、金额及计价语义可靠时使用 last-good 金额并提示年龄；不得把真正缺失的 buyer shipping 金额视为非阻断。
-- Shipping 事实由 Canonical Listing/commerce-lab 负责生产，Time Sale 只读消费；不得在 Time Sale 内建设第二套 Seller 抓取、运费权威或重试队列。[commerce-lab #285](https://github.com/retailpulses/commerce-lab/issues/285)。
+## 5. 每周促销运营循环 [策略推导；频率沿用既有运营约定]
 
-## 4. 运营运行 SOP
+1. **观察需求**：按店铺查看最近 7/30 天订单、销售额、浏览、收藏、上次促销表现及季节趋势。四店合并数据用于发现趋势，不直接混用不同店铺的价格和库存。
+2. **建立候选池**：先依据经济性与官方条件求出可用价格，再将商品分为畅销加速、低转化测试、季节性机会三组；记录入选理由。
+3. **组合与轮换**：防止少数长期畅销商品永久占位。连续多轮促销但没有可测量改善的商品降优先级，留出对照和新候选；具体名额比例应由数据验证，不预设为公司政策。
+4. **审核方案**：比较各分段价格、折扣、单位直接毛利和预期供货风险。SKU 价格安全通过并不等于库存风险可接受。
+5. **执行与协同**：按 Seller 官方流程开展 Time Sale；有适当配额时，让 Newsletter 承接已确认的活动卖点。Newsletter 每店每月发送次数有限，每封最多附 10 个商品，不能把它当作每周全部活动商品的默认通知渠道。详见 [newsletter.md](newsletter.md)。
+6. **复盘与调整**：比较活动前、中、后的销售/毛利，记录原价订单被替代、缺货、复购和自然流量变化，形成下一轮选品与折扣调整依据。
 
-1. **选店与选品**：以 Shop4 为优先业务分析对象，但生成结果严格以单店 Shop context 隔离。使用最近 30 天销量、季节性、浏览/いいね 和商业贡献识别优先推广商品；这些信号为运营优先级建议而非系统资格门槛。
-2. **输入**：从对应 Mercari Seller 获取官方 Create 原始注册 CSV（16 列），仅处理有效 CREATE；使用 SKU1 商品管理代码关联成本；不允许重复 Listing ID。Start/End 使用 JST，默认开始 now+30 分钟向上取整至 15 分钟，结束为严格晚于开始的下周一 02:00；Operator 可显式覆盖。
-3. **模拟**：在同一冻结商业事实快照上比对 Default vs Adjusted 六参数，查看合格数、GAIN/LOSS、价差、实际毛利、soft-cap override、阻断原因及 advisories。修改参数或基础事实发生变化后必须重新 Preview。
-4. **生成与审核**：仅在 Operator 明确 Generate 后生成官方 16 列 UTF-8 BOM CSV、`failed.csv`、`review.xlsx`、summary/ZIP；检查每个商品的毛利、价格与警告。失败报告不是 Seller 上传文件；零成功也应保留失败明细。不得以回放或 smoke 测试代替正式 Generate。
-5. **Seller 人工上传与核验**：CSV GENERATED 仅代表本地生成，不代表 Seller `ACTIVE`、`ELIGIBLE` 或审核成功。上传后检查 Seller 结果/失败文件，按独立证据记录是否确认，并处理被拒商品。
-6. **取消**：使用 Seller 的单独 14 列 UPDATE CSV；默认结束文件内全部行，也可选部分行；只将所选行的 `値引き終了日時` 写为字面 `end`，其他字段保持不变；人工上传并单独核验完成状态。
-7. **审计与恢复**：保存 Shop、有效 policy、Job、input/output hash、Preview 绑定、排除原因、操作证据与阶段状态。PARTIAL 不得显示为成功；相同 Job 安全恢复，不得双重创建促销或将 GENERATED 冒充 ACTIVE。
+**不把每周频率等同于必须每件商品每周打折。** 每轮应有清晰选品理由；缺乏候选或价格优势时缩小规模是合理的。
 
-## 5. 商业指标和评估方法
+## 6. 判断促销是否创造经营价值
 
-每店/每轮至少统计：有效 Create 数、Commercial candidates、Exportable candidates、实际上传数、Seller 实际接受数、实际销售额/件数、毛利与促销前后增量（注意对照和季节性）、未达标及平台排除原因、SOFT_CAP_OVERRIDDEN、零库存/过时数据等 advisory、有效数据覆盖和恢复情况。需求信号与销售增长属于**待验证效果**；Preview 只模拟合格与价格，**不**预测转化或增量销量。
+### 核心结果指标
 
-Shop4 应优先分析：高浏览/高いいね但低转化、高近30天销量、冬季需求强且毛利安全的商品；不应因为热门就跳过可履约判断。促销效果要结合 Newsletter、自然流量和其它活动避免错误归因。
+- **增量直接毛利额**：促销期间真实直接毛利额减去合理基线下的反事实直接毛利额。基线应考虑同期趋势、同类非促销 Listing、季节性和库存变化；简单前后对比不是因果证明。
+- **转化改善**：在曝光/浏览口径可比较时，关注浏览到成交率变化，不只看いいね和閲覧数绝对值。
+- **销售贡献**：增量订单件数与净销售额，单独识别促销销量与自然销量被替代的部分。
+- **单位经济性**：每件活动商品的实际售价、佣金、有效成本、直接毛利额和毛利率，注意折价后毛利率可能合规但毛利总额仍下降。
+- **活动后效果**：结束促销后销量是否维持，是否形成新的长期需求，还是只有价格刺激下的短暂销售。
 
-## 6. 发布证据与未完成事项（不可混写为当前线上状态）
+### 分析维度与最小实验
 
-- **已核实的历史 V2 发布**：2026-11-02，store-ops [#260](https://github.com/retailpulses/store-ops/issues/260) / [PR #268](https://github.com/retailpulses/store-ops/pull/268)，Time Sale provider SHA `3244017ca73695312096d71ce6fa2c580707e490`。当时 Shop4 1165 qualified / 1143 failed；仅代表当时快照。
-- **V2.1 离线验证**：2026-11-06 同快照 Shop4 对比，V2 1085 qualified，V2.1 1629 commercial/exportable，增加 544、减少 0；含 141 个零库存被恢复；最低直接毛利 8%，零已观测输出/毛利违规。这是离线 Replay，**不是**真实 Seller 接受数或生产上线数据。见 [CURRENT_STATE](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/CURRENT_STATE.md)。
-- **阻断项**：现有 CURRENT_STATE 记载 V2.1 尚未部署，独立代码评审、replay 输入认可/原始 11-06 样本核对和部署后 SHA/回滚/只读 smoke 证据尚需完成；跟踪 [store-ops #281](https://github.com/retailpulses/store-ops/issues/281)。本文的创建不构成部署授权。
-- **数据冲突注意**：部分既有 merchandising 文档仍按 V2 口径把库存作为 Timesale 资格硬门槛。V2.1 策略对此作出区分：系统候选可保留零库存 advisory，但人工正式投放时仍应确认履约、预售规则和客户体验。不要擅自覆盖其它业务文档的库存销售政策。
+按 Shop、商品、品类、三个成本分段、需求分组、折扣带、季节、活动次数和在售时长分组分析。首先在 Shop4 做小规模、相似商品或错峰周期对照：**同等毛利保护前提下，验证需求分组和折扣深度对增量直接毛利的影响**。订单少时避免过早作出统计结论。不得把生成器的资格模拟视为销售转化预测。
 
-## 7. 事实归属与维护
+## 7. 与其它 Mercari 经营策略的关系
 
-| 领域 | Canonical owner |
-| --- | --- |
-| 商业促销策略、优先级、运行 SOP | 本文件（`/.github/business/mercari/timesale-strategy.md`） |
-| Time Sale 精确计算、源文件规范、状态机、测试 | [store-ops DESIGN/TRD](https://github.com/retailpulses/store-ops/tree/main/apps/mercari/timesale) |
-| 当前代码/已部署 SHA、生产验证、回滚 | store-ops CURRENT_STATE、#260、#281 + 实际 runtime 读回 |
-| 跨业务定价、平台手续费/运费口径 | [business/pricing-contract.md](../pricing-contract.md) |
-| 当前 canonical shipping facts | commerce-lab Canonical Listing / #285 |
-| 季节性/需求信号选择方法 | [merchandising/seasonality-method.md](merchandising/seasonality-method.md) |
+- **Merchandising / Hero Products** 负责识别具有持续需求的品类与标杆商品；Time Sale 负责判断是否、何时、以何种折扣刺激销售。Hero 产品不默认永久促销。
+- **Newsletter** 负责向已订阅客户传播精选促销；应选择确实能交付、价格已核实、信息明确的 Listing，避免促销资格与宣传内容不一致。
+- **New Products** 可通过 Time Sale 做受控需求测试，但不能因缺少历史数据而自动推定应降价；先验证基础 Listing 质量。
+- **Presale** 有独立的交付与取消风险规则；经济性候选池不能绕过预售管理。
+- **Coupon** 与 Time Sale 应统一审查促销叠加风险及是否属于同一活动的成本投入，不能重复计算带来的增量。
+- **Pricing** 的佣金、运费/费率与成本权威仍由 [pricing-contract](../pricing-contract.md) 管理，不在本文重建第二套规则。
 
-更新规则：当产品设计批准新的商业决策，先核对原始 Sponsor decision、当前实施状态与冲突文档，再更新此归档；不得把实验、设计、生产和 Seller 接受四种证据混为一谈。
+## 8. 决策边界与未验证假设
+
+### 已可作为战略基础的商业事实
+- 成本优先级和三分段 Margin Floor/Soft Cap 是已明确的内部价格政策。
+- Margin-first 扩大商业候选定义，但不免除计算、平台约束和履约审查。
+- 运营仍对最终对外活动内容、折扣及客户承诺负责。
+
+### 推导中的战略假设（不得写成已验证结论）
+- 近 30 天需求信号比简单全店统一折扣更能指导促销资源分配。
+- 更高成本优势可以在不牺牲直接毛利底线的情况下提高价格竞争力。
+- 商品轮换与有限对照比所有商品长期每周重复打折有更高长期经济效益。
+- Newsletter 与 Time Sale 协同能提供可观测的额外需求。
+
+### 需要业务确认/验证的事项
+1. 现有 **Shop4 9% / 其他店 10%** 上限究竟是运营绝对硬规则，还是默认目标？与价格引擎的 Soft Cap override 如何衔接？
+2. **每周一轮、03:00 JST** 是上传/执行操作时间还是实际起始时间？活动是否必须使用默认下周一 02:00 结束？
+3. 是否正式采用**增量直接毛利额**作为促销第一 KPI？该 KPI 所需的可比非促销样本是否具备？
+4. 需求分组与轮换配比应依据 Shop4 实测后制定，不凭空设定固定百分比。
+
+## 9. 溯源
+
+- [StoreOps Time Sale DESIGN](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/DESIGN.md)：成本分段、Margin Floor、Soft Cap、Margin-first 和运营约束的源规则。
+- [StoreOps Time Sale README](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/README.md)：业务操作入口和原始 Seller 数据语义；技术说明仍归此处。
+- [ADR-0002](https://github.com/retailpulses/store-ops/blob/main/docs/decisions/ADR-0002-timesale-v2-commercial-fallback.md)：Effective/Standard TCOGS 经济性依据。
+- [Mercari pricing contract](../pricing-contract.md)：跨业务佣金与运费口径。
+- [Seasonality research](merchandising/seasonality-method.md)：需求和季节性评估方法。
+- [Newsletter policy](newsletter.md)：促销渠道协同及平台额度。
+
+本文是从已存在的商业规则反推而来的**经营战略初稿**；不复制版本发布、部署 SHA、数据库状态或生成器技术合同。后续真实销售验证应反馈到本策略的假设与决策，而不是把工程验收结果当作商业证明。
