@@ -32,3 +32,5 @@ Knowledge entries need not have BUS IDs. Distinguish observed facts, hypotheses,
 2. Giga standard price, fulfillment cost and Effective TCOGS are not conflated.
 3. Business knowledge can be discovered and refreshed without creating scattered monthly reports or a second source of truth.
 4. Sponsor Review does not change production prices, APIs, databases, or existing approval statuses.
+
+| Mercari B2B | [Mercari-based B2B business plan (draft)](mercari/b2b-business-plan.md) | DRAFT; flexible special procurement/documents, no qualified invoice registration |
