@@ -8,15 +8,17 @@
 
 ## 1. Purpose and policy decision
 
-Provide a consistent, low-touch response to business and individual buyers seeking proof of purchase **using documents and screens already available through Mercari or the buyer's payment provider**.
+Provide a consistent, platform-first response to business and individual buyers seeking proof of purchase. **Retain willingness to assess special B2B documentation requirements case by case.** Standard support should use Mercari/payment-provider records without additional paperwork; approved special services may require a separately prepared ordinary document.
 
-**Company operating policy (proposed for approval):**
+**Company operating policy (business direction confirmed; SOP execution remains Sponsor Review):**
 
-1. **Do not prepare, issue, or send a separate seller-generated receipt, commercial invoice, PDF invoice, or qualified tax invoice as part of the routine Mercari Shops support workflow.** Do not promise to add receipts to parcels, send a PDF later, or issue an invoice through external channels.
-2. Direct buyers first to the **automatic purchase confirmation email**, the **order-detail screen** and the **statement/usage history issued by their payment method**. These are alternative purchase/payment evidence, **not automatically a statutory qualified invoice**.
-3. **Do not assert that separate issuance is prohibited by Mercari.** The platform explicitly states that its tools lack receipt and buyer qualified-invoice issuance functions; the official seller guidance allows an individual shop to prepare receipts independently. Our no-separate-document approach is **the company's operational choice**.
-4. **Qualified tax invoice requests or assertions of statutory entitlement go to Backoffice for case-specific legal/tax review before any categorical refusal.** Operators must not invent a registration number, tax breakdown, issuer, or statutory invoice, and must not claim that a platform email or payment statement necessarily meets Japan's input-tax-credit requirements.
-5. Apply this shop-agnostically. Exception to the operating policy requires written management/Backoffice authorization in the owning operational system; an operator cannot independently override it. An exception is not permission to invent or backdate records.
+1. **Platform-first for routine orders:** guide the buyer to Mercari's automatic confirmation email and order details, and to their payment-method usage record. Do not automatically create a second receipt or invoice.
+2. **Special B2B service remains open:** if the buyer has a specific, legitimate commercial-documentation requirement (company addressee, ordinary receipt, purchase statement or non-qualified invoice), collect the precise request and assess feasibility before accepting the order or promising issuance. Management/Backoffice may approve an individually prepared **ordinary, non-qualified** document with verified transaction details. This is an exception path, **not an unconditional offer**.
+3. **Current registration fact (company-confirmed, 2026-11-14):** リテルパルス合同会社 **is not registered as an 適格請求書発行事業者**. We **cannot issue a qualified tax invoice (適格請求書)** or use/invent a T registration number. Do not suggest a non-qualified receipt will support an input-tax-credit claim; the buyer should check with their accountant. Registration status must be reconfirmed if it changes.
+4. **Correct platform distinction:** Mercari Shops has no built-in buyer receipt or qualified-invoice issuance function, **but officially permits a shop to prepare its own ordinary receipt**. Standard nonissuance is a company workflow choice, not a platform ban.
+5. **Compliance controls:** do not mislabel an ordinary document as an 適格請求書; do not backdate, duplicate payment evidence, represent Mercari as seller of goods, bypass platform payment or create off-platform transactions. Special documentation requires a reviewable ticket decision. Escalate allegations of statutory obligation or disputes to Backoffice before definitive replies.
+
+**Tax references:** [NTA No.6498](https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6498.htm) (only registered issuers can issue qualified invoices) and [NTA Q&A on nonregistered issuers' ordinary invoices/receipts](https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/pdf/qa/26-2.pdf) (ordinary non-qualified documents are permitted, but misleading qualified invoices are prohibited).
 
 ## 2. Official platform facts (verified 2026-11-14)
 
@@ -43,100 +45,84 @@ These are platform guidance statements, not a tax-law determination of what evid
 
 ## 3. Operator decision tree
 
-**A. Buyer requests a normal receipt (領収書) or proof of payment**
+**A. Routine 領収書 or proof of purchase:** confirm order context; first guide to Mercari purchase-confirmation email, buyer order details (App マイページ → 購入履歴; Web 購入した商品) and payment-method history. In refunds or partial cancellations, use the final order details rather than original email value. Do **not** categorically say all separate receipts are unavailable; ask whether a special B2B document is essential.
 
-1. Confirm the request refers to a Mercari Shops order. Do not expose another buyer's order details.
-2. Direct to the automatic purchase confirmation email and **マイページ → 購入履歴** (Web: **購入した商品**) to view order details.
-3. Suggest the statement/usage history available from the payment method used, where available. Avoid promising a downloadable PDF or paper statement.
-4. Explain that the shop **does not issue a separate receipt** under its routine policy. Do not say Mercari forbids shops from doing so.
-5. If a partial cancellation or refund occurred, tell the buyer to confirm the final charge on order details, not the initial purchase email.
+**B. Special B2B document request (ordinary receipt / non-qualified 請求書 / company addressee):**
+1. Record requested document type, company addressee, use/purpose, transaction or quote ID, timing, relevant product/quantity, and whether the buyer specifically needs an **適格請求書**.
+2. Disclose that Mercari's purchase/payment evidence is the ordinary route, while special paperwork **may be evaluated individually**, not guaranteed.
+3. Route to Backoffice/Management for feasibility and legal review. If approved, validate seller legal entity, platform order/payment evidence, actual amounts, issue date, identification of addressee, cancellation/refund state, and whether any similar document was already issued. Mark plainly as **not a qualified tax invoice**, where appropriate.
+4. Only issue through an authorized, auditable operational workflow after approval; do not promise off-platform payment, guaranteed availability, or a registration number.
+5. If declined, explain the specific limitation accurately and provide the ordinary platform alternatives.
 
-**B. Buyer requests an invoice (請求書), company-addressed document, or qualified invoice (適格請求書)**
+**C. 適格請求書 request:** inform the buyer accurately that our company is **currently not registered** and cannot provide an 適格請求書; Mercari does not provide one on our behalf. Do **not** imply an ordinary receipt or payment statement is an equivalent qualified invoice. Ask whether an ordinary proof-of-purchase document would serve their needs, without pressuring them; refer tax treatment to their adviser. Escalate legal disputes or registration changes to Backoffice.
 
-1. Determine whether the buyer wants **ordinary evidence of purchase** or specifically an **invoice for tax compliance**. Clarify only if the difference affects the answer.
-2. For ordinary evidence, follow A. Never promise a company-name invoice because a buyer provided a business name.
-3. For a **qualified invoice / registration-number / input-tax-credit** request, do not assert platform evidence is sufficient and do not invent a tax invoice. Escalate to Backoffice for the issuer's registration/status and legal obligations. The routine no-separate-invoice policy remains in place **unless management explicitly authorizes an exception after compliance review**.
-4. Where Backoffice confirms the request cannot be satisfied, give a clear and accurate response and point the buyer to available platform records; do not substitute an unofficial invoice-looking document.
-5. Do not redirect the buyer to off-platform payment or share private settlement documents.
+**D. Buyer cannot find platform records:** guide to the official purchase history and email, and suggest Mercari/payment-provider support if necessary. Never expose a different buyer's account or invent a payment record.
 
-**C. Buyer cannot find their records**
+## 4. Japanese customer service templates (draft; adapt to confirmed case state)
 
-1. Give the current Mercari navigation steps and the official buyer help links.
-2. Ask them to check the email address registered with Mercari, including spam. Where platform account access or historical payment records are missing, direct the buyer to Mercari support or the payment-method provider as appropriate.
-3. An operator must not generate an alternative 'official' receipt, edit timestamps, or provide another buyer's data.
-
-## 4. Approved Japanese reply templates
-
-### 4.1 Standard receipt request
+### 4.1 Normal receipt request — platform-first, special request open
 
 > お問い合わせありがとうございます。
 >
-> 恐れ入りますが、当ショップでは個別の領収書発行は行っておりません。
-> メルカリShopsのご購入時に自動送信される購入確認メール、またはご利用の決済方法の利用明細等をご確認ください。
+> 通常、ご購入時の確認メール、メルカリShopsの注文詳細画面、お支払い方法のご利用明細等をご案内しております。
+> 注文詳細はアプリの「マイページ」→「購入履歴」（Web版では「購入した商品」）からご確認いただけます。
 >
-> ご注文内容は、メルカリアプリの「マイページ」→「購入履歴」（Web版では「購入した商品」）から該当商品を選択すると確認できます。
+> 法人様などで別途書類が必要な場合は、必要な書類の種類・宛名・ご利用目的をお知らせください。対応可否を個別に確認いたします。
 >
-> 公式ガイド：https://help.jp.mercari.com/guide/articles/1271/
->
-> ご理解のほどよろしくお願いいたします。
+> ※書類の発行をお約束するものではございません。
 
-### 4.2 Business buyer asking for a company-name invoice (not specifically tax-qualified)
+### 4.2 Special commercial documentation request — intake
+
+> 法人様向けのご購入書類につきましては、ご希望の書類（領収書・請求書など）、宛名および必要な記載事項をお知らせください。
+> ご注文内容を確認したうえで、個別対応の可否をご案内いたします。
+>
+> なお、当ショップが対応可能な場合でも、適格請求書（インボイス）の発行には対応しておりません。
+
+### 4.3 Qualified tax invoice requested — accurate registration statement
 
 > お問い合わせありがとうございます。
 >
-> 恐れ入りますが、当ショップでは法人名義の請求書・領収書を個別に作成、発行するサービスは行っておりません。
-> ご購入内容はメルカリShopsの購入確認メールおよび注文詳細画面から、決済の記録はご利用の決済方法の利用明細等からご確認いただけます。
+> 当ショップの運営事業者は現在、適格請求書発行事業者の登録を受けていないため、適格請求書（インボイス）を発行することができません。
 >
-> 注文詳細は「マイページ」→「購入履歴」（Web版では「購入した商品」）をご利用ください。
->
-> ご不明な点がございましたら、お問い合わせください。
+> ご購入確認メールや決済方法の利用明細などはご確認いただけます。適格請求書ではない通常の購入証明書類をご希望の場合は、必要な内容をお知らせください。個別に対応可否を確認いたします。
 
-### 4.3 Qualified tax invoice request — pending internal review
+### 4.4 Partial cancellation / changed amount
 
-> お問い合わせありがとうございます。
->
-> 適格請求書（インボイス）の発行について、メルカリShopsには購入者向けの発行機能がございません。
-> ご依頼内容を確認のうえ、当ショップの対応可否をご案内いたします。
->
-> なお、購入確認メールや決済方法の利用明細は、適格請求書と同一の書類であることを保証するものではございません。
+> 一部キャンセル等により、ご購入時のメールと最終的なご請求金額が異なる場合がございます。
+> ご注文詳細画面で最終金額をご確認ください。追加の書類が必要な場合は、内容を確認のうえ個別対応の可否をご案内いたします。
 
-**Send 4.3 only after an internal escalation is actually logged and a follow-up owner exists.** Do not claim an escalation took place if it has not.
+**Templates must not claim review/approval has occurred until it actually has.** For special issuance, a separate approved operator procedure and case record are necessary.
 
-### 4.4 Amount changed due to partial cancellation
+## 5. Controls, case workflow and authority
 
-> ご注文の一部キャンセル等により、ご購入時のメールに記載された金額と最終的なご請求金額が異なる場合がございます。
-> 最終的なご請求金額については、該当注文の詳細画面をご確認ください。
+| Requirement | Standard support | Special B2B service | Approval / control |
+|---|---|---|---|
+| Ordinary receipt | Mercari email/order details/payment history | May consider a separately prepared **non-qualified** receipt | Backoffice/Management approval before commitment |
+| Company-name invoice or purchase statement | Platform records | May consider ordinary, non-qualified document with verified details | Backoffice/Management, audit trail |
+| Qualified tax invoice / registration number | **Not available: company is currently unregistered** | **Cannot offer or produce** | Registration status update requires independent verification |
+| Bulk truck freight estimate, split delivery, required date | Ordinary shipping info | Separate quotation and lead-time feasibility | Operations/supplier quote approval |
+| Cancellations / amended charge | Final order details | If issuing ordinary document, reflect final verified transaction | Never duplicate/overstate paid amount |
 
-## 5. Controls and exceptions
-
-| Situation | Operator action | Owner |
-|---|---|---|
-| Ordinary receipt/proof of purchase request | Reply with 4.1; link official buyer guide; no seller document | Mercari Support |
-| Company-name receipt/invoice request | Reply with 4.2 if ordinary commercial documentation, clearly state policy | Mercari Support |
-| Qualified invoice / statutory compliance request | Record request and escalate; do not deny obligations or promise document; use 4.3 if recorded | Backoffice / Management |
-| Original email differs from final amount | Point to order details and final charge; avoid unsupported totals | Mercari Support |
-| Platform account or payment statement unavailable | Direct buyer to Mercari/payment provider's official recovery/support path | Mercari Support |
-| Demand to generate external PDF, change issuer/date, or issue duplicate financial document | Decline routine creation; escalate if legal obligations alleged | Backoffice |
-
-Keep a minimal ticket record in the operational system: shop, order reference, request type, support response, official guide version/date, escalation owner and final decision. **Do not put buyer names, shipping addresses, payments, or invoice copies into public business documentation.**
+**Special-service state:** REQUESTED → REQUIREMENTS_CAPTURED → REVIEWING → APPROVED / DECLINED → (if approved) DOCUMENT_PREPARED → VERIFIED → DELIVERED. Retain request, authorized reviewer, approval rationale, source order/amount, document type, issue date and proof of delivery in the controlled operational system. Never enter customer PII or copies into GitHub. If no workflow exists, **do not issue documents ad hoc**; keep the request in REVIEWING/DECLINED with reasons.
 
 ## 6. Customer-facing merchandising and shop copy impact
 
-**Do not advertise:** `領収書発行可能`, `インボイス発行可能`, `法人名義の請求書対応`.
+**Do not advertise:** `適格請求書発行可能`, `インボイス対応`, `登録番号あり`, or guaranteed `領収書・請求書発行可能`. We have **no qualified tax invoice registration** and ordinary individual document support requires review.
 
-If relevant to a business-purchase description, use a narrow, truthful statement:
+Recommended concise profile/listing copy, without guaranteeing service:
 
-> 【ご購入内容の確認について】
-> ご購入時の確認メール、メルカリShopsの注文詳細画面、お支払い方法の利用明細等をご利用ください。当ショップでは領収書・請求書を個別に発行しておりません。
+> 【法人・事業者様のご相談】
+> まとめ買い・トラック便などの一括配送、購入書類に関する特別なご要望もお気軽にお問い合わせください。内容に応じて個別に対応可否をご案内いたします。
+> ※適格請求書（インボイス）の発行には対応しておりません。
 
-For a **B2B bulk-shipping** offer, keep the separate benefit (`まとめ買い・トラック便のお見積もり`) independent of the document policy. Never present buyer document availability as an enhanced business-customer service.
+For ordinary purchase evidence, link to Mercari email/order details/payment statement guidance. Avoid displaying registration claims unless current registration is verified. See [Mercari-based B2B business plan](b2b-business-plan.md) (separate PR under review).
 
 ## 7. Review and acceptance
 
-- [ ] Product/Operations owner approves the no-separate-document policy and Japanese templates.
-- [ ] Backoffice confirms how to handle qualified invoice/statutory requests (including registration status and any mandatory obligations) **before** the refusal process is treated as final.
+- [ ] Product/Operations owner approves platform-first plus special B2B documentation exceptions and Japanese templates.
+- [ ] Backoffice records company-provided current status: **not registered** for 適格請求書. Verify any future changes before adjusting standard replies. Review any disputed statutory request.
 - [ ] Existing Shop4 and other shop descriptions/boilerplates are checked to remove contrary claims; this PR **does not change live listings**.
 - [ ] Official buyer and seller URLs remain reachable and the navigation/instructions match the platform.
-- [ ] Inquiries are answered without generating invoices or misrepresenting Mercari's platform capabilities.
+- [ ] An exception case has an approved issuance/audit procedure before an ordinary non-qualified document is created; never misrepresent platform or registration status.
 
-**Non-goals:** accounting-policy revision, tax registration determination, invoice automation, changing marketplace settings, and issuing documents. This SOP is designed to avoid additional manual billing operations, not to override applicable law.
+**Non-goals:** accounting-policy revision, decision to register for qualified tax invoices, invoice automation, changing marketplace settings, or guaranteeing an exception service. This SOP records the company's current nonregistered status as provided by management; it is not independent proof of tax registration or a reason to bypass statutory obligations.
