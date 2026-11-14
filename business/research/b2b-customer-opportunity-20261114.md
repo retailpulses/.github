@@ -1,92 +1,159 @@
-# B2B Business Discovery — Order and Inquiry Evidence Baseline (Draft, 2026-11-14)
+# 日本 B2B 客户机会：基于 Supabase 订单及 Inquiry 的初步研究（中文版）
 
-**Status:** Research Draft / not approved as business policy · **Evidence:** PARTIAL · **Owner:** Business Development + Commerce Operations · **Intent:** assess a distinct B2B go-to-market model from existing Japanese ecommerce demand. This is **not** a decision to launch a new legal entity, channel, CRM, prices, or production workflows.
+**文档状态：Research Draft（未批准商业决策）**  
+**证据状态：PARTIAL（统计已核验，客户身份与转化未核验）**  
+**分析日期：2026-11-14 JST**  
+**Owner：Business Development / Commerce Operations**  
+**数据来源：Hosted Supabase `gqeyfhshxdiyhugvmbuk`，`public.sales_orders`、`public.inquiries`（只读）**
 
-## Executive findings
+## 一、核心结论
 
-- Queried **live hosted Supabase** project `gqeyfhshxdiyhugvmbuk` (Retailpulses Project), read-only, on 2026-11-14. Source systems: `public.sales_orders` and `public.inquiries`. These are raw operational signals, **not** confirmed merchant/organization identities or an audited financial dataset.
-- Order baseline: **6,052 order rows**, **6,027 Mercari** and **25 Rakuten**, covering observed purchase dates **2024-05-26 to 2026-11-13** in Mercari. Rows with `purchase_date is not null` and `line_origin is distinct from 'component'`; one order may have multiple rows.
-- Keyword-screened *potential commercial delivery* signals appear in **141 rows** (140 Mercari, 1 Rakuten) = **2.33%** of observed rows. Includes false positives (e.g. “ビル” in residential building names); **do not interpret as 141 validated businesses or B2B transactions**.
-- Independently, **206 of 3,414** non-deleted inquiry records have `bulk_purchase` in `inquiry_type` (~6.0%), largely tagged in 2026; this is *lead interest*, not converted orders. Only **5 inquiries record units >= 5**, **3 record units >= 10**; the absence of quantities on other inquiries is not proof that they requested one unit.
-- Product title keyword analysis within the **141** heuristic order rows: **58 furniture**, **40 storage**, **7 kitchen**, **2 bedding**, **1 outdoor structure**, **33 other**. Groups are a first-match **title keyword heuristic**, not canonical merchandising taxonomy or evidence of buyer industry.
-- Cross-shop repeated names exist: among **5,147 distinct nonblank recipient-or-buyer name strings** (Mercari), **309** appear on >=2 orders; **38** on >=3; **5** on >=5; **57** span >=2 shops; max **6** orders per same exact string. **Names are not stable buyer IDs**: these figures cannot determine unique customers or legitimate repeat rates; commercial status is unverified. Do not copy recipient names to this document.
-- A recent **Shop4 10-set dining furniture commercial delivery inquiry** (`WF295444BAA`) demonstrates buyer interest in pallet/unpalletized truck quote and consolidated shipping, but at snapshot date had **not become a verified order**. See [BUS-LOG-001](../suppliers/giga/bulk-commercial-delivery.md) and the underlying Giga/Inquiry evidence.
+1. 在 **6,052 条销售订单行**中，使用收货人/账单名称与收货地址关键词进行商业客户初筛，原始 **OR 规则得到 141 条（2.33%）**；严格 **AND 规则只有 4 条（0.07%）**。两者都**不是已确认 B2B 订单数量**。
+2. 名称关键词 44 条、地址关键词 101 条，交集 4 条。其余 **40 条仅名称匹配、97 条仅地址匹配**。地址特征（特别是「ビル」）存在较高误报风险；而严格 AND 则可能漏掉使用个人姓名收货的真实商户。
+3. 共 **3,414 条未删除 Inquiry**，其中 **206 条标有 `bulk_purchase`**，属于与商业采购有关的线索，但没有证明这些咨询已成交，也不能单纯用该标签判定企业身份。
+4. 当前证据支持**测试一个轻量级 B2B 销售运营模式**：从批量家具/收纳/设施采购咨询出发，结合供应商批量卡车配送询价、正式报价、可验证的交期和订单利润；**不足以支持立即建立独立 B2B 软件产品或推算市场规模**。
+5. **Shop3 为其他法人相关销售**：仅可按权限作为市场需求信号分析，**不能纳入本公司自营电商营业收入或毛利**；Shop1/2/4 和 Rakuten 是本公司自营范围。
 
-## Source coverage and data caveats
+## 二、订单样本范围
 
-| Channel/store | Lines | Distinct order IDs | First observed | Last observed | Heuristic commercial delivery rows |
-|---|---:|---:|---|---|---:|
-| Mercari Shop1 (`WMyisFmhbGWyVAPEwsfirn`) | 1,739 | 1,739 | 2024-05-26 | 2026-11-13 | 53 |
-| Mercari Shop4 (`2JMLHBxjiFHDr55jMwA7fs`) | 1,713 | 1,712 | 2026-02-25 | 2026-11-13 | 34 |
-| Mercari Shop2 (`ZaMyGWzp6hUdgDh5E9ADob`) | 1,542 | 1,540 | 2025-01-20 | 2026-11-13 | 29 |
-| Mercari Shop3 (`2JGrmZqojnBMfdWrtP2xk3`) | 1,033 | 1,033 | 2025-12-03 | 2026-11-12 | 24 |
-| Rakuten (`Rakuten`) | 25 | 25 | 2026-06-07 | 2026-10-10 | 1 |
+订单筛选：`purchase_date IS NOT NULL AND line_origin IS DISTINCT FROM 'component'`。分析单位为 **sales_orders 行**，不是去重企业客户、实际包裹数，也不是已付款成交订单。原始订单状态中可能包含取消等情况。
 
-**Corporate accounting boundary:** Shop1/2/4 and Rakuten belong to the company's self-operated sales segment; Shop3 is other-entity sales / service-managed operations and **must not be counted as Retailpulses merchandise revenue**. It can inform anonymous cross-platform demand, if permitted, but segment profitability cannot attribute Shop3 gross sales to our company. No Amazon other-entity sales included. These baselines are operational row counts, not booked sales.
+| 渠道 | 订单行 | 不同 order_id | 数据起始 | 数据截至 | OR 线索 | AND 交集 |
+|---|---:|---:|---|---|---:|---:|
+| Mercari Shop1 | 1,739 | 1,739 | 2024-05-26 | 2026-11-13 | 53 | 1 |
+| Mercari Shop4 | 1,713 | 1,712 | 2026-02-25 | 2026-11-13 | 34 | 1 |
+| Mercari Shop2 | 1,542 | 1,540 | 2025-01-20 | 2026-11-13 | 29 | 1 |
+| Mercari Shop3 | 1,033 | 1,033 | 2025-12-03 | 2026-11-12 | 24 | 1 |
+| Rakuten | 25 | 25 | 2026-06-07 | 2026-10-10 | 1 | 0 |
+| **总计** | **6,052** | **6,049**（各店 distinct order_id 之和） | — | — | **141** | **4** |
 
-**Quantity quality warning:** among Mercari's 6,027 lines, **382 are quantity=0**, **5,634 quantity=1**, only **11 quantity>1**; Rakuten 25 lines are 24 quantity=1, one >1. No Mercari order line has quantity>=5 in this snapshot. Accordingly neither `sum(quantity)` nor quantity-based B2B size segmentation is reliable without validating source semantics, cancellations and line/splitting policies. **Canceled status** also exists (535 Mercari lines and 13 Rakuten lines matched `order_status ilike '%cancel%'`); no conversion/revenue rate is inferred from gross row counts.
+注意：总计列的 6,049 是各渠道/店铺 distinct order_id 加总，**尚未验证跨店 order_id 是否有冲突**；不应自动作为全平台唯一订单数。
 
-**Coverage and missingness:** `buyer_name` is present in 5,279 of 6,027 Mercari rows; `shipping_name` present in 5,518, with varying completeness across stores. Rakuten buyer_name was empty in all 25 observed rows, while shipping_name was present. This affects candidate screening and repeat matching. Match by name is neither GDPR/APPI-grade entity resolution nor proof of identity.
+### 数据质量限制
 
-## Method: lead evidence tiers (not final classification)
+- Mercari **6,027 行**：`quantity=0` 有 **382 行**、`quantity=1` 有 **5,634 行**、`quantity>1` 只有 **11 行**。Rakuten **25 行**中 24 行为数量 1，1 行大于 1。本次没有可靠证据可以据此判断真实批量采购渗透率。
+- `order_status ILIKE '%cancel%'` 匹配 Mercari **535 行**、Rakuten **13 行**；目前未做严谨的付款/退款/取消排除，所有候选比例只是原始行级线索密度。
+- Mercari 的 `buyer_name` 在 **5,279/6,027** 行有值，`shipping_name` 在 **5,518/6,027** 行有值；Rakuten 25 行的 `buyer_name` 为空但 `shipping_name` 有值，存在渠道覆盖差异。
+- 库存、平台费用、采购物流成本以及订单拆行语义均未完成交叉验证，**不计算 B2B 收入、利润或真实转化率**。
 
-- **Tier A — verified commercial transaction (NONE established by this analysis):** explicitly verified organizational purchaser, delivery requirement, paid order, with canonical order evidence and permitted data use.
-- **Tier B — strong commercial lead:** active inquiry explicitly requesting business quantities/commercial delivery, address/institution context corroborated; still unconverted or unverified. Example: Shop4 10-set dining inquiry; purchase remains pending.
-- **Tier C — weak heuristic lead:** order ship/billing name contains organizational/institution marker OR shipping address text contains business-type marker. Potential false positives; do not identify/approach a private buyer on this evidence alone.
-- **Tier D — repeat-purchase candidate:** same normalized name string appears in multiple orders or shops; NOT evidence of business use and may conflate different people/locations. Need a privacy-reviewed account/entity match and transaction validation.
+## 三、商业客户关键词筛选：明确 OR / AND 逻辑
 
-The first-pass row filter included Japanese organizational terms `株式会社`, `有限会社`, `合同会社`, `法人`, `病院`, `医院`, `クリニック`, `介護`, `学校`, `保育園`, `ホテル`, `旅館`, `店舗`, `事務所`, `商店`, `工務店`, `建設`, `センター`, and address terms such as `ビル`, `倉庫`, `工場`, `施設`. **An address containing ビル may be residential**. The filter is intentionally broad and is not validated precision/recall. Source code in the analysis transcript; not persisted as an executable production rule.
+### 3.1 字段和规则
 
-### Order-row signal breakdown
+**名称字段**：`shipping_name` 与 `billing_name` 合并后的文本；关键词示例：`株式会社`、`有限会社`、`合同会社`、`法人`、`病院`、`医院`、`クリニック`、`介護`、`学校`、`保育園`、`ホテル`、`旅館`、`店舗`、`事務所`、`商店`、`工務店`、`建設`、`センター` 等。
 
-| Store | Candidate rows | Candidate rows / all observed rows |
-|---|---:|---:|
-| Shop1 | 53 | 3.05% |
-| Shop4 | 34 | 1.98% |
-| Shop2 | 29 | 1.88% |
-| Shop3 | 24 | 2.32% |
-| Rakuten | 1 | 4.0% (sample too small) |
-| **All** | **141** | **2.33%** |
+**地址字段**：`shipping_address_1` 与 `shipping_address_2` 合并后的文本；关键词示例：`ビル`、`事務所`、`店舗`、`倉庫`、`工場`、`医院`、`病院`、`学校`、`施設`、`株式会社`、`有限会社`、`合同会社`。
 
-A separate named-field screen identified **44 Mercari rows** with commercial/institutional keywords in shipping/billing name and **100** with address-text keywords, with overlapping rows yielding **140 union matches**. These are candidate records, not unique companies.
+**OR（原筛选）**：`name_flag OR address_flag`。  
+**AND（本次复核）**：`name_flag AND address_flag`。  
+更严格的 `shipping_name`（不含 billing_name）与地址 AND 也恰好为 **4 行**，但只是本批数据的结果，不意味着未来两种定义永远等价。
 
-### Inquiry funnel signal, not conversion
+### 3.2 交叉表：全渠道 6,052 行
 
-From `inquiries` (non-deleted):
-- 3,414 total; 2,445 dated 2026; 206 classified `bulk_purchase`.
-- 2026 Shop4: 1,011 inquiries, **114** bulk-tagged; Shop2: 533 / 42; Shop1: 439 / 26; Shop3: 462 / 23. One additional bulk-tagged row has null inquiry_date.
-- Inquiries pre-2026 have zero observed bulk tags; **classification availability/process changes may explain the difference**. Do not interpret 2026 as sudden growth without an audit of tagging coverage.
-- `inquiry_order_links` and actual order outcomes were **not yet reconciled**; the 206 are not leads won, paid orders or pipeline revenue.
+| 名称条件 | 地址条件 | 行数 | 解释 |
+|---|---|---:|---|
+| 命中 | 命中 | **4** | 双重文本信号；**优先人工核实**，不等于已确认企业 |
+| 命中 | 不命中 | **40** | 机构名称可能是真实企业，收货地址没有命中 |
+| 不命中 | 命中 | **97** | 包含住宅楼名等误报，必须严格人工复核 |
+| 不命中 | 不命中 | **5,911** | 无关键词证据，但不能证明非企业客户 |
+| **OR 合计** | 任一命中 | **141** | 宽松线索池 |
+| **AND 合计** | 双重命中 | **4** | 较窄、高优先级候选池 |
 
-## Initial business opportunity hypothesis
+交叉校验：`4+40+97=141`；`44+101-4=141`。各店交集分别为 Shop1/2/3/4 **各 1 行**，Rakuten **0 行**。这些为同一 SQL 口径复核数据。
 
-**Hypothesis:** launch a lightweight B2B *sales operating model* for Japan-based small business establishments procuring multiple furniture/storage/fixture units, especially restaurants, offices, hospitality and care facilities. Buyer desires consolidated delivery, transparent quote, order lead time and reliable arrival more than automatic unit discounts. **Do not equate name/address keyword groups with actual industries.**
+### 3.3 复现查询（只读；返回聚合统计，不返回个人信息）
 
-**Initial MVP before building a separate software product:**
-1. A documented *manual* B2B qualification and quotation playbook: company/establishment type (only if self-declared or public business evidence), use-case, SKU, quantity, warehouse stock, postcode/business unloading constraints, required arrival date, and invoice requirements.
-2. Quote both standard-parcel and truck options against **current supplier quote**, with explicit packaging/loading/pallet fees; record `shipping_savings_quoted` and source time, versus **actual** net shipping after supplier settlement. Keep shipping cost and customer shipping charge separate.
-3. Confirm supplier prep, booking and transit separately. Do not promise five business days where Giga only commits 1–3 working days warehouse preparation and cannot quote dispatch.
-4. Start with Shop4 operational inquiries, then broaden discovery across all company-owned shops; Shop3 only as separately governed demand evidence. Do not make a new shop/legal entity or build a CRM until validated lead volume and contribution economics justify it.
-5. Offer a dedicated product page only after stock, terms, listing amount, and freight revalidation. Avoid unapproved price/permission changes.
+```sql
+WITH base AS (
+  SELECT source_store_id, order_id,
+         COALESCE(shipping_name,'') AS shipping_name,
+         COALESCE(billing_name,'') AS billing_name,
+         COALESCE(shipping_address_1,'') AS a1,
+         COALESCE(shipping_address_2,'') AS a2
+  FROM public.sales_orders
+  WHERE purchase_date IS NOT NULL
+    AND line_origin IS DISTINCT FROM 'component'
+), flags AS (
+  SELECT *,
+    (shipping_name || ' ' || billing_name) ~*
+      '(株式会社|有限会社|合同会社|法人|病院|医院|クリニック|介護|学校|保育園|幼稚園|ホテル|旅館|店舗|事務所|商店|工務店|建設|センター)' AS name_flag,
+    (a1 || ' ' || a2) ~*
+      '(ビル|事務所|店舗|倉庫|工場|医院|病院|学校|施設|株式会社|有限会社|合同会社)' AS address_flag
+  FROM base
+)
+SELECT
+  source_store_id,
+  COUNT(*) AS order_lines,
+  COUNT(*) FILTER (WHERE name_flag) AS name_only_including_overlap,
+  COUNT(*) FILTER (WHERE address_flag) AS address_only_including_overlap,
+  COUNT(*) FILTER (WHERE name_flag AND address_flag) AS intersection,
+  COUNT(*) FILTER (WHERE name_flag OR address_flag) AS union_candidates
+FROM flags
+GROUP BY source_store_id;
+```
 
-**Primary KPIs to validate before investment:**
-- verified commercial buyers and distinct qualified inquiries per month (not row keywords);
-- inquiry-to-paid-order conversion and cycle time;
-- order lines/units per paid B2B deal and repeat paid purchase by validated business entity;
-- incremental **contribution margin after supplier freight, marketplace fee and handling** (not topline gross sales);
-- quoted vs settled shipping savings vs ordinary parcel;
-- request-to-quote, order-to-dispatch, dispatch-to-delivery and full order-to-delivery lead times, with missed delivery dates.
+**复现细节**：上方 SQL 是面向阅读的缩减版；本次实际查询还包含 `(株)`、`（株）` 等正则写法及 `shipping_name` 严格交集检查。想要完全一致的批次，需保留同一完整关键词列表与时间快照。禁止把示例 SQL 直接当作已审核的生产分类规则。
 
-## Critical path / next investigations
+### 3.4 推荐的证据分级，而不是简单用 AND 替代 OR
 
-1. **Data definition and safety:** read the canonical order entity and status definitions. Validate whether `sales_orders` contains split lines, canceled/zero quantity placeholders; separate paid, delivered, refunded and canceled before estimating demand/revenue. Confirm covered stores / fiscal cutoffs.
-2. **Entity resolution within authorized systems only:** join order / inquiry evidence using deterministic platform IDs first; normalize exact organization names only with human review. Avoid fuzzy merging solely by recipient name, common buildings or postal address. Store prospect PII in protected operational SSOT, **not GitHub**.
-3. **Lead audit:** manually assess a stratified privacy-safe sample of the 141 candidate lines and 206 bulk-tagged inquiries; measure confirmed organizational purchase, false-positive rate and unmet demand. Use consent/appropriate channels for any subsequent outreach.
-4. **Commercial economics:** fetch supplier Giga shipment costs / actual settled freight and marketplace fees at order level; distinguish quote from margin. Incorporate truck-delivery lead-time opportunity and failure modes from BUS-LOG-001.
-5. **Business decision gate:** only after at least one verified B2B cohort and contribution analysis, choose dedicated B2B offering/landing page, pricing program and operating ownership. No invented TAM, forecast, conversion rate or launch ROI.
+- **A：Verified B2B transaction** — 有确认的企业采购主体、真实已付款订单及对应履约证据。本轮**没有完成任何 A 级认证**。
+- **B：明确商业采购意图** — 客户直接说明企业/营业用途、批量采购数量、统一收货或商业物流要求；再验证是否付款与交付。十套餐桌椅集中配送案例属于强咨询线索，**尚无成交证据**。
+- **C1：名称+地址都匹配（4 行）** — 优先复核，但是地址字段与名称中的普通词汇也可能误报。
+- **C2：只有名称匹配（40 行）** — 不能仅因未命中地址就排除，可能是普通地址收货的企业。
+- **C3：只有地址匹配（97 行）** — 优先降低权重并排查「ビル」住宅假阳性。
+- **D：复购名称字符串线索** — 仅为进一步核验参考，绝不是企业身份。
 
-## Source and reproducibility
+规则：**OR 适合初筛召回，AND 适合人工复核排序；已确认 B2B 需要订单、主体与目的等独立证据。** 实际误报率/漏报率尚未抽样验证，不宣称哪个条件更“准确”。
 
-Read-only queries run against hosted Supabase `public.sales_orders`, `public.inquiries` on 2026-11-14. Primary filter: `purchase_date IS NOT NULL AND line_origin IS DISTINCT FROM 'component'`. Count by `sales_channel,source_store_id`, `COUNT(DISTINCT order_id)`; textual candidate marker regex against `shipping_name`, `billing_name`, `shipping_address_1/2`; inquiry tags via `'bulk_purchase'=ANY(inquiry_type)`; repeat profile grouped by exact coalesced shipping/buyer name text (statistics only). The query snapshot did not validate production ETL completeness, platform ownership, duplicate identity nor order semantics. No raw PII or order exports are committed.
+## 四、Inquiry 与复购线索
 
-**Revalidation triggers:** order model changes, tag classifier changes, reconciliation of bulk inquiries to orders, and actual B2B order/shipping settlements. **Next owner:** Business Development with Order Management data steward for quality assessment.
+未删除 Inquiry：**3,414 条**；标记 `bulk_purchase`：**206 条（约 6.0%）**；其中 `units >= 5` 仅 5 条、`units >= 10` 仅 3 条。大量 Inquiry 的数量字段未完整记录，不可认为其余都是单件。
+
+2026 年 Bulk Purchase 标记：**Shop4 114 / Shop2 42 / Shop1 26 / Shop3 23**；另 1 条 Shop4 咨询无日期。2025 年以前未见此标签，可能与分类能力变化有关，不可直接推断需求突然增长。
+
+按 Mercari 非空的收货人优先/买家名称回退文本做**完全相同字符串**归组：**5,147 个不同名称字符串**，其中 309 个关联 >=2 笔订单，38 个 >=3 笔，5 个 >=5 笔，57 个跨 >=2 家店；最多 6 笔。**不能据此推算不同买家数、企业复购率或跨店会员识别**。
+
+尚未通过 `inquiry_order_links` 和实际付款证据进行 206 条咨询的成交归因，不能相加得到独立潜在企业客户数。
+
+## 五、潜在 B2B 产品与商业模式假设
+
+对 141 条宽松线索行按商品标题**首个匹配**粗分类：**家具 58、收纳 40、厨房 7、寝具 2、户外结构 1、其他 33**。这仅是标题标签分布，不是“企业购买行业”分类。
+
+初步假设：优先服务日本中小商户（餐饮、办公室、住宿、护理设施等）的**多件家具及设施采购**，从当前电商四店的商业购买需求中验证机会。核心价值可能在于**合并物流成本、稳定交期、采购报价与履约协调**，而非进一步压缩商品单价。
+
+### 与卡车配送 Case Study 的联系
+
+见 [BUS-LOG-001 企业地址集中配送](../suppliers/giga/bulk-commercial-delivery.md)。Shop4 十套桌椅案例中，Giga 默认逐件快递报价 **¥18,920**，不打托卡车 + 装车预计 **¥6,300**，**报价节省 ¥12,620（66.7%）**；客户原运费 **¥21,000** 对比专用页运费报价 **¥8,800**，**客户报价节省 ¥12,200（58.1%）**。两套费用口径不得混算，包装费和结算尚未闭环。
+
+Giga 表示仓库备货 **1–3 工作日**，实际约车、出库和运输耗时**未知**，不能声称“卡车更快”或承诺一定 5 个工作日到货。客户订单截至 2026-11-14 未核实支付。
+
+### 最小商业试点（不另建软件）
+
+1. **先核实真实主体与意图**：优先从 Shop4 已明确询问 5–10 件及企业配送的案例着手，使用有权限的运营系统，不向 GitHub 复制个人信息。
+2. **报价双方案**：普通逐件快递 vs Giga 当前可核实的集中卡车报价，分别核算装车、打托、包装、平台手续费及预计贡献利润。
+3. **验证完整交货链路**：询价→供应商报价→客户付款→采购→备货→约车→出库→送达；分开统计每段 Lead Time。
+4. **小规模人工试点**：现有 Inquiry 管理和专用商品页足够启动；暂无新 CRM、独立 App 或仓库数据模型的必要。
+5. **投资 Gate**：先得到经过验证的企业采购数、付费转化、实际单笔贡献利润和交货 SLA，再讨论独立 B2B 业务渠道、定价及投入。
+
+### 首批 KPI
+
+| KPI | 必要验证 |
+|---|---|
+| 已核实商业客户数量 | 主体唯一性与可追溯交易 |
+| 有效 B2B 询价及成交率 | Inquiry ID → paid order ID |
+| 批量订单采购数量 | 排除数量=0/取消/拆分行 |
+| 实际贡献利润 | 采购、供应商物流、平台费及履约成本 |
+| 供应商运费节省 | 同口径标准与集中配送报价，最终结算 |
+| 客户收到商品的 Lead Time | 订单支付至签收，分段时间证据 |
+| 复购率 | 经核实的企业身份，不以相同姓名推断 |
+
+## 六、待调查与治理要求
+
+1. **优先复核 4 条 AND 记录**，并抽样评估名称-only 40 条、地址-only 97 条的误报；不应仅保留 4 条并丢弃真实商业采购线索。
+2. 调查 `quantity=0`、取消订单、拆行规则与覆盖完整性，建立“有效已付款订单”的 SSOT 口径。
+3. 通过可靠的平台业务键将 `inquiries` 与 `sales_orders` 关联，验证真实订单和批量购买需求；不得仅凭昵称/姓名自动合并用户。
+4. 须尊重 Shop3 非公司自营销售的会计边界，报告中市场需求聚合与法人营业收入严格分离。
+5. 企业名称、私人姓名、收货地址、电话与原始订单导出仅保存在授权业务系统；GitHub 只保存聚合数字、可复现方法及非隐私案例链接。
+6. 重跑条件：订单 ETL/字段语义改变、分类器规则变更、订单成交及出库结算数据补齐、统计窗口扩展。
+
+**结论：** 当前真实证据足以启动 *B2B 需求验证*，但 **141、44、4 或 206 都不是已确认 B2B 客户数**。在任何收入预测、商业计划和目标客户列表之前，应先验证潜在客户身份和付款记录。
