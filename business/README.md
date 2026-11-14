@@ -16,7 +16,7 @@
 ## Canonical business knowledge
 | Domain | Knowledge topic | Status |
 |---|---|---|
-| Mercari | Sales seasonality and monthly bestsellers | Proposed; source `public.sales_orders`; current entrypoint/methodology to be added after reproducible analysis review |
+| B2B / Commerce Ops | [Initial B2B customer opportunity — hosted orders + inquiries (2026-11-14)](research/b2b-customer-opportunity-20261114.md) | DRAFT / evidence PARTIAL; anonymized operational signal screening, not verified business identities |\n| Mercari | Sales seasonality and monthly bestsellers | Proposed; source `public.sales_orders`; current entrypoint/methodology to be added after reproducible analysis review |
 
 Knowledge entries need not have BUS IDs. Distinguish observed facts, hypotheses, approved insights and decisions. Preserve source provenance, store scope, dates, method and review cadence. Do not duplicate raw order history or customer data.
 
@@ -32,3 +32,5 @@ Knowledge entries need not have BUS IDs. Distinguish observed facts, hypotheses,
 2. Giga standard price, fulfillment cost and Effective TCOGS are not conflated.
 3. Business knowledge can be discovered and refreshed without creating scattered monthly reports or a second source of truth.
 4. Sponsor Review does not change production prices, APIs, databases, or existing approval statuses.
+
+| Mercari B2B | [Mercari-based B2B business plan (draft)](mercari/b2b-business-plan.md) | DRAFT; flexible special procurement/documents, no qualified invoice registration |
