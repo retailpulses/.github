@@ -71,7 +71,46 @@ Promotion is a **portfolio of tested mechanisms**, not blanket discounting. Dist
 - [.github Rakuten RMS reference](https://github.com/retailpulses/.github/blob/main/references/rakuten/rms-api.md): foundational API reference index; **do not duplicate API dictionary here**.
 - [store-ops #191](https://github.com/retailpulses/store-ops/issues/191): canonical Rakuten integration/promotion discovery.
 
-## 7. Open questions (not decisions)
+## 7. Rakuten GOLD — promotion content infrastructure (research, not a third growth bet)
+
+**Recommendation (2026-11-14):** Use Rakuten GOLD selectively as a no-license-fee HTML/asset hosting option for campaign landing pages and product/category navigation content. It is an *enabler of Key Bet 2 (promotion)* and, secondarily, Key Bet 1 (listing discovery), **not** a standalone investment thesis or justification for an elaborate custom storefront.
+
+### What is currently feasible vs retired
+
+| Area | 2026 assessment | Business implication |
+| --- | --- | --- |
+| GOLD hosting | Free optional RMS hosting for HTML and related files; public references indicate initial 100 MB, expandable in increments to a 1 GB limit (verify our account entitlement) | Low recurring hosting cost; operator/developer maintenance still costs time |
+| Campaign/category/feature landing pages | GOLD remains usable for pages other than store top; subject to Rakuten marketplace rules and mobile rendering | Candidate for curated sale collections, seasonal home/living themes, and themed category navigation |
+| Store top page (smartphone and PC) | Legacy GOLD store-top capability ended; smartphone transitioned earlier and PC was unified to RMS new store-top by late 2025 | **Do not build the store homepage on GOLD.** Use RMS 新店舗トップページ and link to suitable internal feature pages |
+| Product detail, SKUs, inventory, prices | Remain owned by RMS catalog and existing integrations; GOLD does not replace normal product publishing or commerce APIs | No second product/inventory source of truth |
+| Scripted widgets/external services | Vary by placement, security rules and current RMS policies | Do not assume unrestricted JS, iframe, cross-domain calls or third-party pixels |
+
+**Sources / verification date (2026-11-14):**
+- [2026 GOLD functionality and end of top-page support](https://www.5springs.co.jp/blog/rakutengold/) (specialist account; validate any consequential restriction against logged-in RMS help).
+- [New RMS store top implementation context](https://www.5springs.co.jp/blog/%E3%80%90%E6%A5%BD%E5%A4%A9%E3%80%91%E6%96%B0%E5%BA%97%E8%88%97%E3%83%88%E3%83%83%E3%83%97%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E5%9B%9E%E9%81%8A%E7%8E%87%E3%82%92%E9%AB%98%E3%82%81%E3%82%8B%E6%A7%8B/) (2026-01-06).
+- [RMS Service Square page-production provider](https://service.rms.rakuten.co.jp/product/0061-0001/1) (Rakuten-hosted provider FAQ distinguishes RMS top page from GOLD-hosted scripts/assets).
+- [2026-11-01 GOLD cost/capacity summary](https://markenote.jp/article/2849) (secondary source; account-specific contractual conditions prevail).
+
+### Suggested operating model
+
+1. **RMS is the transactional storefront / SSOT.** Continue managing product pages, variants, price, images where relevant, stock, and the new responsive top page through RMS and existing product integrations. Use GOLD only to present navigational/marketing content and link back to approved Rakuten product/category URLs; do not redirect shoppers outside Rakuten.
+2. **One reusable campaign-page template**, not a bespoke website or page builder: hero banner, date/eligibility text, curated category blocks, product tiles with valid Rakuten links, compliance footer. Make the layout mobile-first, fast-loading, accessible, and readable without unsupported embeds.
+3. **Data ownership:** campaign selection, offer economics, approved copy, asset version, active window, and status remain with the promotion workflow in `inbox/promotion/`. Product availability and price must be sourced from live RMS/catalog readback. If static prices are displayed, define publication and withdrawal checks to prevent stale/misleading claims.
+4. **Publishing safety:** draft -> internal preview -> legal/offer/stock check -> explicit operator approval -> publish/upload -> browser validation on mobile and desktop -> campaign-end withdrawal/expiry. Keep prior version/rollback path. FTP credentials must remain in secrets management, never GitHub Markdown.
+5. **Reuse existing assets:** link campaign scheduling and banner evidence from [commerce-lab Rakuten daily routine](https://github.com/retailpulses/commerce-lab/blob/main/services/rakuten/docs/RAKUTEN_DAILY_ROUTINE.md), [store-ops Rakuten promotion POC](https://github.com/retailpulses/store-ops/blob/main/docs/poc/2026-10-13-rakuten-promotion.md), and the [promotion SSOT](https://github.com/retailpulses/inbox/blob/main/promotion/README.md). The daily-routine evidence notes banners must match the actual configured points multiplier and must be removed after the promotion.
+
+### Priority and experiment
+
+- **P0 prerequisite:** Resolve current `改装中`/compliance blocker before live public campaign pages.
+- **P1 validation:** In RMS confirm GOLD is enabled or can be requested, account storage/quota and upload method, current allowed content placement, no off-platform links, and what can be embedded in current RMS new top page. Verify public URL, image behavior, mobile rendering and analytics availability without production changes.
+- **P1 trial:** Build **one** seasonal or sale feature page, with a small curated set of in-stock, positive-contribution products. Link it from an approved RMS module/banner during a single campaign. Use approved copy; no assumed discount, point multiplier or inventory guarantee.
+- **Success criteria:** Published page and links render correctly on mobile/PC; no stale offer after end date; operator update/rollback is feasible; attributed visits/clickthrough and downstream orders/contribution can be measured sufficiently to compare with the same promotion without the page.
+- **Kill/pause criterion:** If page creation requires recurring manual updates without measurable incremental contribution, revert to RMS-native banners/product modules. Listing quality and campaign economics rank above decorative complexity.
+- **Deferred:** Rich custom homepages, fully automated GOLD deployment, broad dynamic product feeds, third-party page-builder subscriptions, and customer-facing custom shop software.
+
+**Key distinction:** GOLD is free hosting, **not free development, guaranteed ranking improvement, or an alternative to RMS API/CSV.** Do not implement any new automation until the first manual/template trial demonstrates value.
+
+## 8. Open questions (not decisions)
 
 - Confirm the precise second-year renewal terms and any explicit action required in RMS.
 - Confirm January 2026 CSV entitlement and fee waiver from account-specific primary evidence; availability alone does not guarantee practical batch-publish capability.
