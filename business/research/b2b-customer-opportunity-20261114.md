@@ -147,7 +147,7 @@ Giga 表示仓库备货 **1–3 工作日**，实际约车、出库和运输耗�
 | 客户收到商品的 Lead Time | 订单支付至签收，分段时间证据 |
 | 复购率 | 经核实的企业身份，不以相同姓名推断 |
 
-## 七、OR 候选订单画像深挖：行业、收货都道府县、Basket Proxy（2026-11-14）
+## 六、OR 候选订单画像深挖：行业、收货都道府县、Basket Proxy（2026-11-14）
 
 **样本定义完全沿用第三节 OR：名称关键词 OR 地址关键词；分析单位为 141 条 `sales_orders` 行，实测这 141 条恰好属于 141 个不同的 (`sales_channel`, `source_store_id`, `order_id`) 组合。** 不代表 141 家企业、141 名买家、141 笔已付款订单。字段级验证：这 141 条 `product_price` 和 `shipping_price` 全部非 NULL；其中 138 行 `COMPLETED`、2 行 `CANCELED`、1 行 `CONFIRMED`，1 行 `quantity=0`。金额尚未与实收订单总额逐笔对账，以下统一称 **Basket Proxy**。
 
@@ -239,7 +239,7 @@ Giga 表示仓库备货 **1–3 工作日**，实际约车、出库和运输耗�
 
 **本节数据来源**：2026-11-14 对 Hosted Supabase `public.sales_orders` 的只读聚合查询；使用第三节的原版 OR 正则。分组字段为 `shipping_state`、`order_status`、`source_store_id`、`product_name` 及 `shipping_name + billing_name` 的关键词标记。订单去重键采用 (`sales_channel`, `source_store_id`, `order_id`)。数值为查询时快照，不承诺历史不变。
 
-## 六、待调查与治理要求
+## 七、待调查与治理要求
 
 1. **优先复核 4 条 AND 记录**，并抽样评估名称-only 40 条、地址-only 97 条的误报；不应仅保留 4 条并丢弃真实商业采购线索。
 2. 调查 `quantity=0`、取消订单、拆行规则与覆盖完整性，建立“有效已付款订单”的 SSOT 口径。
