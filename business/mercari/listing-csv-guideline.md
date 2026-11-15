@@ -14,7 +14,7 @@ This is **not** a complete executable CSV schema, deployment authorization, or p
 Distinguish clearly:
 
 - **Platform requirements:** Mercari-specified schema, enums, required fields and upload restrictions.
-- **Company-wide operating rules:** common validation, safe export and evidence practices.
+- **Company-wide operating rules:** **single-variant listing strategy (one SKU per Mercari listing)**, common validation, safe export and evidence practices.
 - **Company-wide CSV defaults:** the approved standard values below apply to **every company Mercari Shop**, unless a product-specific condition, platform restriction, or explicitly approved batch override requires a different value.
 - **Shop/batch configuration:** target shop identity, actual Seller eligibility, valid shipping IDs and product-specific pricing must still be resolved at runtime; these do not change the company-wide standard defaults.
 
@@ -31,18 +31,19 @@ Distinguish clearly:
 
 Official [CSV sample](https://guide.mercari-shops-static.com/product_import_template_sample.csv) and [Excel sample](https://guide.mercari-shops-static.com/product_import_template_sample_excel.xlsx) are available as links. **Historical evidence limitation:** the 2026-11-11 review did not verify the original CSV bytes, full header, column order or encoding. The platform page's field listing is **not** an authoritative header fixture. Download and fingerprint the current template and relevant masters before every newly established integration or when versions may have changed.
 
-## Canonical business rules (BUS-MER-001–008)
+## Canonical business rules (BUS-MER-001–009)
 
 | ID | Rule | Acceptance / control |
 |---|---|---|
-| **BUS-MER-001** | CREATE CSV adds new Mercari products; UPDATE CSV is a separate operation. One CSV row represents one platform product, with up to 10 SKU variants; max 10,000 products per upload and only the first 1,000 previewed when over 1,000. PC Seller Web is used. | Keep CREATE/UPDATE/publishing actions separate. Do not automatically equate internal SPU/product/variant entities with a Mercari product row. |
+| **BUS-MER-001** | CREATE CSV adds new Mercari products; UPDATE CSV is a separate operation. One CSV row represents one platform product. **Platform capability** supports up to 10 SKU variants per product, but **company policy requires exactly one SKU per listing**. Max 10,000 products per upload and only the first 1,000 previewed when over 1,000. PC Seller Web is used. | Keep CREATE/UPDATE/publishing actions separate. Generate exactly one row per individually identified sellable variant/SKU, populated via SKU1 only; never group sibling variants into one Mercari product. |
 | **BUS-MER-002** | Resolve the **actual target shop** at export time. An internal variant or item code is not a Mercari Product ID. | Verify selected Seller identity, existing listings, previously submitted batches, and unknown outcomes before preparing CREATE. Lack of a local mapping is not proof of nonexistence. |
 | **BUS-MER-003** | Required and conditionally required columns come from the current official **CREATE** template; do not infer CSV schema from GraphQL/API payloads. | Pin source URL, retrieved time, SHA-256, raw header, encoding and relevant master versions. Check CSV quoting, row alignment and encoding; fail closed on schema mismatch. |
 | **BUS-MER-004** | `商品名` required, at most 130 characters; `商品説明` optional, at most 3,000; `販売価格` required, ¥300–¥9,999,999, common to all SKUs in one product; `カテゴリID` required for publishable registration and must use the current category master ID. | Validate final rendered copy, price, approved category mapping and any batch-specific copy policy. Do not substitute category labels or legacy numeric category values. Other publishing channel limits may differ. |
 | **BUS-MER-005** | Up to 20 images per product; `商品画像名` accepts an uploaded filename or a platform-accessible URL. jpg/jpeg/png, per-image limit 8 MB; local bulk image upload total at most 1 GB (as reviewed). Missing images may permit draft handling but not completed publication. | Preserve approved image order; verify type, size, naming/upload evidence and URL accessibility. Never export local/private image paths. |
-| **BUS-MER-006** | `SKU1_在庫数` required. `SKU1_同時購入可能数` is labeled required but guidance also describes blank as unset; applicable range 1–9,999. Item management code is optional, ≤50 ASCII letters/digits/`-`/`_`; JAN optional ≤14. Up to SKU1–SKU10; optional brand uses master ID. | Validate each SKU field and actual stock; do not invent inventory or silently default unknown values. Treat the simultaneous-purchase ambiguity as template/Seller validation, not grounds to fabricate 1. |
+| **BUS-MER-006** | `SKU1_在庫数` required. `SKU1_同時購入可能数` is labeled required but guidance also describes blank as unset; applicable range 1–9,999. Item management code is optional, ≤50 ASCII letters/digits/`-`/`_`; JAN optional ≤14. The platform supports up to SKU1–SKU10, but company CREATE CSV uses SKU1 only; optional brand uses master ID. | Validate each SKU field and actual stock; do not invent inventory or silently default unknown values. Treat the simultaneous-purchase ambiguity as template/Seller validation, not grounds to fabricate 1. |
 | **BUS-MER-007** | Official condition, delivery method, ship-from region, dispatch lead time, visibility, shipping payer and conditional fields use platform codes, not API enums. Buyer-paid shipping requires `送料ID` from the selected shop's configuration. | Apply the **company-wide defaults** below to every shop, then validate eligibility and conditional fields for the target shop. Record any authorized exception explicitly. |
 | **BUS-MER-008** | Missing images or category can result in a draft-only outcome; it does not represent a completed public listing. Platform upload history retains CSV files for only 7 days (as reviewed). | Separate `CSV_READY`, `DRAFT_ONLY`, `BLOCKED`, `UNKNOWN_OUTCOME`, and `PUBLISHED`. Persist export and import evidence; mark `PUBLISHED` only after reconciliation. |
+| **BUS-MER-009** | **Company-wide single-variant strategy:** one distinct sellable variant/SKU per separate listing and per CREATE CSV row, with **SKU1 only**. | Never collapse sibling SKUs into a multi-variant listing; reject any export row with populated SKU2–SKU10, mixed-variant claims, or non-unique SKU identity. See detailed strategy below. |
 
 ## Official field reference (not an exact header fixture)
 
@@ -57,7 +58,7 @@ Official [CSV sample](https://guide.mercari-shops-static.com/product_import_temp
 | `SKU1_商品管理コード` | Optional; ≤50 allowed ASCII characters |
 | `SKU1_JANコード` | Optional; ≤14 characters under platform rules |
 | `SKU1_catalog_id` | Optional; official Catalog Master identifier |
-| `SKU2`–`SKU10` columns | Use only when the platform product has multiple types; all share the same selling price |
+| `SKU2`–`SKU10` columns | **Platform-only capability, not used under current company strategy.** Keep unused columns blank if present in the official template; do not populate additional SKU groups. |
 | `ブランドID` | Optional; current brand master identifier, not brand name |
 | `販売価格` | Required; ¥300–¥9,999,999 |
 | `カテゴリID` | Required for completed publication; string ID from current category master |
@@ -84,6 +85,17 @@ The current official template may include additional fields. The actual CSV head
 
 For Biz cold-chain, m department and reservation-specific enumerations, consult the applicable current official template and eligibility rules. Windows guidance historically recommends Shift-JIS and other platforms UTF-8; verify that the selected Seller import accepts the actual encoded file.
 
+## Current listing strategy — single variant per listing (all shops)
+
+**Approved company-wide business rule — BUS-MER-009: SINGLE_VARIANT_LISTING.** For every company-operated Mercari Shop, **one distinct sellable source SKU/variant must become one separate Mercari product listing and one CREATE CSV row**. Each generated row contains **exactly one SKU (`SKU1`)**. This is a business strategy, not a technical limitation of Mercari Shops: the platform may support up to 10 SKU variants under one listing, but **we do not use multi-variant listings under the current strategy**.
+
+- **Grouping:** Never combine multiple source variants into one listing, even when variants share a Giga SPU, parent product, family, category, title, image set or price. Each variant is independently listed.
+- **CSV mapping:** Populate `SKU1_在庫数` and the applicable `SKU1_*` fields for the source variant; leave `SKU2_*` through `SKU10_*` empty if those columns exist in the official CREATE template. Do not remove official columns solely to hide unused SKU slots.
+- **Identification:** Keep the variant's stable, valid item/management code in `SKU1_商品管理コード` when available and allowed by platform constraints; record the exact source variant identity in the manifest. Do not substitute SPU/parent ID for the individual SKU identity.
+- **Copy and attributes:** The title, description, images, price, category and stock in each CSV row must reflect that **single variant**. Do not advertise sibling colors, sizes, accessories or assortment options as included in the listing when they are not part of that SKU.
+- **Validation:** Reject/mark `BLOCKED` any proposed CREATE row that contains multiple populated SKU groups, conflates multiple variants, cannot establish a unique sellable source SKU, or duplicates another row's effective SKU identity in the same target shop and batch.
+- **Scope and change control:** Applies to all shops, all CREATE CSV batches and Agent-generated listings. Any move to multi-variant listings requires a separately approved company-wide strategy revision; it is not an operator-level default override. Existing historical multi-variant listings are not automatically converted or modified by this guideline.
+
 ## Company-wide default CREATE CSV policy (all shops)
 
 The values below originated from the existing operational listing CSV policy and are **approved for all company-operated Mercari Shops**, not merely one shop. They are company choices, not mandatory Mercari platform defaults.
@@ -104,8 +116,8 @@ Apply these defaults consistently across shops. Only override a value for a docu
 1. **Select target:** Explicitly record shop identity, operator, date, CREATE intent and approved batch scope. Resolve seller permissions, available delivery options and shipping IDs in that shop.
 2. **Load source data:** Reuse existing authoritative product/copy/image/variant/price/stock/category data and any approved edits. Record source versions. Do not silently regenerate or overwrite reviewed content.
 3. **Pin template and masters:** Retrieve actual CREATE CSV sample plus required category/brand/catalog masters, save original versions and hash; generate from the real header.
-4. **Apply shared policy and resolve exceptions:** Use the company-wide CREATE defaults above for publication state, condition, dispatch origin, lead time, delivery method and shipping payer; verify real product facts and target Seller eligibility, documenting justified overrides. Resolve pricing, product grouping and conditional fields from authoritative inputs.
-5. **Validate candidates:** Check duplicate listings and previous imports; title/description, accurate stock, price range, category master, image limit/accessibility, SKU characters, conditional fields and CSV encoding.
+4. **Apply shared policy and resolve exceptions:** Use the company-wide CREATE defaults above for publication state, condition, dispatch origin, lead time, delivery method and shipping payer; verify real product facts and target Seller eligibility, documenting justified overrides. Resolve pricing and conditional fields from authoritative inputs; **product grouping is fixed by BUS-MER-009 (one source SKU per listing)**.
+5. **Validate candidates:** Enforce BUS-MER-009 (one variant → one row → SKU1 only), check duplicate listings and previous imports; title/description, accurate stock, price range, category master, image limit/accessibility, SKU characters, conditional fields and CSV encoding.
 6. **Export ready rows only:** The operator-uploadable CREATE CSV contains only `CSV_READY` entries. Missing image, category, price, stock or other mandatory condition means **exclude from final upload CSV** and record in manifest/gaps. `DRAFT_ONLY` may be supplied as a **separate, clearly labeled draft artifact** only when intentionally requested; never mix it into a publish-ready file.
 7. **Review and upload:** Operator validates destination shop and final preview before initiating import. CSV generation alone does not authorize platform publication.
 8. **Reconcile:** Record seller result per row, published listing ID or precise failure, plus unresolved/unknown outcomes. Do not retry unknown submissions as CREATE without duplicate investigation.
