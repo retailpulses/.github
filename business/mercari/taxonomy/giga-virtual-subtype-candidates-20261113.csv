@@ -1,0 +1,81 @@
+giga_category_code,giga_category_name,virtual_subtype_key,rule_priority,grounded_title_pattern,variant_count,accepted_title_count,candidate_mercari_category_id,candidate_mercari_full_path,master_resolution,approval_status
+10689,Desks & Work Surfaces,gaming_desk,1,ゲーミング.*デスク|ゲーミングデスク,12,12,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10689,Desks & Work Surfaces,standing_desk,2,昇降.*デスク|電動.*デスク|スタンディングデスク,29,29,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10689,Desks & Work Surfaces,study_desk,3,学習机|勉強机,152,152,LYZnxEw2XX7FkuJpxCm5gP,家具・インテリア > 机・テーブル > 事務机・学習机,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10689,Desks & Work Surfaces,computer_desk,4,パソコンデスク|PCデスク|ワークデスク|オフィスデスク,405,405,yvGJ5Az6vUpvHpHjMWucqA,家具・インテリア > 机・テーブル > パソコンデスク,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10689,Desks & Work Surfaces,_UNMATCHED_FACTS,999,,1,1,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10689,Desks & Work Surfaces,_UNRESOLVED_NO_TITLE,999,,187,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10671,Chairs & Accent Seating,gaming_chair,1,ゲーミングチェア,0,0,3a3LgwY7kuwyTGD9TBpSon,家具・インテリア > 椅子・チェア > ゲーミングチェア,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10671,Chairs & Accent Seating,office_chair,2,オフィスチェア|デスクチェア|パソコンチェア,20,20,gRD8jKpyRewmy6DmW57T66,家具・インテリア > 椅子・チェア > オフィスチェア・ワークチェア,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10671,Chairs & Accent Seating,dining_chair,3,ダイニングチェア|食卓椅子|食卓チェア,449,449,uCmnfJGdXF7HAhN2A9Ab7L,家具・インテリア > 椅子・チェア > ダイニングチェア,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10671,Chairs & Accent Seating,counter_chair,4,カウンターチェア|バーチェア,4,4,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10671,Chairs & Accent Seating,stool,5,スツール|丸椅子,2,2,mj3ot2dY5CAWU8XwvWKW3A,家具・インテリア > 椅子・チェア > スツール,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10671,Chairs & Accent Seating,floor_chair,6,座椅子|フロアチェア,5,5,LR5C9mMughisUCPAek4V4a,家具・インテリア > 椅子・チェア > 座椅子,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10671,Chairs & Accent Seating,_UNMATCHED_FACTS,999,,12,12,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10671,Chairs & Accent Seating,_UNRESOLVED_NO_TITLE,999,,78,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10657,"Beds, Frames & Bases",sofa_bed,1,ソファ.?ベッド|デイベッド,47,47,fv7NAWJqfaqqh7GsP7q2dN,家具・インテリア > ソファ・ソファベッド > ソファベッド,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10657,"Beds, Frames & Bases",loft_bed,2,ロフトベッド|システムベッド,252,252,TH4acvDBAupdG2TnrVGVuC,家具・インテリア > ベッド・マットレス > ロフトベッド・システムベッド,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10657,"Beds, Frames & Bases",bunk_bed,3,二段ベッド|2段ベッド,56,56,so7AVmjvFQARpVnosJSrDV,家具・インテリア > ベッド・マットレス > 二段ベッド,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10657,"Beds, Frames & Bases",folding_bed,4,折りたたみベッド|折畳.*ベッド,27,27,eUZK9wQeLo95E3eGsUmTmP,家具・インテリア > ベッド・マットレス > 簡易ベッド・折りたたみベッド,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10657,"Beds, Frames & Bases",single_bed_frame,5,シングルベッド|パイプベッド|すのこベッド|ベッドフレーム,84,84,UcGCFjG5rAdrqMM88NdkN9,家具・インテリア > ベッド・マットレス > ベッドフレーム > シングル,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10657,"Beds, Frames & Bases",_UNMATCHED_FACTS,999,,11,11,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10657,"Beds, Frames & Bases",_UNRESOLVED_NO_TITLE,999,,54,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10669,Sofas,sofa_bed,1,ソファ.?ベッド,238,238,fv7NAWJqfaqqh7GsP7q2dN,家具・インテリア > ソファ・ソファベッド > ソファベッド,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10669,Sofas,floor_chair,2,座椅子|フロアチェア,29,29,LR5C9mMughisUCPAek4V4a,家具・インテリア > 椅子・チェア > 座椅子,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10669,Sofas,corner_sofa,3,コーナーソファ|L字.*ソファ|カウチソファ,35,35,Fc2XYT5B7wPSrBA29Hg87e,家具・インテリア > ソファ・ソファベッド > コーナーソファ,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10669,Sofas,single_sofa,4,1人掛け|一人掛け|ひとり掛け,63,63,njG2GHWVNGZbHo3ntvDTAP,家具・インテリア > ソファ・ソファベッド > 1人掛けソファ,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10669,Sofas,multi_sofa,5,2人掛け|二人掛け|3人掛け|三人掛け,68,68,bu4k39KtD6mrGamRsyNfHB,家具・インテリア > ソファ・ソファベッド > 2人掛け・3人掛けソファ,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10669,Sofas,_UNMATCHED_FACTS,999,,7,7,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10669,Sofas,_UNRESOLVED_NO_TITLE,999,,57,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10698,"Youth, Kids & Baby Furniture",child_car_seat,1,チャイルドシート|ジュニアシート|ISOFIX,54,54,PeEP8YrpDUXvNvqwHnae7C,ベビー・キッズ > 外出・移動用品 > チャイルドシート > 車用チャイルドシート,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10698,"Youth, Kids & Baby Furniture",baby_playpen,2,ベビーサークル|プレイヤード|ベビーゲート,55,55,aCHBeZHvZKTu6PWwiPm4Qk,ベビー・キッズ > ベビー用セーフティグッズ > ベビーサークル,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10698,"Youth, Kids & Baby Furniture",toy_storage,3,おもちゃ収納|おもちゃ箱|絵本棚|絵本ラック,67,67,CqP5J6fxubMoUrzGP4uJ8e,ベビー・キッズ > 子ども用家具・寝具 > 子ども用家具 > おもちゃ箱・収納,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10698,"Youth, Kids & Baby Furniture",kids_desk,4,子供.*学習机|キッズデスク|子ども.*デスク,19,19,hNyfgnVsHvxRyZfwT3Drmd,ベビー・キッズ > 子ども用家具・寝具 > 子ども用家具 > 子ども用学習机・椅子,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10698,"Youth, Kids & Baby Furniture",kids_bed,5,キッズベッド|子供用ベッド|子ども用ベッド,0,0,XUfNcUZoqezmW4r9ngfkNa,ベビー・キッズ > 子ども用家具・寝具 > 子ども用寝具 > 子ども用ベッド,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10698,"Youth, Kids & Baby Furniture",_UNMATCHED_FACTS,999,,32,32,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10698,"Youth, Kids & Baby Furniture",_UNRESOLVED_NO_TITLE,999,,51,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10681,Cabinets,display_case,1,コレクションケース|ディスプレイケース|ガラスケース|ガラス収納キャビネット,39,39,CUa9W9b5vS5QxRYcvCw3AH,家具・インテリア > リビング収納 > ガラスケース・ディスプレイケース,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10681,Cabinets,kitchen_cabinet,2,食器棚|カップボード|キッチンカウンター,10,10,bBfVXevd9V5DAC2HDX795j,家具・インテリア > キッチン収納 > 食器棚・キッチンカウンター,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10681,Cabinets,shoe_storage,3,シューズラック|シューズボックス|靴箱|下駄箱,24,24,dvirTzsmNzYZQipxpYizmV,家具・インテリア > 玄関・屋外収納 > 下駄箱・靴箱・シューズラック,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10681,Cabinets,tv_stand,4,テレビ台|テレビボード,24,24,b5CQvm7At4c6xmfcX2xMeS,家具・インテリア > リビング収納 > テレビ台,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10681,Cabinets,sideboard,5,サイドボード|リビングボード|チェスト,22,22,nrCpawxs5bctcfDGwjS7Qf,家具・インテリア > リビング収納 > キャビネット・サイドボード,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10681,Cabinets,_UNMATCHED_FACTS,999,,22,22,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10681,Cabinets,_UNRESOLVED_NO_TITLE,999,,34,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10929,Sheds,steel_shed,1,スチール.*物置|金属.*物置|スチール収納庫,42,42,puRM5QK8jMUDxXbR5SvNJH,DIY・工具 > 住宅設備 > 物置・車庫 > スチール物置,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10929,Sheds,wooden_shed,2,木製.*物置|木製収納庫,0,0,pxiZZ4krGbrtg8CFYnJyNR,DIY・工具 > 住宅設備 > 物置・車庫 > 木製物置,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10929,Sheds,greenhouse,3,ビニールハウス|温室,2,2,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10929,Sheds,garden_shed,4,物置小屋|収納庫|物置,92,92,EJy8UoDCTPoYEFSErkLDEF,DIY・工具 > 住宅設備 > 物置・車庫 > 物置小屋・スモールハウス,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10929,Sheds,_UNMATCHED_FACTS,999,,5,5,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10929,Sheds,_UNRESOLVED_NO_TITLE,999,,24,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10670,Tables,dining_table,1,ダイニングテーブル,18,18,bWUDWGgbAARJKEV2KsLkBg,家具・インテリア > 机・テーブル > ダイニングテーブル,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10670,Tables,coffee_table,2,ローテーブル|センターテーブル|コーヒーテーブル,102,102,HXssrNkyYm2e2JhcBHNYyg,家具・インテリア > 机・テーブル > センターテーブル・ローテーブル,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10670,Tables,side_table,3,サイドテーブル,0,0,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10670,Tables,folding_table,4,折りたたみテーブル|折り畳みテーブル,0,0,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10670,Tables,_UNMATCHED_FACTS,999,,2,2,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10670,Tables,_UNRESOLVED_NO_TITLE,999,,34,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10648,Kids Bikes & Riding Toys,kids_bicycle,1,子供用自転車|キッズバイク|キッズ自転車,14,14,tpjWnJJ32WX9kGrorsMqR8,車・バイク・自転車 > 自転車 > 自転車本体 > キッズサイクル > 子供用自転車・ジュニアシティ,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10648,Kids Bikes & Riding Toys,kids_scooter,2,キックボード|キックスクーター,15,15,EBaSitdnBHBCWcJsToEwK,スポーツ > ストリート系スポーツ > キックボード,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10648,Kids Bikes & Riding Toys,ride_on_car,3,乗用玩具|乗れる車|電動乗用,37,37,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10648,Kids Bikes & Riding Toys,_UNMATCHED_FACTS,999,,55,55,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10648,Kids Bikes & Riding Toys,_UNRESOLVED_NO_TITLE,999,,14,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10679,Recliners & Massage Chairs,massage_chair,1,マッサージチェア|マッサージソファ,0,0,gp89GrU3Kq4nMB6tsSFZsY,ダイエット・健康 > マッサージ > マッサージチェア,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10679,Recliners & Massage Chairs,recliner_sofa,2,リクライニングソファ,84,84,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10679,Recliners & Massage Chairs,recliner_chair,3,リクライニングチェア|リクライナー,3,3,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10679,Recliners & Massage Chairs,_UNMATCHED_FACTS,999,,0,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10679,Recliners & Massage Chairs,_UNRESOLVED_NO_TITLE,999,,31,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10643,Pens & Hutches,cat_cage,1,キャットケージ|猫.*ケージ,79,79,sghTLsdBokWxZrQvkuJXvP,ペット用品 > 猫用品 > キャットケージ,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10643,Pens & Hutches,dog_cage,2,ドッグケージ|犬.*ケージ,0,0,QMFcvREzh9VY6bFfoC3sw7,ペット用品 > 犬用品 > ケージ,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10643,Pens & Hutches,rabbit_hutch,3,うさぎ.*ケージ|ラビット.*ケージ,2,2,,,LEAF_NOT_FOUND,DRAFT_REVIEW
+10643,Pens & Hutches,_UNMATCHED_FACTS,999,,18,18,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10643,Pens & Hutches,_UNRESOLVED_NO_TITLE,999,,8,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10644,Trees & Condos,tension_cat_tree,1,突っ張り.*キャットタワー|突っ張り型,0,0,F4N29vdqxczCYHioxUr9bd,ペット用品 > 猫用品 > キャットタワー > 突っ張り型キャットタワー,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10644,Trees & Condos,standing_cat_tree,2,キャットタワー|キャットツリー,31,31,2ToirC84G3j2fnUezS8Mh,ペット用品 > 猫用品 > キャットタワー > 据え置き型キャットタワー,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10644,Trees & Condos,_UNMATCHED_FACTS,999,,4,4,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10644,Trees & Condos,_UNRESOLVED_NO_TITLE,999,,5,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10830,Hard Case Luggage,hard_suitcase,1,スーツケース|キャリーケース|キャリーバッグ,591,591,,,AMBIGUOUS_MASTER_LEAF_2,DRAFT_REVIEW
+10830,Hard Case Luggage,_UNMATCHED_FACTS,999,,20,20,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10830,Hard Case Luggage,_UNRESOLVED_NO_TITLE,999,,58,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10687,Office Chairs,gaming_chair,1,ゲーミングチェア,3,3,3a3LgwY7kuwyTGD9TBpSon,家具・インテリア > 椅子・チェア > ゲーミングチェア,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10687,Office Chairs,office_chair,2,オフィスチェア|ワークチェア|デスクチェア,234,234,gRD8jKpyRewmy6DmW57T66,家具・インテリア > 椅子・チェア > オフィスチェア・ワークチェア,EXACT_MASTER_LEAF,DRAFT_REVIEW
+10687,Office Chairs,_UNMATCHED_FACTS,999,,0,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
+10687,Office Chairs,_UNRESOLVED_NO_TITLE,999,,11,0,,,NO_AUTOMATIC_MAPPING,BLOCKED_PENDING_EVIDENCE
