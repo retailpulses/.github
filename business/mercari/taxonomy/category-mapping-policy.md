@@ -119,3 +119,19 @@ This is an **evidence-constrained candidate proposal**, not an approved determin
 
 Some expanded candidates use source-category semantics plus exact official taxonomy paths rather than title-level product-kind evidence. In particular, Giga 10766 Kitchen Sinks has a garden-sink candidate, 10702 Massage Tables uses a broad massage Other, 10694 Dining and Kitchen Sets spans table and chair leaves, and 10795 commercial display refrigeration uses a showroom/showcase leaf. These are **not confirmed interchangeable item categories** and must be rejected or refined before business approval. The canonical CSV is a proposal inventory, not a safe auto-export allowlist.
 
+
+
+## 2026-11-16 approved scoped-Other candidate follow-up (supersedes prior four uncovered blockers)
+
+User approved three scoped Other proposals, and requested a *most plausible* fourth provisional candidate. Canonical CSV now has **188 candidate relations / 111 of 111 Giga codes**; **0 uncovered Giga codes**. This is **structural coverage only**, not verified per-item accuracy, nor business approval of all 188 relations. Earlier section documenting four uncovered codes remains as historical audit evidence, superseded by this dated update.
+
+| Giga | Mercari ID | Pinned master full path | Decision / eligibility |
+| --- | --- | --- | --- |
+| 10817 | `CBtfuJn7pMEb3QkkkYbvdY` | `フラワー・ガーデニング > 園芸用品 > その他` | User-approved proposed garden-accessory scoped Other; only if actual item belongs to garden supplies |
+| 10749 | `mw5xhvbY4GZ6HLeaAxmuCA` | `家具・インテリア > インテリア小物 > その他` | User-approved proposed interior-decoration-accessory scoped Other; not a general household catchall |
+| 10835 | `DkjqZAKBXaZN8FB2Kb6zhX` | `DIY・工具 > 住宅設備 > その他` | User-approved proposed building-equipment scoped Other for ventilation fans; reject if actual item is not residential equipment |
+| 10832 | `mw5xhvbY4GZ6HLeaAxmuCA` | `家具・インテリア > インテリア小物 > その他` | **LOW-CONFIDENCE HEURISTIC ONLY**. Giga source path is `Other`; no evidence that its 11 distinct products are interior items. This is a provisional review candidate, **never** a safe default or auto-selection |
+
+**Important:** A user's approval to record a scoped Other proposal does not change `candidate_status=PROPOSED_NOT_BUSINESS_APPROVED`. Every candidate must be validated against the actual product title/specifications before selection. For 10832, obtain the 11 distinct canonical products and determine actual branches; if none are home-interior accessories, delete or replace its provisional relation. No Giga-only deterministic auto-selection for 10832 is allowed.
+
+Validation: parse the canonical CSV, require 111 unique source codes and 188 unique `(giga_category_code,mercari_category_id)` keys, and verify each candidate ID/full path against the pinned master. Do not merge or deploy before item-level QA.
