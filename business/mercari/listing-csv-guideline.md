@@ -31,7 +31,7 @@ Distinguish clearly:
 
 Official [CSV sample](https://guide.mercari-shops-static.com/product_import_template_sample.csv) and [Excel sample](https://guide.mercari-shops-static.com/product_import_template_sample_excel.xlsx) are available as links. **Historical evidence limitation:** the 2026-11-11 review did not verify the original CSV bytes, full header, column order or encoding. The platform page's field listing is **not** an authoritative header fixture. Download and fingerprint the current template and relevant masters before every newly established integration or when versions may have changed.
 
-## Canonical business rules (BUS-MER-001–008)
+## Canonical business rules (BUS-MER-001–008, 011)
 
 | ID | Rule | Acceptance / control |
 |---|---|---|
@@ -43,6 +43,7 @@ Official [CSV sample](https://guide.mercari-shops-static.com/product_import_temp
 | **BUS-MER-006** | `SKU1_在庫数` required. `SKU1_同時購入可能数` is labeled required but guidance also describes blank as unset; applicable range 1–9,999. Item management code is optional, ≤50 ASCII letters/digits/`-`/`_`; JAN optional ≤14. Up to SKU1–SKU10; optional brand uses master ID. | Validate each SKU field and actual stock; do not invent inventory or silently default unknown values. Treat the simultaneous-purchase ambiguity as template/Seller validation, not grounds to fabricate 1. |
 | **BUS-MER-007** | Official condition, delivery method, ship-from region, dispatch lead time, visibility, shipping payer and conditional fields use platform codes, not API enums. Buyer-paid shipping requires `送料ID` from the selected shop's configuration. | Apply the **company-wide defaults** below to every shop, then validate eligibility and conditional fields for the target shop. Record any authorized exception explicitly. |
 | **BUS-MER-008** | Missing images or category can result in a draft-only outcome; it does not represent a completed public listing. Platform upload history retains CSV files for only 7 days (as reviewed). | Separate `CSV_READY`, `DRAFT_ONLY`, `BLOCKED`, `UNKNOWN_OUTCOME`, and `PUBLISHED`. Persist export and import evidence; mark `PUBLISHED` only after reconciliation. |
+| **BUS-MER-011** | UPDATE is a patch: a product-level change needs `商品ID` plus the changed product field(s); a SKU-level change also needs the exact target `SKUi_ID` plus changed SKU field(s). Some update families have additional required fields. | Start from a fresh seller-side product export, preserve its full header and order, and change only intended fields and required dependencies. Validate the operation-specific field set below; do not treat CREATE requirements as UPDATE requirements. |
 
 ## Customer-facing copy policy (BUS-MER-009–010)
 
@@ -103,6 +104,38 @@ The current official template may include additional fields. The actual CSV head
 - `発送元の地域`: use current prefecture master code, not display name.
 
 For Biz cold-chain, m department and reservation-specific enumerations, consult the applicable current official template and eligibility rules. Windows guidance historically recommends Shift-JIS and other platforms UTF-8; verify that the selected Seller import accepts the actual encoded file.
+
+## UPDATE CSV — minimum fields for batch changes (BUS-MER-011)
+
+**Official source review:** 2026-11-16 JST. Sources: [Mercari Shops: 商品を一括変更する際のCSVファイルの作り方](https://support.mercari-shops.com/hc/ja/articles/60017371839513), [商品データを一括変更するCSVを読み込むとエラーが表示される](https://support.mercari-shops.com/hc/ja/articles/12829713386521), [CSVで商品を一括変更すると最新状態ではないと表示された](https://support.mercari-shops.com/hc/ja/articles/12263165452185).
+
+### Logical minimum by change type
+
+| Change | Minimum data fields required by the official guide |
+|---|---|
+| Any product-level field (for example title only) | `商品ID` + the changed product field(s). Example title-only patch: `商品ID`, `商品名`. |
+| Any one SKU field | `商品ID` + the exact target SKU ID column (`SKU1_ID` … `SKU10_ID`) + changed SKU field(s). Do not target a variant by row position alone. |
+| SKU stock quantity | `商品ID` + target `SKUi_ID` + `SKUi_現在の在庫数` + `SKUi_増減フラグ` + `SKUi_在庫増減数`. Flag `1` adds and `2` subtracts; adjustment amount is a positive integer. |
+| SKU type, JAN, or item-management code | `商品ID` + target `SKUi_ID` + the changed SKU field. |
+| Product image replacement | `商品ID` + the matching `商品画像更新フラグ_n` + `商品画像名_n`. Flag `2` means changed; use only a previously uploaded filename or accessible URL. Images 2–20 support flag `3` for deletion; image 1 is required and cannot be deleted. |
+| Shipping payer / shipping fee setting | `商品ID` + `配送料の負担` + `送料ID`. When the buyer pays shipping, the target shop's valid `送料ID` is required; when the seller pays, the guide says it is unnecessary. |
+| Reservation schedule | `商品ID` + `発売日` + `予約受付開始日` + `予約受付終了日` + `キャンセル期限` + `お届け予定`. The dates may be locked by the product's current reservation period. |
+
+The table describes the **logical minimum values**, not permission to invent a smaller CSV schema. Use the latest seller-exported UPDATE file as the physical template: retain its complete header and exact column order; do not delete columns or add columns. Preserve read-only identifiers and snapshot values exactly as exported. Populate the target fields and required dependencies only. Mercari says unchanged values need not be entered, while its error guide warns against deleting or adding columns; therefore the safest contract is full official header + only intentional field changes, with the seller export as the baseline.
+
+### Batch update controls
+
+1. Export the target products from the selected shop immediately before editing. Preserve the downloaded file as the source snapshot and record its date, shop, filters, and SHA-256.
+2. Keep one product per row. For a SKU-level edit, preserve the exact `商品ID` and matching `SKUi_ID`; never substitute the internal Item Code/SKU for Mercari's platform identifiers.
+3. Do not change snapshot IDs, current stock values (except the documented stock adjustment inputs), registration timestamps, hash, or other read-only fields. Do not change any unrelated product field as a side effect of regeneration.
+4. Validate only changed fields plus their documented dependencies. Title ≤130 characters, description ≤3,000; use current enum/master values. Reject half-width spaces in non-title/description fields, malformed numeric values, extra rows, blank rows, added/deleted/reordered columns, and unuploaded image names.
+5. Price updates are blocked while a Timesale is active or scheduled. Reservation fields can also become uneditable after their relevant dates.
+6. Preview the upload; reconcile each row against the intended diff. Mercari warns that seller-side changes made after export can produce a stale-data warning. If data is stale, stop and re-export/reconcile; proceed with the stale CSV only when an operator explicitly intends to overwrite the newer values.
+7. Retain the source export, edited CSV, diff, upload result, and reconciliation evidence. Seller CSV history is shown for 7 days according to the current guide; archive evidence outside the seller UI.
+
+### Batch size discrepancy — unresolved platform fact
+
+The UPDATE guide says download and upload can handle up to **10,000 products**, with only the first **1,000** shown in preview. Mercari's CSV error troubleshooting page separately lists uploading **1,000 or more** products as an error. These official pages conflict. Until the actual Seller UI behavior is confirmed against the current template, keep the operating batch below 1,000 products (maximum 999) and treat larger batches as blocked pending a documented live-UI verification. Do not present the 10,000 limit as a verified safe operating batch size.
 
 ## Company-wide default CREATE CSV policy (all shops)
 
