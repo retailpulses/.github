@@ -8,6 +8,7 @@
 |---|---|---|
 | BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU / Family / Variant / Listing；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
+| Warranty | [Product Warranty Policy](warranty.md) | Draft: household 1 year; business/commercial 6 months; product-specific/legal review required |
 | BUS-LOG-001 | [Giga 企业地址批量配送](suppliers/giga/bulk-commercial-delivery.md) | 供应商物流；Approved / Evidence PARTIAL |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Product Group |
 | BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | Listing CSV / Shop4 NPL batch exporter；Draft |
