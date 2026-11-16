@@ -80,3 +80,44 @@ Store Ops promotion scheduling, Shop4 marketing operations, Commerce Lab campaig
 - Future contract name: `mercari-newsletter.v1`. Executable JSON Schema and product-specific TRD belong to the implementation owner; this business registry records the invariant and decision only.
 
 **Next implementation deliverables (not yet completed):** JSON proposal schema, deterministic validator, explicit shop/product resolution, UI review and a governed Seller UI adapter.
+
+## Operator-facing English field labels — Shop4 POC SOP (2026-11-16)
+
+**Decision:** All operator instructions, review templates and Google Drive campaign plans use **English field labels**, matching the Mercari Seller UI in the operator's screenshot. **Customer-facing copy remains Japanese**; do not translate the actual subject, headline or main text into English. The canonical campaign files are in Google Drive `/mercari/newsletter/YYYY-MM`; GitHub stores this reusable SOP and platform business rules, not campaign-specific drafts.
+
+| Seller UI label (English) | Japanese UI / meaning | What the operator enters or checks |
+|---|---|---|
+| Basic information | 基本情報 | Section only |
+| Email subject | 件名 | Japanese subject copy; screenshot counter **0 / 60** |
+| Delivery date and time | 配信日時 | Date + time, JST; screenshot example 2026/11/16 13:30; **example is not evidence of actual scheduled delivery** |
+| Email content | メール内容 | Section only |
+| Header image | ヘッダー画像 | Optional image; screenshot says **JPEG/PNG, max 8 MB**; see official 600×320 px recommended dimensions |
+| Add image | 画像を追加 | Upload action; not mandatory |
+| Headline | 見出し | Japanese headline copy; screenshot counter **0 / 80** |
+| Main text | 本文 | Japanese plain-text body; canonical official guidance currently says max 2,000 characters |
+| Attached products / Products | 掲載商品 | Up to 10 published Shop4 listings, ordered as selected; verify exact English wording in live UI |
+| Preview | プレビュー | Review rendering before scheduling; verify exact English wording in live UI |
+| Test email / Test send | テストメール | Optional; verify exact English wording in live UI |
+| Delivery settings / Schedule delivery | 配信設定 / 配信予約 | Authorized operator action only; verify exact English wording in live UI |
+
+**Observed discrepancy requiring validation:** The English Seller UI screenshot displays a **Headline limit of 80 characters**, while the official Japanese guide previously recorded here states **40**. Preserve both evidence points rather than silently overwriting either. Until reconciled, draft headlines **within 40 characters** (safe intersection) and check the live UI before scheduling. Screenshot also establishes max 8 MB JPEG/PNG for header image; do not infer a mandatory image.
+
+**Campaign plan template (English operator labels; Japanese values):**
+
+```text
+Shop: Shop4 / ホムブリス
+Campaign name: Newsletter #N — [theme]
+Status: DRAFT | APPROVED | SCHEDULED (operator reported) | SENT (verified)
+Email subject: [Japanese copy]
+Delivery date and time (JST): [YYYY-MM-DD HH:mm, or TBD]
+Header image: [None / Drive asset URL; JPEG/PNG <=8MB]
+Headline: [Japanese copy]
+Main text: [Japanese copy, plain text]
+Attached products (in order): [Shop4 listing ID, product title, likes, views, selection reason]
+Source evidence: [CSV snapshot, seasonal report, sales query/window]
+Presale check: [current listing title only, per Shop4 POC decision]
+Review / approval: [operator, timestamp, outstanding checks]
+Execution readback: [campaign ID, scheduled time, UI status, evidence URL]
+```
+
+**Operator workflow:** (1) prepare English-labeled campaign plan in Drive; (2) paste Japanese values into the corresponding English Seller UI fields; (3) attach reviewed Shop4 listings; (4) preview, check quota and required sender disclosure; (5) schedule only with authorization; (6) record actual status/time/ID in Drive. Do not confuse screenshot's selectable earliest delivery time with an already scheduled campaign.
