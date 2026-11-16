@@ -5,6 +5,43 @@ Owner: Marketplace Operations
 Companion canonical platform rules: [newsletter.md](newsletter.md)
 Merchandising evidence: [hero-products](merchandising/hero-products.md), [seasonality method](merchandising/seasonality-method.md), [seasonality intelligence](merchandising/seasonality-intelligence.md), [monthly candidates](merchandising/monthly-top20-candidates.md).
 
+
+## Shop4 November POC: minimal-input SOP (2026-11-16; operational priority)
+
+**Scope correction:** Newsletter audience, products, campaign quota, review and delivery are **per shop**. The November POC is Shop4 only. Four-shop aggregated sales, SPU1 reconciliation, a new campaign service, data warehouse, API integration and elaborate weighted scores are **not prerequisites**. The cross-store intelligence method elsewhere in this document is optional for later enrichment; it must not block Shop4 execution. A Shop4-only recent-sales report is sufficient for the Shop4 rolling-30-day theme. Do not claim cross-shop ranking unless such data was actually used.
+
+### Minimal inputs (existing exports and UI; no new mining project)
+
+| Input | Minimum fields | Required for |
+|---|---|---|
+| Shop4 listing / Timesale CSV **confirmed to be Shop4** | Listing ID, item code, title, price, いいね数, 閲覧数; export timestamp | All campaign candidate pools |
+| Current Shop4 sellable inventory + presale indication | item code/listing mapping, sellable quantity or reliable availability flag, presale/preorder flag, verification time | **Hard gate for every selected listing**; reject unknown |
+| Shop4 live product pages / seller UI | Published status, correct shop, title, image, price, fulfillment conditions | All final selections and copy verification |
+| Shop4 completed sales export, last 30 full JST days | item code, completed order quantity, gross item sales, date | Only rolling-30-day bestseller claim |
+| Shop4 first-publication date or reliable new-arrival log | item code, first-live date | Only new-arrivals claim; registration/update timestamp is not automatically first-live |
+| Existing seasonal sales summary, if available | Shop4 category/item code, comparable-month units/revenue | Seasonal editorial evidence; optional for a **季節のおすすめ** campaign without bestseller claims |
+| Shop4 seller UI | Remaining monthly quota, operator disclosure, valid scheduling slot, test/preview | Before actual scheduling |
+
+**Lightweight selection procedure:** (1) Confirm Shop4 identity and export provenance; (2) remove duplicates/sample rows and join listing by item code; (3) hard-filter published, Shop4-owned, immediately sellable stock, non-presale; (4) generate a shortlist of ~15–20 by theme: NEW = verified new first-live + likes/views; SEASONAL = relevant use cases + existing seasonal sales where available + likes/views; ROLLING = Shop4 completed-sales revenue/units last 30 days + likes/views; (5) manually curate <=10 distinct listings with category variety and compelling images; (6) recheck stock/price and create Japanese copy, preview, operator approval, schedule/readback. No invented numerical engagement thresholds or black-box scores. Likes and views are directional signals, not sales or conversion measures. If seasonal sales evidence is unavailable, label as **季節のおすすめ**, never **季節の売れ筋**.
+
+### Four POC output artifacts (one campaign folder per Shop4 send)
+
+- `selection.csv`: `shop_id,campaign_type,listing_id,item_code,title,price_jpy,likes,views,completed_sales_30d_jpy,units_30d,first_live_at,stock_verified_at,available_now,presale,selected,display_order,selection_reason,exclusion_reason,source_snapshot`. Leave inapplicable/unknown metric fields empty; never fill missing with zero. Final selected rows must pass all hard gates.
+- `newsletter.md`: Japanese subject (<=60 chars), heading (<=40), body (<=2000 plain-text chars), ordered <=10 listing IDs, evidence-backed customer benefits, optional header image brief.
+- `review.md`: Shop4 source provenance, exclusion summary, live price/stock/presale checks, source links, reviewer decision, quota and operator-disclosure check, explicit approval to schedule.
+- `execution-log.md`: proposed slot, approval, Seller UI campaign ID/status/time readback, optional test evidence and observed results. Never record scheduled/sent without UI evidence.
+
+**POC definition of done:** One Shop4 campaign with <=10 verified in-stock non-presale listings, Japanese copy, approved review and an operator-ready Seller UI draft; scheduling/sending only on separate explicit authorization. Reusable CSV/Markdown templates and the exact manual steps should be retained. No ROI uplift proof or automation is required for first POC.
+
+### Current hard blockers and non-blockers
+
+1. **HARD for final selection:** The two provided Timesale CSVs have not been independently tied to Shop4. Need a confirmed Shop4 export or an authoritative shop-to-listing lookup. Do not assume `update` or `registration` denotes Shop4.
+2. **HARD for final selection:** Neither provided CSV establishes currently sellable stock and presale status. Need one current authoritative inventory/presale readback keyed by item code; without it the November engagement shortlist is research-only.
+3. **HARD only for claims:** A `最近30日間の売れ筋` campaign needs Shop4 completed-order sales data; a `新着` campaign needs reliable first-live dates. Otherwise switch to a factual `11月の注目商品` / `季節のおすすめ` editorial theme rather than block the entire POC.
+4. **HARD only for actual scheduling:** Shop4 seller permission, remaining monthly quota, registered operator disclosure, approval and a valid future slot. No API automation is necessary.
+
+The prior 10-item engagement shortlist remains **unverified**, not a Shop4 send-ready selection. Rebuild it after the two final-selection hard gates above are resolved.
+
 ## Objective and campaign portfolio
 
 Use three repeatable, distinct newsletter types per shop; prioritize Shop4 as the initial operational pilot. Default cadence: one of each type monthly (3 of 4 available sends); reserve the fourth slot for exceptional campaigns, not a mandatory send. Campaigns target each shop's own opted-in newsletter subscribers; no cross-shop subscriber pooling. Each send attaches at most 10 actual published products from the sending shop. Shop4 prioritization does not change the unified demand-ranking source.
