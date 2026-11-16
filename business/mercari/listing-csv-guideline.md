@@ -31,7 +31,7 @@ Distinguish clearly:
 
 Official [CSV sample](https://guide.mercari-shops-static.com/product_import_template_sample.csv) and [Excel sample](https://guide.mercari-shops-static.com/product_import_template_sample_excel.xlsx) are available as links. **Historical evidence limitation:** the 2026-11-11 review did not verify the original CSV bytes, full header, column order or encoding. The platform page's field listing is **not** an authoritative header fixture. Download and fingerprint the current template and relevant masters before every newly established integration or when versions may have changed.
 
-## Canonical business rules (BUS-MER-001–008, 011)
+## Canonical business rules (BUS-MER-001–008, 011–012)
 
 | ID | Rule | Acceptance / control |
 |---|---|---|
@@ -44,6 +44,7 @@ Official [CSV sample](https://guide.mercari-shops-static.com/product_import_temp
 | **BUS-MER-007** | Official condition, delivery method, ship-from region, dispatch lead time, visibility, shipping payer and conditional fields use platform codes, not API enums. Buyer-paid shipping requires `送料ID` from the selected shop's configuration. | Apply the **company-wide defaults** below to every shop, then validate eligibility and conditional fields for the target shop. Record any authorized exception explicitly. |
 | **BUS-MER-008** | Missing images or category can result in a draft-only outcome; it does not represent a completed public listing. Platform upload history retains CSV files for only 7 days (as reviewed). | Separate `CSV_READY`, `DRAFT_ONLY`, `BLOCKED`, `UNKNOWN_OUTCOME`, and `PUBLISHED`. Persist export and import evidence; mark `PUBLISHED` only after reconciliation. |
 | **BUS-MER-011** | UPDATE is a patch: a product-level change needs `商品ID` plus the changed product field(s); a SKU-level change also needs the exact target `SKUi_ID` plus changed SKU field(s). Some update families have additional required fields. | Start from a fresh seller-side product export, preserve its full header and order, and change only intended fields and required dependencies. Validate the operation-specific field set below; do not treat CREATE requirements as UPDATE requirements. |
+| **BUS-MER-012** | Mercari category ID validity and product-category relevance are separate checks. A `カテゴリID` existing in the official master does not prove that it matches the individual product. | For CREATE or an intentional category change, validate the ID against a pinned official master and validate the product-type match using verified product facts and an approved versioned mapping. Do not auto-accept broad `その他` mappings or unresolved/conflicting source categories. A copy/price UPDATE that does not change category must preserve the exported category value and is not, by itself, a category reassignment. |
 
 ## Customer-facing copy policy (BUS-MER-009–010)
 
@@ -136,6 +137,19 @@ The table describes the **logical minimum values**, not permission to invent a s
 ### Batch size discrepancy — unresolved platform fact
 
 The UPDATE guide says download and upload can handle up to **10,000 products**, with only the first **1,000** shown in preview. Mercari's CSV error troubleshooting page separately lists uploading **1,000 or more** products as an error. These official pages conflict. Until the actual Seller UI behavior is confirmed against the current template, keep the operating batch below 1,000 products (maximum 999) and treat larger batches as blocked pending a documented live-UI verification. Do not present the 10,000 limit as a verified safe operating batch size.
+
+## Category ID validity and product relevance (BUS-MER-012)
+
+A category check has two separate gates:
+
+1. **Master validity:** the exact Mercari `カテゴリID` exists in the pinned official Category Master version used for the run, with the expected full category path and current eligibility.
+2. **Product relevance:** the category path matches the specific product type supported by verified item facts, under an approved versioned company mapping or documented product-level decision.
+
+Passing the first gate does not pass the second. Do not infer a Giga→Mercari mapping from ID existence, listing title similarity alone, catalog_id, a broad supplier category, or a prior listing's category. The current taxonomy mapping-policy reference is [Giga → Mercari Category Dictionary and Fallback Contract](https://github.com/retailpulses/.github/blob/docs/mercari-catalog-taxonomy-20261113/business/mercari/taxonomy/category-mapping-policy.md); that source is marked **DESIGN REVIEW** and states that no Giga mapping rules have been approved. Its candidate IDs and candidate mappings are not approved production assignments.
+
+Use item-specific evidence when source category observations conflict. Keep raw supplier category fields separate from derived subtype and Mercari category decisions. A known or suspected conflict must remain a row-level review/block state until a unique relevant mapping is supported; do not hide it behind a global fallback. The generic `その他` leaf is not a default mapping. A category change requires a documented mapping/version decision. For a product UPDATE that does not target `カテゴリID`, preserve the seller-exported value and do not rewrite it as an incidental side effect.
+
+Minimum review evidence for a category-changing CREATE/UPDATE: target Shop; product ID / source item key; source category observation(s); verified product type/facts; pinned master SHA and full Mercari category path; exact mapping rule/version or reviewer decision; and the result/exception status. If the master is stale, the ID is absent, or relevance remains ambiguous, stop that row's category change and refresh/resolve the source before export.
 
 ## Company-wide default CREATE CSV policy (all shops)
 
