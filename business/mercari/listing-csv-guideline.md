@@ -3,7 +3,7 @@
 **Status:** Draft / Sponsor Review  
 **Owner:** Mercari Store Operations  
 **Scope:** All Mercari Shops operated by the company; shop-agnostic CREATE CSV preparation and validation  
-**Last source review:** 2026-11-11 JST (revalidate against the current platform templates before execution)
+**Last source review:** 2026-11-16 JST for UPDATE CSV guidance and error handling; CREATE template/master evidence last reviewed 2026-11-11 JST (revalidate current platform templates before execution)
 
 ## Purpose and boundaries
 
