@@ -91,3 +91,31 @@ The current artifact is [giga-to-mercari-category-map-v1.csv](giga-to-mercari-ca
 **Agent selection contract:** first resolve the exact Giga code; only consider Mercari IDs under that code's candidate set. For Mattress, use the specific type-and-size leaf only where product facts support both; use the scoped mattress `その他` only if mattress family is certain and no specific leaf can be supported. Otherwise return `UNRESOLVED` / `REVIEW_REQUIRED`. Candidate rows remain `PROPOSED_NOT_BUSINESS_APPROVED`; they do not authorize CSV export or Seller writes.
 
 **Reproduction:** fetch the pinned 2026-11-13 Category Master (SHA-256 `30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac`), select rows whose full path begins `家具・インテリア > ベッド・マットレス > マットレス >` and whose next path segment is one of `エアーマットレス・エアーベッド`, `スプリングマットレス`, or `ノンスプリングマットレス`; retain exact IDs and paths and sort by type, size, then ID. Add the `家具・インテリア > ベッド・マットレス > その他` row only as a scoped fallback candidate. The earlier 74 relations remain reproducible from the source candidate files as described in Git history; the v1.1 mattress rows are derived directly from the pinned master.
+
+
+## 2026-11-16 expansion audit: 107/111, four hard blockers (not approved)
+
+This is an **evidence-constrained candidate proposal**, not an approved deterministic dictionary. The canonical `giga-to-mercari-category-map-v1.csv` has 184 candidate relations for 107 of the 111 Giga codes. Four codes are intentionally **uncovered** rather than assigned unrelated `その他` IDs. No listing export, CSV upload, or Seller write is authorized. The original 21 mattress type/size leaves and its bed/mattress-scoped Other remain intact.
+
+### Hard blockers (do not invent a mapping)
+
+| Giga code | Source category | Exact blocker / unblock evidence |
+| --- | --- | --- |
+| 10817 | Garden & Outdoor > Accessories | Category is accessory-only and heterogeneous. Need item title/spec/product-kind inventory grouped by actual accessory family, then match a relevant Mercari leaf in the pinned master. |
+| 10749 | Household Supplies & Décor > Accessories | Unqualified accessories spanning multiple household branches. Need observed item types and corresponding exact master branches. |
+| 10832 | Other | Giga path is literally `Other`; no semantic family. Need representative product facts and a narrower supplier classification or explicit reviewed per-item exceptions; cannot use a global Other. |
+| 10835 | Tools & Tool Organizers > Ventilation Fans | No matching ventilation-fan product leaf found in pinned master. `換気口` is an air vent (not a fan); `換気扇カバー・フィルター` is a cover/filter (not the fan). Need actual model/spec and Mercari-supported product category evidence before proposing a scoped alternative. |
+
+### Reproduction and audit method
+
+1. Freeze source inventory `giga-category-inventory-20261113.csv` and official `masters/categories/20261113-30f1c9dc/category_master.csv` (snapshot `20261113-30f1c9dc`, SHA-256 `30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac`). Read the direct, virtual subtype and scoped fallback candidate files from this PR; do not regenerate from the current live Mercari taxonomy without a version change.
+2. Key every relation by `(giga_category_code, mercari_category_id)`; store `candidate_set_id=GIGA:<code>`. Resolve IDs **from the pinned master full-path column**, not from catalog IDs, labels, or fuzzy name alone. Preserve the exact master full path, snapshot ID, and SHA-256 on each row.
+3. For previously uncovered categories, start from the Giga full path and category meaning, identify a narrowly scoped Mercari branch, and enumerate only semantically plausible product-kind leaves. Where Giga meaning is heterogeneous, record several candidate leaves and require later item-level title/spec/image verification. A broad branch `その他` is only a *proposed* candidate when the source category is known to belong to that exact branch and no specific leaf is supported. A parent or unrelated Other is never a coverage shortcut.
+4. The new candidate rows cite the pinned inventory, pinned master, and source-category semantic proposal in `source_evidence`. **This is category-level evidence only, not observed per-item title coverage.** `selector_hint_hit_count` is intentionally blank where not measured. The later agent must verify facts before selecting; if the facts do not distinguish a unique candidate, return `UNRESOLVED / REVIEW_REQUIRED`. In particular, gendered luggage/backpack branches, multi-item furniture sets, broad exercise/outdoor categories, and all Other proposals require review; a source category label alone is insufficient.
+5. Stable sort by numeric Giga code, then exact Mercari ID; deduplicate by `(Giga code, Mercari ID)`. Retain distinct Giga-to-ID relationships even when Mercari IDs recur across Giga codes, provided each has its own source-specific basis. Preserve original mattress candidate evidence.
+6. Validate that the inventory has 111 unique codes; every candidate's ID exists in the pinned master and its full path is byte-for-byte identical; candidate set ID equals `GIGA:<code>`; status equals `PROPOSED_NOT_BUSINESS_APPROVED`; there are no duplicate relations; scoped Other paths have a matching source-family basis; enumerate uncovered codes and per-code counts. **Do not report 111/111 while any of the four blockers remains.**
+
+### Quality caveats requiring review
+
+Some expanded candidates use source-category semantics plus exact official taxonomy paths rather than title-level product-kind evidence. In particular, Giga 10766 Kitchen Sinks has a garden-sink candidate, 10702 Massage Tables uses a broad massage Other, 10694 Dining and Kitchen Sets spans table and chair leaves, and 10795 commercial display refrigeration uses a showroom/showcase leaf. These are **not confirmed interchangeable item categories** and must be rejected or refined before business approval. The canonical CSV is a proposal inventory, not a safe auto-export allowlist.
+
