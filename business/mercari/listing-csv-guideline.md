@@ -44,6 +44,26 @@ Official [CSV sample](https://guide.mercari-shops-static.com/product_import_temp
 | **BUS-MER-007** | Official condition, delivery method, ship-from region, dispatch lead time, visibility, shipping payer and conditional fields use platform codes, not API enums. Buyer-paid shipping requires `送料ID` from the selected shop's configuration. | Apply the **company-wide defaults** below to every shop, then validate eligibility and conditional fields for the target shop. Record any authorized exception explicitly. |
 | **BUS-MER-008** | Missing images or category can result in a draft-only outcome; it does not represent a completed public listing. Platform upload history retains CSV files for only 7 days (as reviewed). | Separate `CSV_READY`, `DRAFT_ONLY`, `BLOCKED`, `UNKNOWN_OUTCOME`, and `PUBLISHED`. Persist export and import evidence; mark `PUBLISHED` only after reconciliation. |
 
+## Customer-facing copy policy (BUS-MER-009–010)
+
+**Owner-confirmed company rule (2026-11-16):** Apply these rules to every company-operated Mercari Shop, including Shop4.
+
+| ID | Rule | Acceptance / control |
+|---|---|---|
+| **BUS-MER-009** | Customer-facing copy in `商品名` and `商品説明` must be written in Japanese. English-language sales copy, supplier copy, and English descriptive phrases are prohibited. | Translate or rewrite into natural Japanese. Translate generic color, material, and feature words (for example, `White`, `Black`, `Metal`, `Solid Wood`, `OFF`) where appropriate. Keep Latin-script terms only when they are necessary, factual product identifiers or standardized technical terms (for example, USB, ISOFIX, R129); this exception does not permit English sentences or marketing wording. |
+| **BUS-MER-010** | Internal Item Code and SKU values must never appear in `商品名` or `商品説明`, including legacy codes and codes prefixed with explanatory text. | Keep them only in structured internal/product-management fields. Scan copy against current and historical code sources; review code-shaped tokens (for example, `WF194269AAA`) manually so a code is not missed when it differs from the current row's management-code value. |
+
+### Copywriting and review guidance
+
+- Lead the title with the Japanese product category/name, then the most useful differentiators such as size, material, included components, use case, and color/variant. Keep it readable and within the platform's 130-character limit; do not repeat near-synonyms merely to fill the limit.
+- Use the description to explain the actual product, its dimensions/materials, practical use, included items, and verified limitations. Prefer concise, product-specific bullets over supplier boilerplate or repeated claims.
+- Avoid generic hype such as `大人気`, `数量限定`, `全新品` or absolute safety/quality claims unless the claim is accurate, relevant, and supported. Do not use title space for unsubstantiated popularity or scarcity.
+- Write promotions and shipping conditions in Japanese, and include them only when current, accurate, and applicable to that listing. Avoid copy that could be read as a guarantee where eligibility or exceptions apply.
+- Remove unresolved placeholders such as `Not Applicable`; fill a value from an authoritative product source or omit the unsupported detail.
+- As a pre-export gate, inspect the final rendered title and description for English-language text, internal codes, placeholders, repetition, unsupported claims, and consistency with the structured product fields. A clean CSV schema does not establish copy approval.
+
+These are company copy standards, separate from Mercari's technical field limits. The maximum title/description lengths and current template requirements remain governed by BUS-MER-004 and the active official CREATE/UPDATE template.
+
 ## Official field reference (not an exact header fixture)
 
 | Field | Rule |
