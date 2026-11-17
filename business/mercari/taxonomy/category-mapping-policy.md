@@ -1,6 +1,6 @@
 # Giga → Mercari Category Dictionary and Fallback Contract
 
-**Status: DESIGN REVIEW — official category source snapshot structurally verified; no Giga mapping rules approved yet.** Owner: Mercari Store Operations; consumers: standalone Giga→Mercari Web app (#312), future clients by explicit contract. Not an NPL resolver migration.
+**Status: candidate mapping baseline; suitcase category rule explicitly approved on 2026-11-17 (see current amendment below). Other candidates retain their existing review state.** Owner: Mercari Store Operations; consumers: standalone Giga→Mercari Web app (#312), future clients by explicit contract. Not an NPL resolver migration.
 
 ## Decision and business purpose
 For the standalone application, **do not use the existing NPL Category Resolver**. Create a one-time, verified mapping of Giga supplier categories / product-kind qualifiers to actual current Mercari `カテゴリID`, and persist the approved deterministic dictionary here as canonical company business knowledge. Follow with incremental exception review, not ongoing per-item human approval. Never confuse official `catalog_id` with Mercari `カテゴリID`.
@@ -152,3 +152,18 @@ Validation: parse the canonical CSV, require 111 unique source codes and 188 uni
 **Stage 3 — QA before release:** Run on a fixed, representative sample per Giga code (Shop4 first). Log `item_code`, source code, candidate set size, resolver stage, selected ID/path, confidence, evidence, review outcome, and unresolved reason. Compute 1-to-1 deterministic coverage, 1-to-N agent accuracy against human labels, scoped-Other frequency, false-positive rate, and unresolved rate. No production CSV changes until a separate approval/release gate. Keep mapping fixes in the canonical CSV via a reviewed PR, not in prompts or application-specific shadow maps.
 
 **WIP cleanup:** Close only PRs proven to be superseded by the canonical map; leave unrelated feature PRs intact. On each superseded PR, record its replacement path, PR #109, and whether any unique facts need migration. Delete no branches or evidence files as part of this cleanup. New implementation work should be a separate scoped issue/PR; avoid re-opening multiple competing taxonomy-map drafts.
+
+
+## Approved suitcase rule — 2026-11-17 (current amendment)
+
+**Rule ID: SUITCASE_CATEGORY_20261117. Business owner: Jim. Status: APPROVED CATEGORY SELECTION RULE; no Seller publication authorization.** [User decision and evidence](https://github.com/retailpulses/.github/issues/133#issuecomment-6935845955). This amendment supersedes earlier requirements to infer gender or abstain for an unspecified-gender suitcase. It does not approve unrelated category candidates.
+
+All actual travel suitcases — hard or soft, men's, women's, unisex, or gender unspecified — use exactly **`5iWsn24UMbPf3MMMYBLhyT` = `ファッション > レディース > バッグ > キャリーケース`**. The レディース path is the approved operational destination, not a claim about the buyer's gender. Color, size and marketing gender do not change this selection. Do not select the men's suitcase leaf `oaRD8SorG7tSgWWrME7Nz5` for these products.
+
+The existing canonical CSV is updated in place: **Giga 10829 Soft Case Luggage and 10830 Hard Case Luggage each have the single approved suitcase destination**, with explicit product-kind guards and approval evidence. The CSV now contains **186 candidate relations covering all 111 Giga codes** (two alternative men's relations removed; all other relations unchanged). Historical 188-relation counts above describe prior snapshots.
+
+Apply the rule only after the title establishes an actual suitcase. A tote bag, backpack, pet carrier, carrier wagon, hand truck, cover or replacement part is not a suitcase merely because of a supplier category or an ambiguous キャリー keyword. If such a product is under 10829/10830, retain its title-based exception. If a genuine suitcase appears under a different source code, the approved destination is still this ID; record a `CANDIDATE_MAPPING_GAP` until the relevant code-specific relation is reviewed and added. Never use this rule as a global non-suitcase fallback.
+
+**Approval compatibility:** `candidate_status=PROPOSED_NOT_BUSINESS_APPROVED` is retained in the existing CSV schema to avoid changing consumer enums or implying row/batch publication approval. For the two suitcase relations, the semantic category-rule approval is explicitly carried in `candidate_basis`, `source_evidence`, and this section; the old status value must not be interpreted as an unresolved gender decision. Review-sheet `approval_status` remains `NOT_APPROVED` until the separate listing/batch approval step. No upload-ready CSV, Seller writes, production data mutation, resolver deployment or automatic approvals are authorized by this amendment.
+
+Validation: verify all 186 ID/path pairs against the pinned 7,625-ID master (SHA-256 `30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac`), unique source-code/ID keys, 111-code coverage, exactly one suitcase candidate for each of 10829/10830, and unchanged non-suitcase relations. Shop4 application: identify actual suitcase titles independently of current category and supplier label, update the 295 suitcase decisions, rebuild filtered tabs/summary, and reconcile all 2,480 listing IDs. Keep the mis-bucketed 10829 tote-bag title in human review.
