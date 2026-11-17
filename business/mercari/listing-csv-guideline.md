@@ -218,3 +218,43 @@ Apply these defaults consistently across shops. Only override a value for a docu
 **Preflight:** snapshot original CSV, Giga XLSX, mapping/master SHAs and current Seller UPDATE template; verify one row per distinct Mercari `商品ID`, approved `カテゴリID` is a valid master leaf and canonical candidate, each listing's SKU set is compatible, current value differs, no unresolved combo conflicts, all required columns present, exact UTF-8/encoding as official template, and no unrelated field differences. Produce dry-run diff, blocked-row report, rollback baseline, upload batch checksum, operator/reviewer, and reconciliation plan. Do not upload until explicitly authorized. After Seller import, reconcile product IDs and actual category values; preserve error CSV and import evidence, and never infer success from upload acceptance alone.
 
 **Shop4 first-run sources:** Shop4 export [2026-11-16 CSV](https://drive.google.com/file/d/1YScThDIlJD_kbbMTGLjopjkkAC4Qb2ma/view); Giga [2026-11-15 XLSX](https://docs.google.com/spreadsheets/d/14W6XqePlDcJkjWpi9NJWSfxy2rpV-jCR/edit); [read-only review folder](https://drive.google.com/drive/folders/13dwjXZQuxz_MYPpRo49P9b0ifD4GHxEW). Implementation tracking: [#133](https://github.com/retailpulses/.github/issues/133), [#134](https://github.com/retailpulses/.github/issues/134).
+
+
+## Mercari description formatting standard (BUS-MER-013)
+
+**Owner-confirmed rule (2026-11-17):** Apply this rendering standard to customer-facing `商品説明` for all company-operated Mercari Shops. It is a plain-text platform field; do not assume Markdown syntax is rendered.
+
+- **Plain text only:** Do not use Markdown heading markers (`#`), bold markers (`**`), Markdown tables, code fences, or other markup syntax. Such syntax may appear literally to buyers instead of formatting the copy.
+- **Section spacing:** Insert exactly one blank line between major sections.
+- **Within a section:** Do not insert blank lines between the section heading and its content, between consecutive sentences, or between bullets/items. Keep the section compact and continuous.
+- **No decorative whitespace:** Do not add leading blank lines, trailing blank lines, multiple consecutive blank lines, or blank lines merely to make individual bullets look spacious.
+- **Readable plain-text labels:** Use concise Japanese section labels and simple symbols such as `■`, `【】`, `①`, and `・` where useful. These are literal characters, not Markdown.
+- **Preserve factual content:** Formatting changes must not add unverified specifications, included-item counts, warranty terms, shipping promises, or performance claims. Confirm uncertain facts or omit them.
+- **Keep sections purposeful:** Typical sections are product introduction, key features, product specifications, shipping, and purchase notes. Include only sections relevant to the listing.
+
+**Acceptance check:** Inspect the final description as rendered on the public Mercari listing page. It must contain no literal Markdown syntax, exactly one blank line between major sections, and no extra blank lines within a section. The source text and the rendered listing should be visually checked; a CSV/schema validation alone is insufficient.
+
+**Canonical compact example:**
+
+```text
+【商品名・商品タイプ】
+商品の概要を簡潔に説明します。
+購入判断に必要な特徴を続けて説明します。
+
+■ おすすめポイント
+① 特徴の見出し
+特徴の説明。
+② 特徴の見出し
+特徴の説明。
+
+■ 商品仕様
+・カラー：ナチュラル
+・素材：木製＋スチール
+・サイズ：幅・奥行・高さ
+
+■ 発送について
+・発送目安：1～2営業日
+※地域別の追加送料など、適用する条件のみ記載
+```
+
+The example is structural only. Populate every value from verified listing data. The standard governs visible spacing: one blank line between sections, none within sections.
