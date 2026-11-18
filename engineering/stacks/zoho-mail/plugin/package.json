@@ -1,0 +1,25 @@
+{
+  "name": "@local/dsh-zoho-mail",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Read, search, send, and organize mail in a Zoho Mail mailbox.",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "locale/*.json",
+    "icon.svg",
+    "scripts/*.mjs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
