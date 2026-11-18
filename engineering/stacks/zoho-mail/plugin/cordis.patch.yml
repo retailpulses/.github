@@ -1,0 +1,10 @@
+# Zoho Mail tools: read, search, send, and organize messages.
+# Authorize once with `node scripts/zoho-auth.mjs` (or the zoho_mail_connect tool);
+# credentials are stored in ./credentials/zoho.json with private permissions.
+- insert:
+    - id: zoho-mail
+      name: '@local/dsh-zoho-mail'
+      config:
+        allowSend: true
+        maxResults: 20
+        timeoutMs: 30000

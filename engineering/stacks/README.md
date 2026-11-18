@@ -34,3 +34,4 @@
 | 栈 | slug | 状态 | 形态 | 入口 |
 |---|---|---|---|---|
 | 本地 Supabase 访问 | [`supabase-local`](supabase-local/README.md) | Pilot（2026-11-17 本机实测） | DeepSeek Harness Host 插件 | `supabase_query`、`supabase_schema`、`supabase_status` |
+| Zoho Mail 访问 | [`zoho-mail`](zoho-mail/README.md) | Pilot（2026-11-18 本机实测） | DeepSeek Harness Host 插件 | `zoho_mail_status`、`zoho_mail_folders`、`zoho_mail_list`、`zoho_mail_search`、`zoho_mail_read`、`zoho_mail_send`、`zoho_mail_update`、`zoho_mail_attachment`、`zoho_mail_connect` |
