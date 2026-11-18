@@ -7,7 +7,7 @@
 
 ## Product group management
 
-Product groups use a separate Seller CSV workflow. See [Product group management reference](product-group-management.md) for create, update, unlink and whole-group deletion, and [Shop4 initialization strategy](shop4-product-group-initialization-strategy.md) for SPU1-first grouping and repair of unsuitable existing groups. Ordinary product UPDATE CSV group fields do not perform these operations.
+Product groups use a separate Seller CSV workflow. See [Product group management reference](product-group-management.md) for create, update, unlink and whole-group deletion, and [Shop4 initialization strategy](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit?usp=drivesdk) for SPU1-first grouping and repair of unsuitable existing groups. Ordinary product UPDATE CSV group fields do not perform these operations.
 
 ## Purpose and boundaries
 
