@@ -5,6 +5,10 @@
 **Scope:** All Mercari Shops operated by the company; shop-agnostic CREATE CSV preparation and validation  
 **Last source review:** 2026-11-16 JST for UPDATE CSV guidance and error handling; CREATE template/master evidence last reviewed 2026-11-11 JST (revalidate current platform templates before execution)
 
+## Product group management
+
+Product groups use a separate Seller CSV workflow. See [Product group management reference](product-group-management.md) for create, update, unlink and whole-group deletion, and [Shop4 initialization strategy](shop4-product-group-initialization-strategy.md) for SPU1-first grouping and repair of unsuitable existing groups. Ordinary product UPDATE CSV group fields do not perform these operations.
+
 ## Purpose and boundaries
 
 This guideline defines common Mercari Shops **CSV bulk listing** business semantics, platform constraints, validation gates, evidence, and operator responsibilities. It applies regardless of destination shop. A particular shop is an **execution parameter**, not a hardcoded assumption in this document.
