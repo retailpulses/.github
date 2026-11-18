@@ -276,3 +276,27 @@ The example is structural only. Populate every value from verified listing data.
 - A normal product UPDATE that does not edit SKU type must preserve current SKU data and use the operation-specific patch semantics. An omitted type field in an unrelated patch is not a request to clear it.
 
 Source: [Official product UPDATE CSV guide](https://support.mercari-shops.com/hc/ja/articles/60017371839513). Shop4 pilot-specific short-name length and grouping decisions remain in its [Drive plan](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit); promote only validated reusable grouping rules after the pilot.
+
+
+## Customer-facing color names use katakana by default (BUS-MER-015)
+
+**Owner-confirmed company rule (2026-11-18):** Use conventional Japanese katakana as the default for customer-facing color names across all company Mercari Shops. This covers `SKUi_種類`, product-group `商品i_省略名`, and color expressions intentionally authored in `商品名` / `商品説明`.
+
+| Source / abbreviated value | Default display |
+|---|---|
+| White / 白 | ホワイト |
+| Black / 黒 | ブラック |
+| Gray / Grey | グレー |
+| Light Gray / Light Grey / 薄グレー | ライトグレー |
+| Dark Gray / Dark Grey / 濃グレー | ダークグレー |
+| Beige | ベージュ |
+| Brown | ブラウン |
+| Dark Brown / 濃茶 | ダークブラウン |
+| Light Brown / 薄茶 | ライトブラウン |
+| Natural | ナチュラル |
+
+- Apply the same spelling to group short names and accurate SKU type values whenever they describe the same color. Preserve genuine shade differences and meaningful combinations; do not collapse light/dark/blue-gray into generic gray.
+- Do not shorten `ホワイト` to `白`, `ブラック` to `黒`, or `ライトグレー` to `薄グレー` merely to meet a display-length target. Shorten redundant non-color text, simplify the selection axis or split the group while preserving the actual choice.
+- Katakana is the default naming convention, not permission to invent a color. Preserve verified official/special color names, material/finish or transparent descriptors where a mechanical transliteration would change the meaning; document the source when an exception is needed.
+- Keep names factual and free of marketing terms. Validate the complete field against its active platform limit and the applicable pilot readability target.
+- Keep raw supplier/export observations unchanged. Update only the explicitly targeted display fields; a color-rule update does not authorize a blanket rewrite of live listings or existing SKU data.
