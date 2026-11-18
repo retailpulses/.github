@@ -262,3 +262,17 @@ Apply these defaults consistently across shops. Only override a value for a docu
 ```
 
 The example is structural only. Populate every value from verified listing data. The standard governs visible spacing: one blank line between sections, none within sections.
+
+
+## SKU 種類 naming and completeness (BUS-MER-014)
+
+**Owner-confirmed company rule (2026-11-18):** For every SKU that actually exists in a listing, `SKUi_種類` must contain an accurate, non-empty Japanese option name when creating that SKU or intentionally editing its type. This is a company operating standard; the platform may technically accept an empty value.
+
+- Describe the actual distinguishing specification: color, size, capacity, included quantity or type. Do not use marketing claims, promotions, popularity/scarcity language, warranties, internal Item Codes or arbitrary variant letters.
+- Follow the current official field limit (the reviewed UPDATE guide specifies 16 characters); confirm the active template before export. Do not truncate a required distinction or invent a specification to fill a blank.
+- Align the wording with the product group's `商品省略名` wherever both represent the same option. One listing may contain multiple SKUs: its group short name can describe a listing-level choice while each SKU type describes a finer option. Do not force all SKU names to the same value or copy an inaccurate existing type into the group short name.
+- Existing empty or inaccurate type names are a separate cleanup queue. The Shop4 product-group pilot does not require a complete SKU-type rewrite. Leave unrelated existing SKU fields untouched in a group-only batch, and track observed exceptions for subsequent work.
+- Unused `SKU2`–`SKU10` slots remain empty. Do not create phantom SKUs or fill all ten type columns merely to satisfy this standard.
+- A normal product UPDATE that does not edit SKU type must preserve current SKU data and use the operation-specific patch semantics. An omitted type field in an unrelated patch is not a request to clear it.
+
+Source: [Official product UPDATE CSV guide](https://support.mercari-shops.com/hc/ja/articles/60017371839513). Shop4 pilot-specific short-name length and grouping decisions remain in its [Drive plan](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit); promote only validated reusable grouping rules after the pilot.
