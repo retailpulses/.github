@@ -27,7 +27,7 @@
 | 商品1_ID ～ 商品10_ID | Mercari 商品ID，按展示顺序排列 |
 | 商品1_省略名 ～ 商品10_省略名 | 对应商品的买家可见规格标签 |
 
-内部 Item Code / SPU1 不能替代商品ID。管理用名称、ID不展示给买家；规格标签应使用准确日文，不放内部代码。
+内部 Item Code / SPU1 不能替代商品ID。管理用名称、ID不展示给买家；规格标签应使用准确日文，不放内部代码。颜色默认使用标准片假名（如「ホワイト」「ブラック」「ライトグレー」），尽可能与准确的 SKU 種類统一；不得为缩短名称改成「白」「黒」「薄グレー」。共通规则以 [listing-csv-guideline.md 的 BUS-MER-015](listing-csv-guideline.md#customer-facing-color-names-use-katakana-by-default-bus-mer-015) 为准；规格真实性和长度限制仍须核对。
 
 ## 3. 创建、更新、解除与删除
 
