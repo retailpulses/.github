@@ -71,4 +71,4 @@
 ## 5. 相关文档
 
 - [Listing CSV guideline](listing-csv-guideline.md)
-- [Shop4 商品グループ初始化策略](shop4-product-group-initialization-strategy.md)
+- [Shop4 商品グループ初始化策略](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit?usp=drivesdk)
