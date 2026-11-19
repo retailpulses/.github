@@ -77,3 +77,5 @@ The photographed checklist does **not** show the actual deadline or full investi
 
 ## Monthly close acceptance criteria
 All applicable rows have evidence links or explicit missing/N/A status; payroll gross-to-net reconciles; withheld tax and insurance reconcile to filings and payments; company vs personal payments are distinguished; journal imports reconcile; reviewer/date recorded. Never mark a missing filing as complete solely because a reconstructed worksheet exists.
+
+Social insurance policy moved to [`social insurance.md`](./social%20insurance.md).
