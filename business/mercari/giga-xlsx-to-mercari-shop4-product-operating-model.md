@@ -5,6 +5,8 @@
 **Canonical full PRODUCT critical path:** [Store-Ops P0–P5 delivery-critical-path.md](https://github.com/retailpulses/store-ops/blob/design/giga-mercari-standalone-20261113/docs/products/giga-mercari-listing-web/delivery-critical-path.md)  
 **Status:** 2026-11-13 JST · design scope only, no delivery approval or production release.
 
+**Listing identity decision (2026-11-19):** Create a new Mercari listing for a different Giga product. A discontinued product's listing and `商品ID` are not repurposed to obtain its likes, reviews, listing age or Time Sale history. Same-product restocks can continue on their existing listing. See the company-wide [listing identity and reuse decision](listing-csv-guideline.md#listing-identity-and-reuse-decision-bus-mer-016) for scope and official sources.
+
 ## Business outcome / throughput
 
 Restore **repeatable Shop4 new-product publication** from Giga ProductsInfo XLSX through an independent operator Web app and reviewed Mercari Shops **CREATE CSV**. Measure actual accepted Seller imports and sustainable item throughput. A generated CSV is not a successful listing. Prioritize a **real verified end-to-end pilot**, then an operator-reproducible Web UX and coverage expansion, not an attempt to solve every Giga taxonomy/Canonical source issue first.
