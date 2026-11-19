@@ -50,6 +50,18 @@ Official [CSV sample](https://guide.mercari-shops-static.com/product_import_temp
 | **BUS-MER-011** | UPDATE is a patch: a product-level change needs `商品ID` plus the changed product field(s); a SKU-level change also needs the exact target `SKUi_ID` plus changed SKU field(s). Some update families have additional required fields. | Start from a fresh seller-side product export, preserve its full header and order, and change only intended fields and required dependencies. Validate the operation-specific field set below; do not treat CREATE requirements as UPDATE requirements. |
 | **BUS-MER-012** | Mercari category ID validity and product-category relevance are separate checks. A `カテゴリID` existing in the official master does not prove that it matches the individual product. | For CREATE or an intentional category change, validate the ID against a pinned official master and validate the product-type match using verified product facts and an approved versioned mapping. Do not auto-accept broad `その他` mappings or unresolved/conflicting source categories. A copy/price UPDATE that does not change category must preserve the exported category value and is not, by itself, a category reassignment. |
 
+## Listing identity and reuse decision (BUS-MER-016)
+
+**Owner decision, 2026-11-19.** For all company Mercari Shops, do not repurpose an existing listing for a different product, including using a discontinued Giga product's listing for a new product. Create a new listing for the new product rather than carrying over the old `商品ID`, likes, reviews, age, or price history. This company decision applies whether or not the old listing has reviews.
+
+The same product returning to stock may continue on its existing listing. For an upgraded or replacement product whose identity is unclear, assess the actual product and whether the existing reviews and other buyer-facing information remain accurate; seek Mercari clarification when needed before reuse. A shared category alone does not establish product identity.
+
+**Official rule and rationale.** Mercari expressly lists editing a product page with existing reviews into a completely different product as conduct that may manipulate reviews or ratings. The company decision above extends to all different-product reuse. Existing likes reflect interest in the former product, and old reviews can mislead buyers. Linking different products to one `商品ID` may also confuse historical order, cost and reporting associations depending on the systems' retained snapshots; this is a risk to investigate, not a verified defect.
+
+Time Sale eligibility depends on qualifying recent selling and price history, including periods when the product is available for purchase, rather than listing age alone. Mercari's guidance does not establish how that history is treated when a listing is repurposed. Do not plan to transfer or rely on an old product's Time Sale history for a new product.
+
+Sources, reviewed 2026-11-19: [Mercari Shops — 購入者の適正な商品選択を妨げる行為](https://support.mercari-shops.com/hc/ja/articles/900004854186); [タイムセールを設定できる商品の条件](https://support.mercari-shops.com/hc/ja/articles/10086352662041); [商品の非公開・削除後の影響](https://support.mercari-shops.com/hc/ja/articles/4653081053081).
+
 ## Customer-facing copy policy (BUS-MER-009–010)
 
 **Owner-confirmed company rule (2026-11-16):** Apply these rules to every company-operated Mercari Shop, including Shop4.
