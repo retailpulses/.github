@@ -1,0 +1,10 @@
+# secrets — never committed
+client_secret*.json
+credentials/
+logs/
+*.log
+
+# local runtime
+.venv/
+__pycache__/
+*.pyc
