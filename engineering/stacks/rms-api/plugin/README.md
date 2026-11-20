@@ -32,6 +32,14 @@ currently blocked by app permissions (see [API permission boundary](#api-permiss
   `cabnt-n515p416432` has only `n515p416432w` at 17,280 / reference 28,800 while
   `c` and `b` remain at normal price.
 
+**Timing warning:** RMS has no separate future sale-price field. `standardPrice`
+is the current price, so writing the SALE price in November makes it visible on
+the storefront immediately. With a future `purchasablePeriod`, the page shows the
+sale price and 「販売期間前です」, and the item is not purchasable until the period
+starts. Verified on 2026-11-20: `cabnt-n515p416432` displayed 17,280 yen with a
+28,800 reference and a 2026-12-03 20:00 start; all 60 accepted products shared
+that same period. Do not treat `standardPrice` as a scheduled price.
+
 ## Tools
 
 | Tool | Method / endpoint | Behavior |
