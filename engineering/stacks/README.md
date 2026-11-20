@@ -35,3 +35,4 @@
 |---|---|---|---|---|
 | 本地 Supabase 访问 | [`supabase-local`](supabase-local/README.md) | Pilot（2026-11-17 本机实测） | DeepSeek Harness Host 插件 | `supabase_query`、`supabase_schema`、`supabase_status` |
 | Zoho Mail 访问 | [`zoho-mail`](zoho-mail/README.md) | Pilot（2026-11-18 本机实测） | DeepSeek Harness Host 插件 | `zoho_mail_status`、`zoho_mail_folders`、`zoho_mail_list`、`zoho_mail_search`、`zoho_mail_read`、`zoho_mail_send`、`zoho_mail_update`、`zoho_mail_attachment`、`zoho_mail_connect` |
+| GigaB2B Open API 2.0 访问 | [`gigab2b`](gigab2b/README.md) | Pilot（2026-11-20 本机实测） | DeepSeek Harness Host 插件 | `giga_status`、`giga_inventory`、`giga_price`、`giga_products`、`giga_product_detail`、`giga_order_status`、`giga_tracking`、`giga_dropship_sync` |

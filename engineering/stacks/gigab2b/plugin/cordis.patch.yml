@@ -1,0 +1,12 @@
+# GigaB2B Open API 2.0 tools: inventory, price, products, details, orders.
+# Credentials resolve from config, then GIGA_CLIENT_ID/GIGA_CLIENT_SECRET, then
+# ./credentials/giga.json (0600, git-ignored). Run `node scripts/giga-auth.mjs`
+# to store them without pasting secrets into the chat.
+- insert:
+    - id: gigab2b
+      name: '@local/dsh-gigab2b'
+      config:
+        environment: production
+        allowWrites: false
+        maxRetries: 2
+        timeoutMs: 30000
