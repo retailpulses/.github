@@ -1,0 +1,25 @@
+{
+  "name": "@local/dsh-rms-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Read and (optionally) write Rakuten RMS data from chat: orders, items, inventory and prices over the official RMS WEB SERVICE API.",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "locale/*.json",
+    "icon.svg",
+    "scripts/*.mjs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Engineering Foundational References
 
-Status: **Pilot** · Owner: Engineering · Updated: 2026-10-27
+Status: **Pilot** · Owner: Engineering · Updated: 2026-11-20
 
 跨仓库、跨产品共用的外部 API / 平台契约的发现入口。**这里的 Reference 是经来源标注的内部整理资料，不取代供应商官方文档。** 实现代码、内部 API schema 和运行证据保留在各自 Owner 仓库。
 
@@ -10,7 +10,7 @@ Status: **Pilot** · Owner: Engineering · Updated: 2026-10-27
 | REF-GIGA-CAPABILITY | [GigaB2B Access Code & Runtime Inventory](giga/capability-inventory.md) | Code-evidence only; runtimes not fully audited | CatalogSync, commerce-ops, commerce-lab, tool-services |
 | REF-GIGA-DATA | [GigaB2B Business Dictionary & Field Mapping](giga/data-dictionary-mapping.md) | Partially verified; live API ↔ DB lineage open | Monthly P&L, Orders, NPL, catalog consumers |
 | REF-MERCARI-INQUIRY | [Mercari Shops Inquiry](mercari/inquiry-api.md) | Partial / evidence-linked | commerce-ops Inquiry, Customer Operations |
-| REF-RAKUTEN-RMS | [Rakuten RMS API](rakuten/rms-api.md) | Mixed; by capability | commerce-ops, commerce-lab, CatalogSync, RPagentOS |
+| REF-RAKUTEN-RMS | [Rakuten RMS API](rakuten/rms-api.md) | Mixed; live read POC 2026-11-20, Item API write permission open | commerce-ops, commerce-lab, CatalogSync, RPagentOS |
 
 | REF-WECOM-CAPABILITY | [WeCom Shared Capability Registry](wecom/capability-registry.md) | Reference / POC pending; external customer group API not yet tested | Seller Coordination, Orders, Inquiry, IT Ops |
 
