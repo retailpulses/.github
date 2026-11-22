@@ -33,7 +33,7 @@
 
 | 栈 | slug | 状态 | 形态 | 入口 |
 |---|---|---|---|---|
-| 本地 Supabase 访问 | [`supabase-local`](supabase-local/README.md) | Pilot（2026-11-17 本机实测） | DeepSeek Harness Host 插件 | `supabase_query`、`supabase_schema`、`supabase_status` |
+| Supabase 访问（本地 + Cloud） | [`supabase`](supabase/README.md) | Pilot（本地 2026-11-17 实测；v1.0 云端读写 2026-11-22 实测） | DeepSeek Harness Host 插件 | `supabase_query`、`supabase_schema`、`supabase_status`、`supabase_targets` |
 | Zoho Mail 访问 | [`zoho-mail`](zoho-mail/README.md) | Pilot（2026-11-18 本机实测） | DeepSeek Harness Host 插件 | `zoho_mail_status`、`zoho_mail_folders`、`zoho_mail_list`、`zoho_mail_search`、`zoho_mail_read`、`zoho_mail_send`、`zoho_mail_update`、`zoho_mail_attachment`、`zoho_mail_connect` |
 | GigaB2B Open API 2.0 访问 | [`gigab2b`](gigab2b/README.md) | Pilot（2026-11-20 本机实测） | DeepSeek Harness Host 插件 | `giga_status`、`giga_inventory`、`giga_price`、`giga_products`、`giga_product_detail`、`giga_order_status`、`giga_tracking`、`giga_dropship_sync` |
 | Google Workspace 访问（Drive 为主） | [`google-workspace`](google-workspace/README.md) | Pilot（2026-11-18 本机实测） | 第三方 MCP server + DSH MCP client | `mcp__google_workspace__*`（43 工具：Drive 搜索/列目录/读取/导出/建文件、Docs/Sheets/Slides 编辑） |
