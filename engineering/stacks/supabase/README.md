@@ -1,13 +1,13 @@
 # 栈记录：supabase
 
 > 索引：[Engineering Stack Registry](../README.md) ／ 设计：[design.md](design.md)
-> 取代：`engineering/stacks/supabase-local/`（v0.1，仅本地、默认只读）。本记录与设计自 2026-11-22 起定义 v1.0；**云目标尚未实施**。
+> 取代：`engineering/stacks/supabase-local/`（v0.1，仅本地、默认只读）。本记录与设计自 2026-11-22 起定义 v1.0；v1.0 已实施，并于同日完成首次云端写入验证。
 
 ## 概览
 
 | 项 | 值 |
 |---|---|
-| 状态 | Pilot。本地传输 2026-11-17 本机实测；云连接事实 2026-11-22 只读核实；**云目标的读写在插件中尚未实现** |
+| 状态 | Pilot。本地传输 2026-11-17 实测；云连接事实 2026-11-22 只读核实；v1.0 于 2026-11-22 实施：`local` 只读、`cloud` 读写（`rp_agent_readwrite`，`confirm`）已实测 |
 | 形态 | DeepSeek Harness Host 插件，向 Agent 暴露 4 个工具 |
 | 目标 | 具名 targets：`local`（默认）、`cloud`、`cloud-admin`（可选）、`macmini`（可选） |
 | 入口 | `supabase_query`、`supabase_schema`、`supabase_status`、`supabase_targets` |
@@ -61,10 +61,11 @@
 | 角色 | 超级用户 | BYPASSRLS | 现状 |
 |---|---|---|---|
 | `rp_agent_readonly` | 否 | 是 | 已存在：`public` 的 `SELECT`，另含 `public.inquiries` 的 `UPDATE` |
-| `rp_agent_readwrite` | 否 | 是 | **待建**（见 design.md §7）：`public` 的 DML + 序列，`auth`/`storage` 只读，`pg_monitor` |
+| `rp_agent_readwrite` | 否 | 是 | 已建 2026-11-22：`public` 的 DML + 序列、`storage` 只读、`pg_monitor`；**`auth` 不可读**（见下） |
 | `postgres` | 是 | 是 | 仅 `cloud-admin` 目标使用 |
 
-- 写角色**不授予 `public` 的 `CREATE`**：DDL 在配置层（`ddl: false`）与数据库层同时被拒。
+- 写角色**不授予 `public` 的 `CREATE`**：DDL 在配置层（`ddl: false`）与数据库层同时被拒（实测 `permission denied for schema public`）。
+- `auth` 与部分 `storage` 表由 Supabase 自有管理角色持有，`postgres` 无授予权限，因此 `grant` 只发出警告、实际未生效；`auth` 缺少 schema `USAGE`，写角色读不到它。需要读 auth 时应改用 `cloud-admin`，不要放宽本角色。
 - `BYPASSRLS` 沿用现有 `rp_agent_*` 约定，代价是 RLS 不构成兜底；控制点因此落在插件门禁与审计上。
 - 待清理项（不属本栈范围）：`rp_agent_readonly` 名称与 `public.inquiries` 的 `UPDATE` 授权不一致，需要单独裁决。
 
@@ -133,7 +134,26 @@
 | `psql -q` + 事务包裹 | 仅输出 JSON 行，命令标签被抑制 |
 | 本机 / Mac mini 全局 IPv6 | 均为 0，直连不可用 |
 
-**未验证**（需实施后补）：任何对云端目标的写入；`rp_agent_readwrite` 的创建与授权；插件在 Plugin Manager 中的标题与图标渲染。
+### 2026-11-22（v1.0 实施验证）
+
+| 用例 | 结果 |
+|---|---|
+| 角色引导 SQL（§design 7） | 成功：`rp_agent_readwrite` login+bypassrls，`public` 得 DELETE/INSERT/SELECT/UPDATE，`storage` 得 SELECT，成员含 `pg_monitor` |
+| `auth`/`storage` 授权 | 部分失败：`auth` 与部分 `storage` 表由 Supabase 管理角色持有，`postgres` 无授予权，只产生 warning；`auth` 缺 `USAGE` 故不可读 |
+| 以新角色经池化器登录 | 成功：`current_user = rp_agent_readwrite`，可见 `public` 119 张表 |
+| 新角色直接 DDL | 被数据库拒绝：`permission denied for schema public` |
+| 插件 `supabase_status` (cloud) | `reachable: true`、`currentUser = rp_agent_readwrite`、连接数 11（`pg_monitor` 生效）、TLS 必需 |
+| 写入未指定 target | 被拒：多目标必须显式命名 |
+| 首次云端写入（`dsh_smoke.writes`） | 成功：`BEGIN → INSERT 0 1 → COMMIT`，`transactional: true`，约 566 ms，`written_by = rp_agent_readwrite` |
+| 写入后回读 | 返回该行，时间戳与角色正确 |
+| `cloud` 上执行 DDL | 被配置层拒绝（`ddl: false`），未连库 |
+| 带 WHERE 的 DELETE | 成功：`DELETE 1`，事务提交 |
+| 审计日志 | 2 行（INSERT/DELETE），含目标、角色、命令标签、耗时；无口令、无数据值 |
+| 凭据文件 | `credentials/supabase.json` 权限 0600，口令未出现在 argv、进程环境或日志 |
+
+**未验证**：插件在 Plugin Manager 中的标题、详情页与图标渲染（无浏览器控制）；`cloud-admin`（`postgres`）目标未安装。
+
+## 限制与风险
 
 ## 限制与风险
 
@@ -142,6 +162,8 @@
 - 插件在 Host 进程直接 spawn docker，**不经过** bash 工具的沙箱与审批层；数据库语义上有护栏，操作系统层面没有。
 - 无 Config schema：配置来自 bundle patch 行与环境变量，Settings 中没有可编辑字段。
 - `BYPASSRLS` + 生产写权限是最大残余风险；插件门禁与审计是唯一控制点，`cloud-admin` 影响面最大。
+- 写角色覆盖整个 `public` schema（119 张表），未按表收窄；后续可按 schema/表细化。
+- `dsh_smoke` 为一次性冒烟 schema，保留以便复测，可用 `drop schema dsh_smoke cascade` 清理。
 - 池化器行为可能随平台升级变化（尤其 startup options 与模式差异），升级后应重跑上表用例。
 
 ## 变更记录
@@ -150,3 +172,4 @@
 |---|---|
 | 2026-11-17 | 初始登记 `supabase-local`：3 个工具、只读默认、容器自动探测 |
 | 2026-11-22 | 更名 `supabase` 并升为 v1.0 设计：多目标（local/cloud/cloud-admin/macmini）、写入路径与角色模型、`BEGIN READ ONLY` 取代 `PGOPTIONS`、修正池化器区域与主机事实 |
+| 2026-11-22 | v1.0 实施：`rp_agent_readwrite` 角色与凭据就位，`cloud` 目标启用读写，`dsh_smoke` 完成首次写入与回读；补记 `auth` 不可读 |

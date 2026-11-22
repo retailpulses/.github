@@ -1,6 +1,6 @@
 # supabase — Design v1.0
 
-**状态：** 设计定稿（2026-11-22）。**未实施**，无生产变更。
+**状态：** 设计定稿并实施（2026-11-22）。角色、凭据与云端首次写入均已按本设计验证；§7 的引导 SQL 已执行。
 **取代：** 本目录 v0.1 设计（`supabase-local`，仅本地、默认只读、`PGOPTIONS` 兜底）。
 **配套：** [栈记录](README.md) · [Database Governance](../../../docs/DATABASE_GOVERNANCE.md) · [Central Agent Guidance §3](../../../AGENTS.md)
 
@@ -171,7 +171,7 @@ psql -X -t -A -v ON_ERROR_STOP=1
 | 角色 | 超级用户 | BYPASSRLS | 用途 |
 |---|---|---|---|
 | `rp_agent_readonly` | 否 | 是 | 既有只读访问（另含 `public.inquiries` 的 `UPDATE`） |
-| `rp_agent_readwrite` | 否 | 是 | 本设计新增：云端 DML |
+| `rp_agent_readwrite` | 否 | 是 | 已建 2026-11-22：云端 DML（`public`），`storage` 只读；`auth` 不可读 |
 | `postgres` | 是 | 是 | 仅 `cloud-admin` |
 
 引导 SQL（一次性、作为受审迁移执行，执行前经人复核；口令另行设置，不进仓库、不上命令行）：
@@ -244,6 +244,8 @@ grant select on all tables in schema auth, storage to rp_agent_readwrite;
 ## 11. 验证摘要
 
 2026-11-17（v0.1，Mac mini 本机）：三工具可用、只读拦截生效、写入临时表无残留、截断正确。
+
+2026-11-22（v1.0 实施，云端写入）：`rp_agent_readwrite` 已建（`public` DML、`storage` 只读、`pg_monitor`，`auth` 不可读）；经池化器以该角色登录成功且 DDL 被数据库拒绝；首次云端写入 `BEGIN → INSERT 0 1 → COMMIT` 并回读一致；未指定 target 与 DDL 均被前置拒绝；审计两行、无凭据。
 
 2026-11-22（v1.0 设计期，只读）：Management API 确认区域 `ap-northeast-2`；池化器主机以错误口令区分法定位为 `aws-1-ap-northeast-2`；`PGOPTIONS` 经池化器失效、`BEGIN READ ONLY` 与 `SET statement_timeout` 生效；容器内 `psql` 经 tailscale 打通 Mac mini 栈并完成读/写/只读拒绝/超时四类验证；`psql -q` 抑制命令标签。
 

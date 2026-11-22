@@ -33,4 +33,4 @@
 
 | 栈 | slug | 状态 | 形态 | 入口 |
 |---|---|---|---|---|
-| Supabase 访问（本地 + Cloud） | [`supabase`](supabase/README.md) | Pilot（本地 2026-11-17 实测；云目标 2026-11-22 设计定稿，未实施） | DeepSeek Harness Host 插件 | `supabase_query`、`supabase_schema`、`supabase_status`、`supabase_targets` |
+| Supabase 访问（本地 + Cloud） | [`supabase`](supabase/README.md) | Pilot（本地 2026-11-17 实测；v1.0 云端读写 2026-11-22 实测） | DeepSeek Harness Host 插件 | `supabase_query`、`supabase_schema`、`supabase_status`、`supabase_targets` |
