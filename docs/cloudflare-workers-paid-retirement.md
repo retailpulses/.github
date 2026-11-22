@@ -90,6 +90,44 @@ Cron inventory to relocate or consolidate to ≤5:
 `order-health-recovery.timer`. **Confirm whether the Worker crons are duplicates before porting them** —
 do not preserve a double-writer.
 
+## 4a. Phase 2 blocker — none of the CPU-heavy Workers is idle (verified 2026-11-22)
+
+A first read of the dashboard suggests these are cron shell activity (invocation count ≈ cron cadence).
+The subrequest breakdown disproves that: every one of them performs real outbound writes every day.
+
+| Worker | Invocations / 24h | Subrequests / 24h | What the cron actually does |
+|---|---|---|---|
+| `rp-order-mgmt` | 1,290 | 40,820 | 49K to `*.supabase.co` (2xx), 11K to `worker-order.homesbliss.net` — **live order pipeline** |
+| `ticketing-rakuten-ingestion` | 722 | 10,880 | 7K Supabase (2xx), 3K `rp-relay.homesbliss.net` — ticket ingestion |
+| `inquiry-handler` | 440 | 3,380 | Baserow reads/writes — inquiry handling |
+| `rp-mail-integration` | 144 | 10,080 | 9K `mail.zoho.com` (2xx) — mail sync |
+| `investment-clawbot-prod` | 103 | 5,130 | RSS feeds + 4K `dashscope-intl.aliyuncs.com` (4xx) |
+
+**Do not delete these to free cron slots.** They must be migrated or consolidated.
+
+### The `rp-order-mgmt` double-writer
+
+`rp-order-mgmt` is the single largest cron consumer (12 expressions, ~51 fires/hour) and it runs
+`push_orders_to_giga`, `pull_giga_tracking` and `close_shop_orders` — the **same three steps** the ConoHa VPS
+`order-mgmt-orchestrator.timer` runs hourly in `orchestrator_live` mode (release `bd0d1dc2`, writing
+`sales_orders` / `giga_shipment_projections` in Supabase).
+
+`OrderMgmt/src/lib/pipeline-schedule.mjs` already declares the intended end state:
+
+> `TRANSITIONAL: per-platform cron map. Will be consolidated in Phase B (channel-stage timers).`
+> `Systemd timers become authoritative in Phase 3.`
+
+That Phase 3 has **no planning document** in the repo yet, and the VPS orchestrator's last hourly run failed
+at `close_shop_orders` (`ok: false` → service exit 1). So the correct order of work is:
+
+1. Make the systemd timers cover the required cadence (the Worker currently runs every 10 minutes; the VPS
+   timer is hourly — parity gap).
+2. Fix the failing `close_shop_orders` step.
+3. Prove parity, then remove the Worker cron map and let systemd own the schedule.
+
+Only then can `rp-order-mgmt`'s 12 cron expressions be retired, and only then does the Free plan's 5-cron
+budget become reachable.
+
 ## 5. Target runtimes
 
 Per `AGENTS.md` §2 and `runtime-strategy.md`, not everything goes to the same host:
