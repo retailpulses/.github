@@ -1,7 +1,7 @@
 # Rakuten-Style Main Image — Platform Rules, Our Preference, R2 Delivery
 
 状态：**Draft / Sponsor Review** · Owner：Business / Listing · 日期：2026-11-22
-证据状态：Rakuten 主图规则 **VERIFIED**（官方 RMS Service Square コラム，2025-12-26 更新）；尺寸/容量/违规点数细节 **PARTIAL**（第三方整理，需 RMS 登录后复核）；R2 现状 **VERIFIED**（读代码库实际实现）。
+证据状态：Rakuten 主图规则 **VERIFIED**（官方 RMS Service Square コラム，2025-12-26 更新）；尺寸/容量/违规点数细节 **PARTIAL**（第三方整理，需 RMS 登录后复核）；R2 现状 **VERIFIED**（读代码库实际实现）；R2→Mercari 链路 **VERIFIED（2026-11-22 实测）**。
 
 ## Scope
 
@@ -143,12 +143,13 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 ### 3.3 关键限制与风险
 
 1. **`r2.dev` 不是生产域名。** Cloudflare 官方明确：`r2.dev` 仅用于非生产、**有限流**；要用缓存、WAF、Bot Management 必须挂**自定义域名**；也不支持 CNAME 到 `r2.dev`。 → 现在这个 `pub-606b...r2.dev` 适合 POC 和内部验证，**不适合作为 Mercari 店铺长期图片源**。
-   **域名约束（已确认）：** 我们只有 **`homesbliss.net`** 在 Cloudflare 托管；`retailpulses.com` 仍由 Wix 管理，不能用于 R2 custom domain。生产图片域名只能用 homesbliss.net 的子域，建议 **`img.homesbliss.net`**（与现有 `listing.homesbliss.net` 同区）。
+   **域名约束（已确认）：** 我们只有 **`homesbliss.net`** 在 Cloudflare 托管；`retailpulses.com` 仍由 Wix 管理，不能用于 R2 custom domain。生产图片域名只能用 homesbliss.net 的子域。
+   **已上线：** **`img.homesbliss.net`** 已绑定 `resize-product-images`，SSL 签发完成，实测 `HTTP/2 200`（见 §3.5）。
 2. **R2 ≠ R-Cabinet。** Rakuten 的商品图在 CSV 里是 **R-Cabinet 路径**，说明文内图片也只能用 R-Cabinet；R2 的公网 URL 不能直接填进 Rakuten 商品画像字段。R2 服务的是 **Mercari CSV（外部 URL）** 和内部资产归档。若同一张图要上 Rakuten，仍需单独上传 R-Cabinet。
-3. **图片是店铺资产，不是页面资产。** 一旦 CSV 引用 R2 URL，删对象等于商品图挂掉。需要生命周期策略：至少保留"当前上架 SKU 在用的对象"，删除前先查 manifest/listing。
+3. **Mercari 会转存外链图片（2026-11-22 实测）。** `updateProduct` 接受 R2 公网 URL 后，Mercari 会把图片抓取到自己的 `assets.mercari-shops-static.com` 并**替换整个 imageUrls 列表**。因此：① 删除 R2 对象不会立刻让已上架商品图挂掉；② 但重发/回滚仍依赖 R2 对象存在；③ 外链只需在更新那一刻可达。生命周期策略：在架 SKU 的对象保留，删除前查 manifest。
 4. **Mercari 侧限制是 8MB/张、≤20 张**（见 [Giga Image Selection Policy](https://github.com/retailpulses/.github/blob/main/business/mercari/images/giga-image-selection-policy.md)）。1000×1000 JPG 约 88KB，远低于上限。
 
-### 3.4 建议的生产配置（待决策）
+### 3.4 生产配置（已定）
 
 | 决策 | 建议 |
 |---|---|
@@ -159,6 +160,20 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 | 回滚 | manifest 保留历史 hash，CSV 重发旧 key 即可 |
 | 保留期 | 在架 SKU 永久；下架后 90 天 |
 
+### 3.5 Verified end-to-end — 2026-11-22
+
+| 步骤 | 结果 |
+|---|---|
+| Custom domain 绑定 | `img.homesbliss.net` → bucket `resize-product-images`（zone `homesbliss.net`）；SSL 签发后 `HTTP/2 200` |
+| R2 object | `main-image/n515s537400w/n515s537400w_c4_44c588a6.jpg`；198,962 bytes；sha256 `44c588a6…`；`content-type: image/jpeg`；`cache-control: max-age=14400` |
+| 公网完整性 | 本地文件与公网下载 sha256 一致 |
+| Mercari 写入 | `updateProduct(input:{id, imageUrls:[new]+既存13枚})` 返回无 errors；实际返回 **14 张 Mercari 转存后**的 assets URL |
+| 首图确认 | 转存后第 1 张为 1500×1500 生成图（人工目检） |
+| 其他字段 | name / price（26,568）/ status（OPENED）/ description（1,681 chars）均未变 |
+| 回滚证据 | 更新前快照 `out/listing_backup_before_image_swap.json`（13 张原图 URL） |
+
+**结论：** R2 + custom domain + Mercari API 三者已打通。Mercari 会把外链图片转存到自有 CDN，因此 R2 承担的是**摄取源 + 归档**，不是买家侧最终交付；这也意味着 R2 侧只需保证"更新那一刻可达"。
+
 ---
 
 ## 4. Operating procedure (target state)
@@ -168,7 +183,7 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 3. 渲染 + 校验：`text_ratio ≤ 0.20`、无促销词、输出 1500×1500 且 JPG ≤ 2MB。
 4. 上传 R2（key 含内容哈希），写 manifest。
 5. Mercari CSV 的 `商品画像名` 使用 manifest 里的 public URL。
-6. 上传后回读验证 URL 可访问、字节数匹配。
+6. 回读验证：URL 200、字节/sha 一致；Mercari 侧确认首图为新图、其他字段未变。
 
 ---
 
