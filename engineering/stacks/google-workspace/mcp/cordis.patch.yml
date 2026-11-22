@@ -1,0 +1,32 @@
+# Google Workspace MCP —— DSH 接入配置（片段）
+#
+# 用法：把下面整个 `- insert:` 块追加到 ~/.dsh/profiles/<profile>/cordis.patch.yml
+# 顶层数组末尾，替换尖括号占位符为实际路径，然后重启 DSH。
+#
+# 不包含任何凭据：client_secret.json 与 credentials/ 由 mcp/.gitignore 排除。
+# 完整前置条件见同目录 README.md。
+
+- insert:
+    - id: mcp-google-workspace
+      name: "@deepseek-ai/dsh-mcp-client"
+      config:
+        serverName: google_workspace
+        transport: stdio
+        # 本机安装目录；.venv 由 uv/pip 创建，见 README 第 1 步
+        command: "<WORKSPACE_MCP_DIR>/.venv/bin/workspace-mcp"
+        args:
+          - --single-user
+          - --tool-tier
+          - core
+          # 只想保留 Drive 与文档编辑时，用下面三行替换 --tool-tier core：
+          # - --tools
+          # - drive,docs,sheets,slides
+        cwd: "<WORKSPACE_MCP_DIR>"
+        env:
+          # 单用户模式下的身份；授权时用同一账号登录
+          USER_GOOGLE_EMAIL: "<your-google-account>"
+          # OAuth 客户端 JSON（Desktop app），权限 0600，勿提交
+          GOOGLE_CLIENT_SECRET_PATH: "<WORKSPACE_MCP_DIR>/client_secret.json"
+          # refresh token 缓存目录（0600 文件），勿提交
+          WORKSPACE_MCP_CREDENTIALS_DIR: "<WORKSPACE_MCP_DIR>/credentials"
+          WORKSPACE_MCP_LOG_DIR: "<WORKSPACE_MCP_DIR>/logs"

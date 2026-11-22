@@ -5,6 +5,10 @@
 **Scope:** All Mercari Shops operated by the company; shop-agnostic CREATE CSV preparation and validation  
 **Last source review:** 2026-11-16 JST for UPDATE CSV guidance and error handling; CREATE template/master evidence last reviewed 2026-11-11 JST (revalidate current platform templates before execution)
 
+## Product group management
+
+Product groups use a separate Seller CSV workflow. See [Product group management reference](product-group-management.md) for create, update, unlink and whole-group deletion, and [Shop4 initialization strategy](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit?usp=drivesdk) for SPU1-first grouping and repair of unsuitable existing groups. Ordinary product UPDATE CSV group fields do not perform these operations.
+
 ## Purpose and boundaries
 
 This guideline defines common Mercari Shops **CSV bulk listing** business semantics, platform constraints, validation gates, evidence, and operator responsibilities. It applies regardless of destination shop. A particular shop is an **execution parameter**, not a hardcoded assumption in this document.
@@ -218,3 +222,81 @@ Apply these defaults consistently across shops. Only override a value for a docu
 **Preflight:** snapshot original CSV, Giga XLSX, mapping/master SHAs and current Seller UPDATE template; verify one row per distinct Mercari `商品ID`, approved `カテゴリID` is a valid master leaf and canonical candidate, each listing's SKU set is compatible, current value differs, no unresolved combo conflicts, all required columns present, exact UTF-8/encoding as official template, and no unrelated field differences. Produce dry-run diff, blocked-row report, rollback baseline, upload batch checksum, operator/reviewer, and reconciliation plan. Do not upload until explicitly authorized. After Seller import, reconcile product IDs and actual category values; preserve error CSV and import evidence, and never infer success from upload acceptance alone.
 
 **Shop4 first-run sources:** Shop4 export [2026-11-16 CSV](https://drive.google.com/file/d/1YScThDIlJD_kbbMTGLjopjkkAC4Qb2ma/view); Giga [2026-11-15 XLSX](https://docs.google.com/spreadsheets/d/14W6XqePlDcJkjWpi9NJWSfxy2rpV-jCR/edit); [read-only review folder](https://drive.google.com/drive/folders/13dwjXZQuxz_MYPpRo49P9b0ifD4GHxEW). Implementation tracking: [#133](https://github.com/retailpulses/.github/issues/133), [#134](https://github.com/retailpulses/.github/issues/134).
+
+
+## Mercari description formatting standard (BUS-MER-013)
+
+**Owner-confirmed rule (2026-11-17):** Apply this rendering standard to customer-facing `商品説明` for all company-operated Mercari Shops. It is a plain-text platform field; do not assume Markdown syntax is rendered.
+
+- **Plain text only:** Do not use Markdown heading markers (`#`), bold markers (`**`), Markdown tables, code fences, or other markup syntax. Such syntax may appear literally to buyers instead of formatting the copy.
+- **Section spacing:** Insert exactly one blank line between major sections.
+- **Within a section:** Do not insert blank lines between the section heading and its content, between consecutive sentences, or between bullets/items. Keep the section compact and continuous.
+- **No decorative whitespace:** Do not add leading blank lines, trailing blank lines, multiple consecutive blank lines, or blank lines merely to make individual bullets look spacious.
+- **Readable plain-text labels:** Use concise Japanese section labels and simple symbols such as `■`, `【】`, `①`, and `・` where useful. These are literal characters, not Markdown.
+- **Preserve factual content:** Formatting changes must not add unverified specifications, included-item counts, warranty terms, shipping promises, or performance claims. Confirm uncertain facts or omit them.
+- **Keep sections purposeful:** Typical sections are product introduction, key features, product specifications, shipping, and purchase notes. Include only sections relevant to the listing.
+
+**Acceptance check:** Inspect the final description as rendered on the public Mercari listing page. It must contain no literal Markdown syntax, exactly one blank line between major sections, and no extra blank lines within a section. The source text and the rendered listing should be visually checked; a CSV/schema validation alone is insufficient.
+
+**Canonical compact example:**
+
+```text
+【商品名・商品タイプ】
+商品の概要を簡潔に説明します。
+購入判断に必要な特徴を続けて説明します。
+
+■ おすすめポイント
+① 特徴の見出し
+特徴の説明。
+② 特徴の見出し
+特徴の説明。
+
+■ 商品仕様
+・カラー：ナチュラル
+・素材：木製＋スチール
+・サイズ：幅・奥行・高さ
+
+■ 発送について
+・発送目安：1～2営業日
+※地域別の追加送料など、適用する条件のみ記載
+```
+
+The example is structural only. Populate every value from verified listing data. The standard governs visible spacing: one blank line between sections, none within sections.
+
+
+## SKU 種類 naming and completeness (BUS-MER-014)
+
+**Owner-confirmed company rule (2026-11-18):** For every SKU that actually exists in a listing, `SKUi_種類` must contain an accurate, non-empty Japanese option name when creating that SKU or intentionally editing its type. This is a company operating standard; the platform may technically accept an empty value.
+
+- Describe the actual distinguishing specification: color, size, capacity, included quantity or type. Do not use marketing claims, promotions, popularity/scarcity language, warranties, internal Item Codes or arbitrary variant letters.
+- Follow the current official field limit (the reviewed UPDATE guide specifies 16 characters); confirm the active template before export. Do not truncate a required distinction or invent a specification to fill a blank.
+- Align the wording with the product group's `商品省略名` wherever both represent the same option. One listing may contain multiple SKUs: its group short name can describe a listing-level choice while each SKU type describes a finer option. Do not force all SKU names to the same value or copy an inaccurate existing type into the group short name.
+- Existing empty or inaccurate type names are a separate cleanup queue. The Shop4 product-group pilot does not require a complete SKU-type rewrite. Leave unrelated existing SKU fields untouched in a group-only batch, and track observed exceptions for subsequent work.
+- Unused `SKU2`–`SKU10` slots remain empty. Do not create phantom SKUs or fill all ten type columns merely to satisfy this standard.
+- A normal product UPDATE that does not edit SKU type must preserve current SKU data and use the operation-specific patch semantics. An omitted type field in an unrelated patch is not a request to clear it.
+
+Source: [Official product UPDATE CSV guide](https://support.mercari-shops.com/hc/ja/articles/60017371839513). Shop4 pilot-specific short-name length and grouping decisions remain in its [Drive plan](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit); promote only validated reusable grouping rules after the pilot.
+
+
+## Customer-facing color names use katakana by default (BUS-MER-015)
+
+**Owner-confirmed company rule (2026-11-18):** Use conventional Japanese katakana as the default for customer-facing color names across all company Mercari Shops. This covers `SKUi_種類`, product-group `商品i_省略名`, and color expressions intentionally authored in `商品名` / `商品説明`.
+
+| Source / abbreviated value | Default display |
+|---|---|
+| White / 白 | ホワイト |
+| Black / 黒 | ブラック |
+| Gray / Grey | グレー |
+| Light Gray / Light Grey / 薄グレー | ライトグレー |
+| Dark Gray / Dark Grey / 濃グレー | ダークグレー |
+| Beige | ベージュ |
+| Brown | ブラウン |
+| Dark Brown / 濃茶 | ダークブラウン |
+| Light Brown / 薄茶 | ライトブラウン |
+| Natural | ナチュラル |
+
+- Apply the same spelling to group short names and accurate SKU type values whenever they describe the same color. Preserve genuine shade differences and meaningful combinations; do not collapse light/dark/blue-gray into generic gray.
+- Do not shorten `ホワイト` to `白`, `ブラック` to `黒`, or `ライトグレー` to `薄グレー` merely to meet a display-length target. Shorten redundant non-color text, simplify the selection axis or split the group while preserving the actual choice.
+- Katakana is the default naming convention, not permission to invent a color. Preserve verified official/special color names, material/finish or transparent descriptors where a mechanical transliteration would change the meaning; document the source when an exception is needed.
+- Keep names factual and free of marketing terms. Validate the complete field against its active platform limit and the applicable pilot readability target.
+- Keep raw supplier/export observations unchanged. Update only the explicitly targeted display fields; a color-rule update does not authorize a blanket rewrite of live listings or existing SKU data.

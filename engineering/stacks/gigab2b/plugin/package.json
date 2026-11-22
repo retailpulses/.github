@@ -1,0 +1,25 @@
+{
+  "name": "@local/dsh-gigab2b",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Read and (optionally) write GigaB2B Open API 2.0 data from chat: inventory, price, product list/detail, order status, tracking and dropship sync.",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "locale/*.json",
+    "icon.svg",
+    "scripts/*.mjs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
