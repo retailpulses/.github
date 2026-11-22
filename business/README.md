@@ -21,6 +21,7 @@
 | Domain | Knowledge topic | Status |
 |---|---|---|
 | B2B / Commerce Ops | [Initial B2B customer opportunity — hosted orders + inquiries (2026-11-14)](research/b2b-customer-opportunity-20261114.md) | DRAFT / evidence PARTIAL; anonymized operational signal screening, not verified business identities |\n| Mercari | Sales seasonality and monthly bestsellers | Proposed; source `public.sales_orders`; current entrypoint/methodology to be added after reproducible analysis review |
+| Rakuten | [Rakuten-style main image: platform rules, our preference, R2 delivery](rakuten/style-image.md) | DRAFT; Rakuten official rules VERIFIED, size/penalty PARTIAL, R2 VERIFIED |
 
 Knowledge entries need not have BUS IDs. Distinguish observed facts, hypotheses, approved insights and decisions. Preserve source provenance, store scope, dates, method and review cadence. Do not duplicate raw order history or customer data.
 
