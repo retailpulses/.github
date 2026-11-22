@@ -9,7 +9,7 @@
 | [DOCUMENTATION_STANDARD.md](DOCUMENTATION_STANDARD.md) | **Pilot** | 产品知识与 Design、Architecture、TRD、Current State、ADR、Reference 的职责边界。PR #17 合并为提案；PR #20、#21 增补 Reference 与 UI Sketch 指引；按 Issue #16 后续评估，不视为全组织强制采用。 |
 | [DESIGN_MIGRATION_GUIDE.md](DESIGN_MIGRATION_GUIDE.md) | **Pilot** | 产品文档迁移的审计、对照、验证与交接流程；它不授权批量改造产品仓库。 |
 | [templates/PRODUCT_DESIGN.md](templates/PRODUCT_DESIGN.md) | **Reference / optional template** | 产品 Design 的可复用起点；是否使用由产品 Owner 按需决定。 |
-| [stacks/README.md](stacks/README.md) | **Pilot** | 工程/工具栈登记：组合方式、入口、数据边界与验证证据；当前含 [`supabase-local`](stacks/supabase-local/README.md)（本地 Supabase 访问，2026-11-17 本机实测）。 |
+| [stacks/README.md](stacks/README.md) | **Pilot** | 工程/工具栈登记：组合方式、入口、数据边界与验证证据；当前含 [`supabase`](stacks/supabase/README.md)（Supabase 访问：本地 + Cloud 多目标，本地 2026-11-17 实测、云目标 2026-11-22 设计定稿）。 |
 
 ## Proposed / Pilot / Reference
 

@@ -377,7 +377,7 @@ Connection pooling rules depend on the access path, not the client library:
 | Access path | Transport | Pooling mechanism |
 |-------------|-----------|-------------------|
 | `postgrest` | HTTP (PostgREST via Supabase client) | Supabase manages connection pooling server-side; no client-side pooler needed |
-| `supavisor` | PostgreSQL wire protocol (port 6543) | PgBouncer / Supavisor transaction-mode pooling |
+| `supavisor` | PostgreSQL wire protocol via the Supavisor pooler host: 6543 (transaction mode) or 5432 (session mode) | PgBouncer / Supavisor pooling |
 | `direct_postgres` | PostgreSQL wire protocol (port 5432) | No built-in pooling; operator must configure a connection pooler or keep connections short-lived |
 
 - `supabase-js` (the Supabase JavaScript client) uses HTTP/PostgREST by default. This path does **not** use PgBouncer directly — the Supabase platform manages PostgREST-to-database connection pooling server-side. Do not describe `supabase-js` as connecting through PgBouncer.
@@ -385,6 +385,13 @@ Connection pooling rules depend on the access path, not the client library:
 - Direct `psql` sessions must be short-lived (under 60 seconds of idle time).
 - No workload may open more than 5 concurrent database connections without explicit approval in the workload declaration. Exact per-workload connection limits are declared in the workload declaration, not centrally mandated.
 - Connection-held transactions (idle-in-transaction) exceeding 30 seconds must be killed. Timeout enforcement is the operator's responsibility.
+
+**Supavisor behaviour verified 2026-11-22 (project `gqeyfhshxdiyhugvmbuk`).** These are facts about the pooler, not preferences; workloads relying on the opposite must be corrected:
+
+- The **host** identifies the access path, not the port. `<ref>.supabase.co:5432` is a direct connection (IPv6-only); `<pooler-host>.pooler.supabase.com:5432` is Supavisor **session** mode and `:6543` is **transaction** mode. A workload declared as `supavisor` must point at the pooler host.
+- Supavisor **does not forward libpq startup `options`**. `PGOPTIONS="-c default_transaction_read_only=on"` was ignored on both 5432 and 6543 (a `CREATE TEMP TABLE` succeeded). Read-only enforcement and timeouts must be expressed in SQL (`BEGIN READ ONLY`, `SET LOCAL statement_timeout`), not in connection options.
+- `pg_stat_ssl` reports `ssl = false` for sessions behind the pooler even when the client connection is encrypted, because the pooler terminates TLS. Verify encryption with client-side connection info, not that view.
+- Non-`postgres` project roles are supported in the `<role>.<ref>` form; a role that does not exist fails with `(EAUTHQUERY) user not found in the database`, which distinguishes a missing role from a wrong password or wrong region.
 
 ### 13.5 Timeouts and Retries
 
@@ -489,7 +496,7 @@ Every workload must declare and follow an approved database access path. The gov
 | Path | Description | Typical use |
 |------|------------|------------|
 | `postgrest` | Supabase REST API (PostgREST) via Supabase client or HTTP | Server-side read queries, lightweight API access |
-| `supavisor` | Supabase transaction-mode pooler (port 6543) | Direct database access with connection pooling |
+| `supavisor` | Supabase Supavisor pooler host — transaction mode (6543) or session mode (5432) | Direct database access with connection pooling |
 | `internal_api` | Owner-repo Worker API endpoint | When an owner provides a curated API; consumer repos may use this or any other approved path |
 | `direct_postgres` | Direct PostgreSQL connection (port 5432) | Schema operations, migrations, maintenance; requires explicit approval |
 
