@@ -130,9 +130,18 @@ budget become reachable.
 
 The cutover is specified in
 [`OrderMgmt/docs/plans/systemd-authoritative-order-pipeline-cutover.md`](https://github.com/retailpulses/OrderMgmt/blob/main/docs/plans/systemd-authoritative-order-pipeline-cutover.md):
-phase parity matrix, five blocking gaps (cadence, Rakuten flags, message ingestion, payment reminders,
-and `close_shop_orders` failing on every VPS run), and a sequence that never leaves the pipeline with zero
-runners.
+phase parity matrix and the blocking gaps (cadence, Rakuten flags, message ingestion, payment reminders),
+plus a sequence that never leaves the pipeline with zero runners.
+
+Verified scheduler ownership: `order_scheduler_ownership` names `vps_order_orchestrator` for all six Mercari
+workloads (`legacy_scheduler_disabled=true`), and `pipeline_run_log` shows those steps only ever run with
+`trigger_type='systemd'`. The Worker is **already fenced out** of the Mercari order pipeline — this is not a
+double-writer, and `rp-order-mgmt`'s Mercari crons are no-ops. The Worker still actively runs the Rakuten
+set, `sync_mercari_messages` and `send_payment_reminders`.
+
+Note on `close_shop_orders`: its step has reported `ok=false` on every run for 14+ days, but business
+closing is healthy (333 `mercari_close_order` CONFIRMED in 30 days). It is a false-negative success signal,
+not an outage.
 
 ## 5. Target runtimes
 
