@@ -1,6 +1,6 @@
 # Cloudflare Workers Paid — Retirement Decision
 
-**Status:** Accepted — migration in progress (plan not yet retired)
+**Status:** Accepted — Phase 1 complete (2026-11-22), Phase 2 pending (plan not yet retired)
 **Version:** 1.0.0
 **Last updated:** 2026-11-22
 **Owner:** Jim Yang
@@ -44,8 +44,8 @@ and Registrar are free of Workers Paid.
 
 ## 3. Inventory (verified 2026-11-22, account `3c508be87424420345cce942487c298f`)
 
-- **45** Worker scripts, **8** Pages projects.
-- **27 cron entries across 12 workers.**
+- **33** Worker scripts (was 45 before Phase 1), **8** Pages projects.
+- **25 cron entries across 10 workers** (was 27 across 12).
 - 4 Durable Objects namespaces (SQLite-backed), 68.89K requests/month.
 - 1 tunnel: `rp-order-mgmt-relay` (healthy, 8 apps).
 
@@ -67,11 +67,11 @@ Verified against the live Workers plan comparison table.
 
 | Constraint | Workers Free | Current account | Verdict |
 |---|---|---|---|
-| **Cron Triggers per account** | **5** | **27** | **BLOCKER — ~22 schedules would stop** |
+| **Cron Triggers per account** | **5** | **25** | **BLOCKER — ~20 schedules would stop** |
 | CPU time per invocation | 10 ms | 7 workers exceed | **BLOCKER** |
 | Requests | 100,000 / day | ~124K / month | OK |
 | Subrequests per request | 50 | unaudited | Audit heavy Workers |
-| Number of Workers | 100 | 45 + 8 | OK |
+| Number of Workers | 100 | 33 + 8 | OK |
 | Durable Objects | 100,000 req/day | 68.89K / month | OK |
 | Queues | 10,000 ops/day | minimal | OK |
 | Workers Builds | 3,000 min/mo | 0 used | OK (6,000 → 3,000) |
@@ -84,7 +84,7 @@ Cron inventory to relocate or consolidate to ≤5:
 | `inquiry-automation-worker` | 3 |
 | `inquiry-handler` | 2 |
 | `ticketing-mercari-ingestion` | 2 |
-| `boutique-listing-dev`, `boutique-listing-production`, `investment-clawbot`, `investment-clawbot-prod`, `mercari-ticket-reports`, `rp-mail-integration`, `ticketing-amazon-ingestion`, `ticketing-rakuten-ingestion` | 1 each |
+| `investment-clawbot`, `investment-clawbot-prod`, `mercari-ticket-reports`, `rp-mail-integration`, `ticketing-amazon-ingestion`, `ticketing-rakuten-ingestion` | 1 each |
 
 `rp-order-mgmt` alone holds 12 of the 27, and the VPS already runs `order-mgmt-orchestrator.timer` and
 `order-health-recovery.timer`. **Confirm whether the Worker crons are duplicates before porting them** —
@@ -110,12 +110,27 @@ runtime and ConoHa for the relay. That split is retained.
 **Phase 0 — Freeze & inventory (done).**
 Billing, subscriptions, cron, DO, CPU and Pages inventory captured in §1–§4.
 
-**Phase 1 — Retire the dead surface (low risk).**
-1. Repoint `canonical_copy_ui.py`'s `BOUTIQUE_LISTING_BASE_URL`, or confirm the tool is retired.
-2. Remove the `listing.homesbliss.net` route and the `0 18 * * *` cron from
-   `boutique-listing/wrangler.toml`, deploy, confirm the hostname is decommissioned.
-3. Delete `boutique-listing-production` and `boutique-listing-dev` scripts.
-4. Delete Workers with no routes and no traffic (the `*-staging` ticketing and learning set).
+**Phase 1 — Retire the dead surface (DONE 2026-11-22).**
+1. Deleted `boutique-listing-production` and `boutique-listing-dev`; `listing.homesbliss.net` no longer resolves.
+2. Deleted 10 routeless, zero-traffic scripts: `giga-products-sync-dev`, `giga-youge-sync-staging`,
+   `learning-plan-app-dev`, `mercari-ticket-reports-staging`, and the six `ticketing-*-staging` scripts.
+   Result: 45 → 33 Worker scripts, 27 → 25 cron entries.
+3. Removed the `0 18 * * *` cron and the `listing.homesbliss.net` custom-domain route from
+   `boutique-listing/wrangler.toml` (`867bbf2`) so a later deploy cannot resurrect them.
+4. `canonical_copy_ui.py` left untouched: 30 days of zone HTTP analytics show **zero** calls to
+   `/api/mercari/single-listing`, so repointing it is deferred until the tool is actually used again.
+
+**Phase 1 evidence.** Zone `homesbliss.net` (Free plan) HTTP analytics for `listing.homesbliss.net`,
+30 days to 2026-11-22: 860 requests, all 404 probes for `/.env.staging`, `/.git/logs/HEAD`,
+`/.kube/config`, `/service-account-key.json` and similar — zero business paths. The publish endpoint was
+still live and enforcing auth (`POST /api/mercari/single-listing` → 401 Unauthorized), so the zeroes are
+real absence of use, not a dead endpoint.
+
+**Restore path if the gateway is suddenly needed.** The feature is not on `main`: it lives on
+`origin/feat/single-listing-publish-api` (+123 lines in `src/index.js`, issue #91, closed 2026-10-06 and
+deployed to production 2026-10-07 via API). The deployed bundle is preserved at
+`~/retailpulses/cf-worker-backups/boutique-listing-production-20261007-5ef9e449.js` and can be redeployed
+with `wrangler deploy <bundle> --name boutique-listing-production`.
 
 **Phase 2 — Consolidate crons onto VPS (the real work).**
 Move each remaining cron to a `systemd` timer on the owning VPS (pattern proven by `catalogsync.timer` and
