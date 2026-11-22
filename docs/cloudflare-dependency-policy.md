@@ -1,8 +1,8 @@
 # Cloudflare Dependency Policy
 
 **Status:** Advisory
-**Version:** 1.0.0
-**Last updated:** 2026-06-09
+**Version:** 1.1.0
+**Last updated:** 2026-11-22
 
 ---
 
@@ -224,6 +224,11 @@ As of 2026-06-09:
 | `Techstack` | Low (relay Workers) | Low | Clean pattern. No action needed. |
 | `retailpulses-tool-services` | Low (R2 MCP) | Low | R2 is portable. No action needed. |
 | All others | None | None | No action needed. |
+
+**2026-11-22 update:** The account-level Workers Paid subscription is being retired. See
+[`cloudflare-workers-paid-retirement.md`](./cloudflare-workers-paid-retirement.md) for the decision,
+the Free-tier blockers (27 cron triggers against a limit of 5; 7 Workers above the 10 ms CPU cap) and the
+phased migration. New Worker dependencies should assume the Free plan is the end state.
 
 ---
 
