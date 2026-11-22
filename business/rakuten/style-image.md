@@ -65,6 +65,7 @@ Mercari Shops 的商品主图采用 **Rakuten 风格**（楽天市場の第1商�
 | **禁止促销/优惠信息** | 送料無料、ポイント、クーポン、セール、割引、価格、円 等一律不出现 | 主图是商品资产不是促销素材；活动变化会让图过期；并占用 20% 配额 |
 | **卖点必须是产品属性** | 4段 / 全面ガラス / 棚板高さ調整 | 可长期成立、无需随活动更新 |
 | **不写完整商品名** | 只写类型 + 一句利益点 | 完整标题交给 Mercari 标题字段，避免主图文字膨胀 |
+| **不加顶部装饰线/短横条** | 标题直接从版面上沿起排 | 短横条虽非"枠線"，但属于 Rakuten 判定里可能被视作"帯状要素"的灰色元素；去掉可消除歧义 |
 
 **强制实现：** 渲染器内置 `assert_no_offer_text()`，任何标题/副标题/标签/尺寸文案命中促销词即抛错、不出图。这条是代码约束，不是操作纪律。
 
@@ -165,7 +166,8 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 | 步骤 | 结果 |
 |---|---|
 | Custom domain 绑定 | `img.homesbliss.net` → bucket `resize-product-images`（zone `homesbliss.net`）；SSL 签发后 `HTTP/2 200` |
-| R2 object | `main-image/n515s537400w/n515s537400w_c4_44c588a6.jpg`；198,962 bytes；sha256 `44c588a6…`；`content-type: image/jpeg`；`cache-control: max-age=14400` |
+| R2 object（v1） | `main-image/n515s537400w/n515s537400w_c4_44c588a6.jpg`；198,962 bytes；sha256 `44c588a6…`；`content-type: image/jpeg`；`cache-control: max-age=14400` |
+| R2 object（v2，当前） | `main-image/n515s537400w/n515s537400w_c4_18e1aed2.jpg`；198,431 bytes；sha256 `18e1aed2…`；去掉标题上方装饰线后重新出图并替换；首图已确认 |
 | 公网完整性 | 本地文件与公网下载 sha256 一致 |
 | Mercari 写入 | `updateProduct(input:{id, imageUrls:[new]+既存13枚})` 返回无 errors；实际返回 **14 张 Mercari 转存后**的 assets URL |
 | 首图确认 | 转存后第 1 张为 1500×1500 生成图（人工目检） |
