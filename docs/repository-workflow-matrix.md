@@ -13,7 +13,7 @@
 | **workers** | Active | CF Workers monorepo (6 workers) | Cloudflare Workers | main |
 | **CatalogSync** | Active | CF Worker + VPS relay | CF Workers + ConoHa VPS | main |
 | **boutique-listing** | Active | CF Worker + VPS relay | CF Workers + ConoHa VPS | main |
-| **OrderMgmt** | Active | CF Worker + VPS relay | CF Workers + ConoHa VPS | main |
+| **OrderMgmt** | **RETIRED / ARCHIVED** (2026-11-22) — superseded by `commerce-ops/apps/orders` | — | — | — |
 | **mercariops** | Active | Python tools + CF Worker (reporting) | CF Workers (reporting) | main |
 | **ticket handling** | Active | CF Worker + VPS proxy | CF Workers + ConoHa VPS | main |
 | **amazonops** | Active | Python CLI tools | N/A (local only) | main |
@@ -35,7 +35,7 @@
 | **workers** | None ⟶ **ADDED** | PR validation → main | dev env | workflow_dispatch (manual) | main only | ✓ per-worker | Missing PR CI |
 | **CatalogSync** | None ⟶ **ADDED** | PR validation → main | dev env | workflow_dispatch (manual) | main only | Added | Missing PR CI, concurrency, smoke |
 | **boutique-listing** | Validate embedded in deploy | PR validation → main | dev env (auto on push) | workflow_dispatch (manual) | main only | ✓ Worker + Relay | Missing separate PR CI |
-| **OrderMgmt** | Test embedded in deploy | PR validation → main | No dev env | workflow_dispatch (manual) | main only | ✓ Worker + Relay | Missing separate PR CI |
+| **OrderMgmt** | **RETIRED / ARCHIVED** — do not deploy from here | — | — | — | — | — | Repo is read-only; use `commerce-ops` |
 | **mercariops** | Python tool only | PR validation → main | dev env (auto on push) | push/release/workflow_dispatch | main (no guard) | **Missing** | No smoke, no branch guard, no concurrency |
 | **ticket handling** | ✓ pr-check.yml | PR validation → main | staging env | **push to main auto-deploys production** | main | ✓ production only | **CRITICAL: auto-deploy to production on push** |
 | **amazonops** | None | N/A (tool only) | N/A | N/A | N/A | N/A | No CI at all |
@@ -52,7 +52,7 @@
 | Repository | Exception | Justification |
 |-----------|----------|---------------|
 | **boutique-listing** | Push to main auto-deploys to dev | Internal tool with no customer impact; dev environment is isolated; production requires manual dispatch |
-| **OrderMgmt** | No dev environment | Would double-process orders if dev env existed; testing via local CLI and unit tests |
+| **OrderMgmt** | **RETIRED / ARCHIVED** | No longer part of the deploy surface; it had diverged from production |
 | **mercariops (reporting)** | Push trigger still present | Legacy; being addressed in this audit |
 | **ticket handling** | Push to main deploys production | Legacy; being addressed in this audit. Production deploys must be manual |
 | **amazonops, rakutenops** | No CI at all | CLI tools run locally by operator; no deployable service |
@@ -68,7 +68,7 @@
 | **workers** | Low-risk: PR validation → sequential merge to main |
 | **CatalogSync** | Low-risk (single service): PR validation → merge to main |
 | **boutique-listing** | Low-risk: PR validation → merge to main → dev auto-deploy → manual production |
-| **OrderMgmt** | High-risk: PR validation → manual production with approval. Order pipeline affects customers. |
+| **OrderMgmt** | **RETIRED / ARCHIVED** — order domain owned by `commerce-ops/apps/orders` |
 | **mercariops** | Low-risk: PR validation → merge to main |
 | **ticket handling** | High-risk: PR validation → staging → manual production. Customer messaging is affected. |
 
