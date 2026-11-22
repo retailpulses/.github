@@ -204,6 +204,27 @@ at all; it requires eliminating the remaining six expressions:
 
 Each of those Workers also needs a machine credential before a VPS timer can drive it.
 
+## 4c. Retired repositories found during this work
+
+### `retailpulses/OrderMgmt` — archived 2026-11-22
+
+Retired and archived during the Phase 2 investigation. It had already diverged from production before
+retirement, so nothing in it was authoritative:
+
+| Fact | OrderMgmt | commerce-ops / production |
+|---|---|---|
+| `src/orchestrator.mjs` | 24,464 bytes (drifted) | 24,776 bytes — byte-identical to the VPS release |
+| Deployed Worker release `8bf0de39…` | absent | present (2026-10-11) |
+| `wrangler.toml` cron expressions | 11 | 12 — matched the live Cloudflare schedules, including `11,21,31,41,51 * * * *` |
+
+Its README and `AGENTS.md` now carry a RETIRED banner naming `commerce-ops/apps/orders` as the single
+canonical source. Archiving makes all 13 workflows inert, including `deploy-worker.yml`, which would
+otherwise have shipped the older code plus a cron set that no longer matches production.
+
+**Canonical ownership after retirement:** order domain = `commerce-ops/apps/orders`; inquiry and tickets =
+`commerce-ops/apps/inquiry`, `commerce-ops/apps/tickets`. This repository remains the cross-cutting
+governance record.
+
 ## 5. Target runtimes
 
 Per `AGENTS.md` §2 and `runtime-strategy.md`, not everything goes to the same host:
