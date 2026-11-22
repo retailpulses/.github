@@ -1,6 +1,11 @@
 # Cloudflare Workers Paid — Retirement Decision
 
-**Status:** Accepted — Phase 1 complete (2026-11-22), Phase 2 pending (plan not yet retired)
+**Status:** Accepted — Phase 1 complete (2026-11-22). Phase 2 design under review
+([commerce-ops#499](https://github.com/retailpulses/commerce-ops/pull/499)).
+
+**Sprint design (canonical):** [commerce-ops `docs/phases/cloudflare-retirement-mercari-single-ingestion`](https://github.com/retailpulses/commerce-ops/blob/main/docs/phases/cloudflare-retirement-mercari-single-ingestion/README.md)
+— bounded Phase covering repository consolidation, the order scheduling cutover, `commerce-ops#498`, the
+single-source Mercari ingestion refactor, and the plan downgrade.
 **Version:** 1.0.0
 **Last updated:** 2026-11-22
 **Owner:** Jim Yang
