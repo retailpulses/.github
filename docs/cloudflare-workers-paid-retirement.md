@@ -128,6 +128,12 @@ at `close_shop_orders` (`ok: false` → service exit 1). So the correct order of
 Only then can `rp-order-mgmt`'s 12 cron expressions be retired, and only then does the Free plan's 5-cron
 budget become reachable.
 
+The cutover is specified in
+[`OrderMgmt/docs/plans/systemd-authoritative-order-pipeline-cutover.md`](https://github.com/retailpulses/OrderMgmt/blob/main/docs/plans/systemd-authoritative-order-pipeline-cutover.md):
+phase parity matrix, five blocking gaps (cadence, Rakuten flags, message ingestion, payment reminders,
+and `close_shop_orders` failing on every VPS run), and a sequence that never leaves the pipeline with zero
+runners.
+
 ## 5. Target runtimes
 
 Per `AGENTS.md` §2 and `runtime-strategy.md`, not everything goes to the same host:
