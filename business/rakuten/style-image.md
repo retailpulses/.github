@@ -35,9 +35,9 @@ Mercari Shops 的商品主图采用 **Rakuten 风格**（楽天市場の第1商�
 
 | 项 | 常见要求 | 我们的产出 |
 |---|---|---|
-| 推荐尺寸 | 正方形 **700×700 以上**；实务 700–1000px | 1500×1500 源图 + 1000×1000 上传图 |
+| 推荐尺寸 | 正方形 **700×700 以上**；实务 700–1000px | **1500×1500**（JPG 上传 ~194KB + PNG 源） |
 | 最大尺寸 | 3840×3840 | 1500 ✓ |
-| 文件容量 | ≤ 2MB | PNG ≈ 620KB / JPG ≈ 88KB ✓ |
+| 文件容量 | ≤ 2MB | JPG ≈ 194KB / PNG ≈ 606KB ✓ |
 | 格式 | JPG / GIF（PNG 会被转换） | 上传用 JPG |
 | 数量 | 1 商品 ≤ 20 张 | 主图 1 张 |
 
@@ -74,7 +74,7 @@ Mercari Shops 的商品主图采用 **Rakuten 风格**（楽天市場の第1商�
 |---|---|---|
 | 产品占画面 | 65–75% | **66%** |
 | 文字占比 | ≤ 20%（Rakuten 上限） | **9.5%** |
-| 画布 | 1:1 正方形 | 1500×1500 / 1000×1000 |
+| 画布 | 1:1 正方形 | **1500×1500** |
 | 背景 | #FFFFFF 纯白 | 是 |
 | 边框 | 无 | 无 |
 
@@ -142,7 +142,8 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 
 ### 3.3 关键限制与风险
 
-1. **`r2.dev` 不是生产域名。** Cloudflare 官方明确：`r2.dev` 仅用于非生产、**有限流**；要用缓存、WAF、Bot Management 必须挂**自定义域名**；也不支持 CNAME 到 `r2.dev`。 → 现在这个 `pub-606b...r2.dev` 适合 POC 和内部验证，**不适合作为 Mercari 店铺长期图片源**，量产前应切到自定义域（如 `img.retailpulses.com`）。
+1. **`r2.dev` 不是生产域名。** Cloudflare 官方明确：`r2.dev` 仅用于非生产、**有限流**；要用缓存、WAF、Bot Management 必须挂**自定义域名**；也不支持 CNAME 到 `r2.dev`。 → 现在这个 `pub-606b...r2.dev` 适合 POC 和内部验证，**不适合作为 Mercari 店铺长期图片源**。
+   **域名约束（已确认）：** 我们只有 **`homesbliss.net`** 在 Cloudflare 托管；`retailpulses.com` 仍由 Wix 管理，不能用于 R2 custom domain。生产图片域名只能用 homesbliss.net 的子域，建议 **`img.homesbliss.net`**（与现有 `listing.homesbliss.net` 同区）。
 2. **R2 ≠ R-Cabinet。** Rakuten 的商品图在 CSV 里是 **R-Cabinet 路径**，说明文内图片也只能用 R-Cabinet；R2 的公网 URL 不能直接填进 Rakuten 商品画像字段。R2 服务的是 **Mercari CSV（外部 URL）** 和内部资产归档。若同一张图要上 Rakuten，仍需单独上传 R-Cabinet。
 3. **图片是店铺资产，不是页面资产。** 一旦 CSV 引用 R2 URL，删对象等于商品图挂掉。需要生命周期策略：至少保留"当前上架 SKU 在用的对象"，删除前先查 manifest/listing。
 4. **Mercari 侧限制是 8MB/张、≤20 张**（见 [Giga Image Selection Policy](https://github.com/retailpulses/.github/blob/main/business/mercari/images/giga-image-selection-policy.md)）。1000×1000 JPG 约 88KB，远低于上限。
@@ -151,8 +152,8 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 
 | 决策 | 建议 |
 |---|---|
-| 公开域名 | 自定义域 `img.retailpulses.com` 绑 R2，启用 Cache Everything + 长 TTL（内容哈希已保证不被覆盖） |
-| 上传图规格 | 1000×1000 JPG q90（Mercari CSV 用）；1500 PNG 仅作归档，不必公开 |
+| 公开域名 | **已定：`img.homesbliss.net`**（homesbliss.net 是唯一 Cloudflare 托管域；retailpulses.com 在 Wix 下不可用），启用 Cache Everything + 长 TTL（内容哈希已保证不被覆盖） |
+| 上传图规格 | **1500×1500 JPG q92**（已定：1500 优于 1000）；1500 PNG 仅作源归档，不必公开 |
 | key 前缀 | `main-image/`，与 `resize-product-images` 现有超图路径区分 |
 | 上传触发 | 独立 CLI/runner job，幂等：同 hash 已存在则跳过 |
 | 回滚 | manifest 保留历史 hash，CSV 重发旧 key 即可 |
@@ -164,7 +165,7 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 
 1. 选底图（白底 3/4、无供应商文字）。
 2. 配置产品级参数（类型、卖点、尺寸、徽章）。
-3. 渲染 + 校验：`text_ratio ≤ 0.20`、无促销词、1000/1500 尺寸正确。
+3. 渲染 + 校验：`text_ratio ≤ 0.20`、无促销词、输出 1500×1500 且 JPG ≤ 2MB。
 4. 上传 R2（key 含内容哈希），写 manifest。
 5. Mercari CSV 的 `商品画像名` 使用 manifest 里的 public URL。
 6. 上传后回读验证 URL 可访问、字节数匹配。
@@ -185,10 +186,18 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 
 ---
 
-## 6. Open decisions
+## 6. Decisions and open items
 
-1. **生产图片域名**：切 `img.retailpulses.com`（需 Cloudflare zone + R2 custom domain）还是继续用 `r2.dev` 跑 POC？
-2. **是否保留 1500 PNG 归档**：只公开 1000 JPG 可省存储，但失去高分辨率源。
-3. **哪些图进 R-Cabinet**：如果同一主图未来要上 Rakuten，是否现在就把 R2 对象同步一份到 R-Cabinet？
-4. **违规点数复核**：量产前用 RMS「画像判定」工具实测 3–5 张，确认 20% 计算口径与我们 `text_ratio` 一致。
-5. **POC 代码归属**：`rakuten-style-poc/` 迁入 `store-ops` 还是 `rakutenops`（见 POC README）。
+**已定（2026-11-22 sponsor）：**
+
+| 决策 | 结果 |
+|---|---|
+| 生产图片域名 | `img.homesbliss.net`（homesbliss.net 是唯一 Cloudflare 托管域；retailpulses.com 在 Wix 下不可用） |
+| 图片尺寸 | **1500×1500**（不用 1000） |
+| R-Cabinet 同步 | **暂不做**；R2 只服务 Mercari CSV 与内部归档 |
+
+**仍待定：**
+
+1. **1500 PNG 是否长期归档**：JPG 已满足上传；PNG 保留可作再编辑源，但需确定存放位置（R2 或 Git LFS/artifact）。
+2. **违规点数复核**：量产前用 RMS「画像判定」工具实测 3–5 张，确认 20% 计算口径与我们 `text_ratio` 一致。
+3. **POC 代码归属**：`rakuten-style-poc/` 迁入 `store-ops` 还是 `rakutenops`（见 POC README）。
