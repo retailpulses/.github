@@ -143,6 +143,67 @@ Note on `close_shop_orders`: its step has reported `ok=false` on every run for 1
 closing is healthy (333 `mercari_close_order` CONFIRMED in 30 days). It is a false-negative success signal,
 not an outage.
 
+## 4b. Phase 2 progress — moving schedules off Cloudflare cron
+
+### Verified premise correction (inquiry)
+
+An earlier assumption that inquiry ingestion already ran on a VPS cron is **false**:
+
+- `commerce-ops/docs/PRODUCTION_RUNTIME_INVENTORY.md`: `Inquiry ingestion | Worker inquiry-automation-worker;
+  three existing cron triggers`.
+- `commerce-ops/apps/inquiry/apps/worker/wrangler.toml`: `crons = ["*/30 * * * *", "0 * * * *", "0 16 * * *"]`.
+- `apps/inquiry/crontab.example` targets a **Mac** path, and the Mac has no crontab installed.
+- The VPS has no inquiry timer, no inquiry service process, and root's crontab holds only `acme.sh`.
+- Runtime truth: `inquiry_ingestion_runs` = 707 rows in 7 days, `delivery_source='daily_audit'`,
+  `release_sha` null, clustered at minute `:01` hourly across 4 shops — the Worker's hourly cron.
+
+### New machine credential (2026-11-22)
+
+The inquiry Worker's `authGuard()` fails closed without a token, and the existing `ADMIN_TOKEN` was not
+available in any local or VPS registry (only `INQUIRY_METRICS_TOKEN`, a different surface). A new random
+machine credential was generated and installed as:
+
+- Worker secrets `ADMIN_TOKEN` and `INQUIRY_AUDIT_ADMIN_TOKEN` on `inquiry-automation-worker`
+  (set via `wrangler secret put`; the REST secrets endpoint returns 401 with this OAuth token).
+- `/etc/inquiry-cron.env` on the VPS (`0600 root:root`), holding `INQUIRY_ADMIN_TOKEN` and
+  `INQUIRY_BASE_URL`.
+
+Rotating `ADMIN_TOKEN` is low-risk: no runtime consumer references it in `commerce-ops` (only docs and
+tests), and the inquiry dashboard authenticates against Supabase directly.
+
+### First VPS timer (template)
+
+`inquiry-cron.timer` → `inquiry-cron.service` → `/usr/local/bin/inquiry-run.sh`, which POSTs
+`/run?step=classify` to the Worker. This reproduces the `*/30 * * * *` cron, which runs
+`runMasterHandler(env, {dryRun:false})`.
+
+- `OnCalendar=*:0/30`, `AccuracySec=30s`, enabled 2026-11-22 22:19 JST, next fire 22:30 JST.
+- Verified: manual run returned `http=200`, `status ok`, `dryRun:false`, cursor advanced id 3450 → 3451.
+- Status: **dual-run** with the existing Worker cron until the results are compared.
+
+### Remaining endpoint gap
+
+Only `*/30 * * * *` has a clean HTTP equivalent. The other two inquiry crons need work first:
+
+| Cron | scheduled() action | HTTP equivalent |
+|---|---|---|
+| `0 * * * *` | `runAllShopAudits({maxDiscoveryPages:2})` + Sunday nickname conversion | none — `/admin/mercari-audit` is per-shop and has no `maxDiscoveryPages` |
+| `0 16 * * *` | `runAllShopAudits()` | per-shop only → 4 calls |
+
+### Cheaper route to the 5-cron budget
+
+`rp-order-mgmt` (2) + inquiry (3) = **exactly 5**. Reaching the Free plan does not require touching inquiry
+at all; it requires eliminating the remaining six expressions:
+
+| Worker | Crons | Verified activity |
+|---|---|---|
+| `inquiry-handler` | 2 | 440 invocations/24h, writes Baserow, owns `JobStateDO` |
+| `ticketing-mercari-ingestion` | 2 | active — 531 tickets, last 2026-11-16 |
+| `mercari-ticket-reports` | 1 | nightly 02:30, serves `/tickets/` |
+| `rp-mail-integration` | 1 | Zoho mail sync, ~9K subrequests/24h |
+
+Each of those Workers also needs a machine credential before a VPS timer can drive it.
+
 ## 5. Target runtimes
 
 Per `AGENTS.md` §2 and `runtime-strategy.md`, not everything goes to the same host:
