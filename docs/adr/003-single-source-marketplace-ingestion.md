@@ -1,6 +1,7 @@
 # ADR-003: Single-source marketplace ingestion with domain-owned projections
 
-**Status:** Proposed
+**Status:** Accepted (2026-11-23)
+**Accepted by:** Jim Yang
 **Date:** 2026-11-22
 **Governance version:** v1.5.0
 **Issue:** [commerce-ops#499](https://github.com/retailpulses/commerce-ops/pull/499) (Phase `cloudflare-retirement-mercari-single-ingestion`, stage S6)
