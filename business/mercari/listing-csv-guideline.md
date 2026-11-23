@@ -278,6 +278,10 @@ The example is structural only. Populate every value from verified listing data.
 Source: [Official product UPDATE CSV guide](https://support.mercari-shops.com/hc/ja/articles/60017371839513). Shop4 pilot-specific short-name length and grouping decisions remain in its [Drive plan](https://docs.google.com/document/d/1H_x9TSHexYcFmsDYfkqbejhjrE7dMHJ3r2IL1WLI5Hc/edit); promote only validated reusable grouping rules after the pilot.
 
 
+## SKU type default source — GigaB2B Main Color (BUS-MER-016)
+
+For `SKUi_種類`, the default value is the corresponding GigaB2B `Main Color` (internal `main_color`), expressed in conventional Japanese katakana per BUS-MER-015. GigaB2B `Main Color` is the source of truth by default, but in rare cases its value may be incorrect; a verified correction may override that default.
+
 ## Customer-facing color names use katakana by default (BUS-MER-015)
 
 **Owner-confirmed company rule (2026-11-18):** Use conventional Japanese katakana as the default for customer-facing color names across all company Mercari Shops. This covers `SKUi_種類`, product-group `商品i_省略名`, and color expressions intentionally authored in `商品名` / `商品説明`.
