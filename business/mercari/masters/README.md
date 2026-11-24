@@ -1,6 +1,6 @@
 # Mercari Catalog Master and Category Master — source registry and harvesting policy
 
-**Status:** Sponsor Review / Draft · 2026-11-13 JST. **Business authority:** `/.github/business/mercari`. No product code or marketplace changes authorized.
+**Status:** Category Master snapshot verified; **Giga→Mercari category dictionary v1 APPROVED 2026-11-24 JST** (see `taxonomy/category-mapping-policy.md` approval record and `taxonomy/giga-to-mercari-category-map-v1.manifest.json`). **Business authority:** `/.github/business/mercari`. Approval covers category decisions only — no listing upload, Seller write, or runtime activation is authorized by it.
 
 ## Critical distinction
 
@@ -84,4 +84,4 @@ See `taxonomy/category-mapping-policy.md` and standalone app design [store-ops #
 
 ## 2026-11-13 Local Giga census and mapping proposals
 
-The full local Supabase census is recorded in [Giga category audit](../taxonomy/giga-category-audit-20261113.md) and the 111-row [inventory](../taxonomy/giga-category-inventory-20261113.csv). It covers 6,309 categorized out of 6,464 active Canonical Variants, with 155 uncategorized and 39 supplier codes missing from the 72-row registry. The initial [one-shot candidate mappings](../taxonomy/giga-category-mapping-candidates-20261113.csv), [virtual subcategory proposals](../taxonomy/giga-virtual-subtype-candidates-20261113.csv) and [disabled fallback candidates](../taxonomy/giga-scoped-fallback-candidates-20261113.csv) are also on this draft branch. [Design and remaining quality gates](../taxonomy/giga-virtual-subcategory-design-20261113.md). **No candidate is approved for production CSV use by these draft files.**
+The full local Supabase census is recorded in [Giga category audit](../taxonomy/giga-category-audit-20261113.md) and the 111-row [inventory](../taxonomy/giga-category-inventory-20261113.csv). It covers 6,309 categorized out of 6,464 active Canonical Variants, with 155 uncategorized and 39 supplier codes missing from the 72-row registry. The initial [one-shot candidate mappings](../taxonomy/giga-category-mapping-candidates-20261113.csv), [virtual subcategory proposals](../taxonomy/giga-virtual-subtype-candidates-20261113.csv) and [disabled fallback candidates](../taxonomy/giga-scoped-fallback-candidates-20261113.csv) are also on this branch. [Design and remaining quality gates](../taxonomy/giga-virtual-subcategory-design-20261113.md). Those intermediate proposal files remain historical inputs; the **approved** decision source is now `taxonomy/giga-to-mercari-category-map-v1.csv` (308 relations, 111 Giga codes) with its manifest. Consumers read a pinned copy and never edit it locally.
