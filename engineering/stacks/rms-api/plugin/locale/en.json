@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Rakuten RMS",
+    "description": "Search RMS orders, items and inventory; confirm orders and update stock only when writes are explicitly enabled."
+  }
+}

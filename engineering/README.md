@@ -9,7 +9,7 @@
 | [DOCUMENTATION_STANDARD.md](DOCUMENTATION_STANDARD.md) | **Pilot** | 产品知识与 Design、Architecture、TRD、Current State、ADR、Reference 的职责边界。PR #17 合并为提案；PR #20、#21 增补 Reference 与 UI Sketch 指引；按 Issue #16 后续评估，不视为全组织强制采用。 |
 | [DESIGN_MIGRATION_GUIDE.md](DESIGN_MIGRATION_GUIDE.md) | **Pilot** | 产品文档迁移的审计、对照、验证与交接流程；它不授权批量改造产品仓库。 |
 | [templates/PRODUCT_DESIGN.md](templates/PRODUCT_DESIGN.md) | **Reference / optional template** | 产品 Design 的可复用起点；是否使用由产品 Owner 按需决定。 |
-| [stacks/README.md](stacks/README.md) | **Pilot** | 工程/工具栈登记：组合方式、入口、数据边界与验证证据；当前含 [`supabase`](stacks/supabase/README.md)（Supabase 访问：本地 + Cloud 多目标，本地 2026-11-17 实测、云端读写 2026-11-22 实测）、[`zoho-mail`](stacks/zoho-mail/README.md)（Zoho Mail 访问，2026-11-18 本机实测）、[`gigab2b`](stacks/gigab2b/README.md)（GigaB2B Open API 2.0 访问，2026-11-20 本机实测）、[`google-workspace`](stacks/google-workspace/README.md)（Google Drive/Workspace 访问，2026-11-18 本机实测）。 |
+| [stacks/README.md](stacks/README.md) | **Pilot** | 工程/工具栈登记：组合方式、入口、数据边界与验证证据；当前含 [`supabase`](stacks/supabase/README.md)（Supabase 访问：本地 + Cloud 多目标，本地 2026-11-17 实测、云端读写 2026-11-22 实测）、[`zoho-mail`](stacks/zoho-mail/README.md)（Zoho Mail 访问，2026-11-18 本机实测）、[`gigab2b`](stacks/gigab2b/README.md)（GigaB2B Open API 2.0 访问，2026-11-20 本机实测）、[`google-workspace`](stacks/google-workspace/README.md)（Google Drive/Workspace 访问，2026-11-18 本机实测）与 [`rms-api`](stacks/rms-api/README.md)（Rakuten RMS WEB SERVICE 访问，2026-11-20 本机实测；Item API 写入受 app 权限限制）。 |
 
 ## Proposed / Pilot / Reference
 

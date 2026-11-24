@@ -1,0 +1,12 @@
+# Rakuten RMS WEB SERVICE tools: orders, items, inventory and prices.
+# Credentials resolve from config, then RAKUTEN_SERVICE_SECRET /
+# RAKUTEN_LICENSE_KEY, then ./credentials/rms.json (0600, git-ignored).
+# Run `node scripts/rms-auth.mjs` to store them without exposing them in chat.
+- insert:
+    - id: rms-api
+      name: '@local/dsh-rms-api'
+      config:
+        allowWrites: false
+        timeoutMs: 30000
+        minIntervalMs: 750
+        maxRetries: 2
