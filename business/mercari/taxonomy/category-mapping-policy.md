@@ -11,7 +11,32 @@
 - **Consumer contract:** a consumer reads a pinned copy (or vendored mirror with provenance) of the manifest + CSV, verifies SHA-256, and records the mapping version it used. Ambiguous candidates (one Giga code resolving to more than one Mercari leaf) still require the qualified product-kind rule; when neither an exact nor a qualified rule applies deterministically, the result remains `UNRESOLVED` / `REVIEW_REQUIRED`, not a guess.
 - **Historical note:** the `candidate_status` column still reads `PROPOSED_NOT_BUSINESS_APPROVED` in every row. That value is retained so consumer enums do not break; it is superseded by this approval record and the manifest's `approval_status: APPROVED`. Future dictionary versions may migrate the column.
 
+## Forbidden categories (MUST NOT be used)
+
+Some Mercari categories are forbidden for our listings regardless of how well a product might fit. The canonical list is `mercari-forbidden-categories-v1.csv` (currently: the `ダイエット・健康 > マッサージ` path prefix, per Sponsor decision 2026-11-24). A resolution MUST fail closed — return `UNRESOLVED` / `REVIEW_REQUIRED` — when the selected Mercari category id or path matches a forbidden entry. **Forbidden entries outrank both code-level rules and item overrides.**
+
+Recorded conflicts in the approved v1 dictionary (require a re-decision, do not resolve through them):
+
+| Giga code | Current target | Status |
+| --- | --- | --- |
+| `10679` Recliners & Massage Chairs | `ダイエット・健康 > マッサージ > マッサージチェア` | MUST_BE_REPLACED |
+| `10702` Massage Tables | `ダイエット・健康 > マッサージ > その他` | MUST_BE_REPLACED |
+
+Until those two rows are re-decided, consumers must treat them as unresolved rather than publishing into a forbidden category.
+
+## One-shot item overrides (agent-resolved)
+
+Codes that fan out to several Mercari leaves (beds, sofas, desks, chairs, lights, tools) cannot be decided from the Giga code alone. `giga-to-mercari-item-overrides-v1.csv` holds the one-time, per-SKU decision for those rows, so coverage does not stop at "unambiguous code only".
+
+- **Precedence:** exact `item_code` override → code-level rule → `UNRESOLVED`.
+- **Provenance:** each row carries `resolution_source` (`AGENT_ONESHOT_20261124` = agent decision constrained to the code's approved candidate set; `SPONSOR_DECISION_20261124` = sponsor-directed leaf).
+- **Validation:** every override id must exist in the pinned Category Master and, for agent-resolved rows, must be one of that Giga code's approved candidate leaves. An override that violates a forbidden category is discarded.
+- **Scope:** overrides are a one-shot bridge, not a permanent taxonomy. When a code accumulates enough overrides, promote the stable pattern into a qualified code rule and retire those rows.
+- **Known unresolved:** `WF297048DAA` (Giga `Part`, unidentifiable title) intentionally has no override.
+
+
 ## Decision and business purpose
+
 For the standalone application, **do not use the existing NPL Category Resolver**. Create a one-time, verified mapping of Giga supplier categories / product-kind qualifiers to actual current Mercari `カテゴリID`, and persist the approved deterministic dictionary here as canonical company business knowledge. Follow with incremental exception review, not ongoing per-item human approval. Never confuse official `catalog_id` with Mercari `カテゴリID`.
 
 ## Three distinct inputs

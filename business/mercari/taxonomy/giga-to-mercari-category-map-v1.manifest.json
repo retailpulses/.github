@@ -44,7 +44,39 @@
     "id_handling": "Mercari category IDs are case-sensitive 20-22 character strings; never cast, normalize or uppercase them."
   },
   "known_gaps": {
-    "giga_codes_without_rule": ["10838", "10839"],
-    "note": "Tool boxes / tool cabinets have no approved relation yet; they remain UNRESOLVED."
+    "giga_codes_without_rule": [
+      "10838",
+      "10839"
+    ],
+    "note": "Tool boxes/cabinets (10838/10839) resolve via item override only; no code-level rule yet. 10679/10702 code rules currently point into a forbidden category and must be re-decided."
+  },
+  "item_overrides": {
+    "file": "giga-to-mercari-item-overrides-v1.csv",
+    "sha256": "b5c58024b41b049d8dad1b6aba0e2f230dc0b7a7e01b02f404d9ca951b0640f4",
+    "row_count": 130,
+    "resolution_sources": {
+      "AGENT_ONESHOT_20261124": 123,
+      "SPONSOR_DECISION_20261124": 7
+    },
+    "purpose": "One-shot per-SKU category decisions for Giga codes that fan out to several Mercari leaves. Consulted before code-level rules; exact item_code match only.",
+    "known_unresolved": [
+      "WF297048DAA"
+    ]
+  },
+  "forbidden_categories": {
+    "file": "mercari-forbidden-categories-v1.csv",
+    "rule": "A resolution MUST fail closed when the selected Mercari category id or path matches a forbidden entry. Forbidden entries override both code rules and item overrides.",
+    "known_conflicts": [
+      {
+        "giga_category_code": "10679",
+        "mercari_category_path": "ダイエット・健康 > マッサージ > マッサージチェア",
+        "status": "MUST_BE_REPLACED"
+      },
+      {
+        "giga_category_code": "10702",
+        "mercari_category_path": "ダイエット・健康 > マッサージ > その他",
+        "status": "MUST_BE_REPLACED"
+      }
+    ]
   }
 }
