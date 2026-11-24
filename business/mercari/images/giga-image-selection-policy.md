@@ -5,6 +5,8 @@
 **Implementation details:** [Image Preparation & Selection](https://github.com/retailpulses/store-ops/blob/design/giga-mercari-standalone-20261113/docs/products/giga-mercari-listing-web/image-preparation-and-selection.md).
 
 > **Main-image composition is governed elsewhere:** this policy covers source URL selection, size filtering and selection evidence only. Hero composition, text budget, background, safe zones and family representation follow the [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](../../listing/main-image-standard.md) (BUS-IMG-001–012).
+>
+> **Upload size:** Mercari's 8 MB is a platform ceiling. The main-image upload derivative MUST follow BUS-IMG-002 (≤200 KB target, ≤250 KB hard cap). The 8 MB threshold in this policy is a source-selection filter, not the main-image target.
 
 ## Business rule
 

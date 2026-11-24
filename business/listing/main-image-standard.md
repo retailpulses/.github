@@ -26,8 +26,8 @@ Consequences:
 | # | Requirement | Mercari Shops | Rakuten (first image / SKU image) | AND — our standard |
 |---|---|---|---|---|
 | 1 | Aspect ratio | Square recommended | Square recommended | **1:1** |
-| 2 | Minimum size | Not specified | ≥700×700 recommended | **1500×1500** (min 700×700) |
-| 3 | File size | ≤8 MB per image | ≤2 MB target (internal, PARTIAL) | **≤2 MB target; >2 MB blocked; 8 MB absolute ceiling** |
+| 2 | Canvas | Square recommended | Square ≥700×700 recommended | **1500×1500, 1:1** (min 700×700) |
+| 3 | File size | ≤8 MB per image (platform ceiling) | ≤2 MB per file (R-Cabinet limit, PARTIAL) | **≤200 KB target; ≤250 KB hard cap; 2 MB is a ceiling, not a target** |
 | 4 | Format | JPG / JPEG / PNG | JPEG / PNG (GIF converted) | **JPEG for upload; PNG retained as edit source** |
 | 5 | Animation | Not addressed | Animated GIF prohibited | **No GIF; no animation** |
 | 6 | Text area | No fixed limit | **≤20%** of image area | **≤12% target; ≤20% hard limit** |
@@ -50,9 +50,19 @@ The matrix is the contract. Where a rule below uses MUST / MUST NOT, it is norma
 
 - MUST be 1:1, 1500×1500 px, JPEG for upload.
 - MUST be at least 700×700 px; smaller images MUST NOT be published.
-- File size MUST be ≤2 MB for the upload derivative. A file >2 MB MUST be blocked until the Rakuten limit is re-verified or the file is recompressed. The absolute platform ceiling is 8 MB (Mercari).
+- The upload derivative MUST be ≤200 KB. The hard cap is 250 KB; a file >250 KB MUST be blocked or recompressed before publication.
+- 2 MB (R-Cabinet per-file limit) and 8 MB (Mercari per-file limit) are platform ceilings, not operating targets.
 - PNG MAY be retained as the editable archive; it MUST NOT be the upload format unless a platform-specific need is approved.
 - Animated GIF MUST NOT be used.
+
+**R-Cabinet storage budget (why 200 KB).** R-Cabinet capacity is a store-level constraint, not only a per-file one. The current 出店案内 lists 1.5 GB for がんばれ！プラン; the 規約PDF lists 500 MB for the same plan, so the contracted figure MUST be confirmed in RMS. At 1.5 GB and a 533-item catalogue:
+
+| Scenario | Images | At 200 KB | Fits 1.5 GB? |
+|---|---:|---:|---|
+| 8 standard slots per item | 4,264 | 0.85 GB | Yes, with room for banners/description images |
+| 20 images per item | 10,660 | 2.13 GB | No |
+
+This is why the 8-slot image sequence is a standard, and why 20-image listings are the exception rather than the default. A master image that only fits at 2 MB is not usable at catalogue scale.
 
 ### BUS-IMG-003 — Text budget and safe zones
 
@@ -119,7 +129,7 @@ The main image MUST NOT contain:
 
 Before publication, every main image MUST pass:
 
-1. 1500×1500, 1:1, JPEG, ≤2 MB.
+1. 1500×1500, 1:1, JPEG, ≤250 KB (target ≤200 KB).
 2. Solid #FFFFFF background.
 3. No border / band / frame.
 4. Text ≤20% (target ≤12%).
@@ -200,7 +210,9 @@ The master file is identical. Only the delivery path differs.
 | Specific title; title keyword weight > description; no irrelevant keywords; no delete/relist | [メルカリ検索表示ガイド](https://help.jp.mercari.com/guide/articles/1864/) / [官方解读](https://jp-news.mercari.com/info/40006) | VERIFIED (official) |
 | No manufacturer images without permission; no "〇〇風" | [メルカリ 商品名・商品画像ルール](https://jp-news.mercari.com/info/49410) (2026-04-01) | VERIFIED (official) |
 | Text ≤20%, no border, white or photo background, no animated GIF; square ≥700×700 | [楽天 RMS 商品画像登録ガイドライン](https://service.rms.rakuten.co.jp/column/detail/26) (2025-12-26) | VERIFIED (official) |
-| Rakuten 2 MB limit; 20–31% = △, >31% = ×; 5 penalty points per product | Third-party summaries / internal observation | PARTIAL — re-verify in RMS |
+| R-Cabinet per-file limit 2 MB / 3840×3840; store capacity 1.5 GB (がんばれ！プラン, 出店案内 2026-11) vs 500 MB (規約PDF) | [R-Cabinet capacity guide](https://ec-tsumugu.com/method/rakuten-cabinet/) / [RMS image size](https://fancas.co.jp/blog/rms-image-size) | PARTIAL — confirm contracted capacity in RMS |
+| Rakuten official column recommends <200 KB/image for page speed | [RMS 商品画像登録ガイドライン](https://service.rms.rakuten.co.jp/column/detail/26) / capacity guide | VERIFIED recommendation (not a hard limit) |
+| 20–31% = △, >31% = ×; 5 penalty points per product | Third-party summaries | PARTIAL |
 | R2 custom domain `img.homesbliss.net`; Mercari re-hosts external images | Internal R2 and API tests | VERIFIED (internal) |
 | Mercari 8 MB/image, ≤20 images | Mercari official help via internal image policy | VERIFIED |
 
@@ -208,7 +220,7 @@ The master file is identical. Only the delivery path differs.
 
 ## 8. Open items
 
-1. Re-verify the Rakuten 2 MB file-size limit and the penalty-point calculation in RMS before blocking production files solely on the 2 MB target.
+1. Confirm the contracted R-Cabinet capacity in RMS (1.5 GB per current 出店案内 vs 500 MB per 規約PDF) and re-verify the 2 MB per-file limit and penalty-point calculation.
 2. Confirm the text-area measurement method (our renderer vs RMS judgement tool) on 3–5 real images.
 3. Confirm supplier image licences cover derivative works and both channels.
 4. Confirm whether Rakuten requires a distinct SKU image for every SKU; if so, the manifest must include a per-SKU image field.
