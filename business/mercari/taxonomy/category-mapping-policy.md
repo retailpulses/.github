@@ -1,6 +1,15 @@
 # Giga → Mercari Category Dictionary and Fallback Contract
 
-**Status: candidate mapping baseline; suitcase category rule explicitly approved on 2026-11-17 (see current amendment below). Other candidates retain their existing review state.** Owner: Mercari Store Operations; consumers: standalone Giga→Mercari Web app (#312), future clients by explicit contract. Not an NPL resolver migration.
+**Status: APPROVED dictionary baseline (2026-11-24 JST) — see "Approval record" below.** The 308 relations in `giga-to-mercari-category-map-v1.csv` are business-approved category rules. Approval covers **category decision** only: it does not authorize listing uploads, Seller writes, or runtime activation. Owner of the dictionary: Mercari Store Operations (`/.github/business/mercari`). Consumers read a pinned, versioned copy by contract: standalone Giga→Mercari Web app (#312), CatalogSync publish pipeline, and future clients. Consumers are **users of the dictionary, never owners** — no consumer may edit, extend or fork the mapping locally. Not an NPL resolver migration.
+
+## Approval record (2026-11-24 JST)
+
+- **Approver:** Jim Yang (Sponsor), 2026-11-24.
+- **Scope of approval:** the 308 category relations in `giga-to-mercari-category-map-v1.csv` (mapping version `v1`, 111 Giga category codes) are approved as the company's canonical Giga→Mercari category decision source.
+- **Machine-readable pin:** `giga-to-mercari-category-map-v1.manifest.json` (same directory) carries the SHA-256, row/ID counts, master snapshot pin and approval metadata. Consumers MUST validate the CSV against that manifest and fail closed on mismatch.
+- **What approval does NOT do:** it does not approve any specific listing, CSV export or Seller write; it does not authorize runtime deployment; it does not convert a category decision into a publish decision. Per-listing/batch approval remains a separate step.
+- **Consumer contract:** a consumer reads a pinned copy (or vendored mirror with provenance) of the manifest + CSV, verifies SHA-256, and records the mapping version it used. Ambiguous candidates (one Giga code resolving to more than one Mercari leaf) still require the qualified product-kind rule; when neither an exact nor a qualified rule applies deterministically, the result remains `UNRESOLVED` / `REVIEW_REQUIRED`, not a guess.
+- **Historical note:** the `candidate_status` column still reads `PROPOSED_NOT_BUSINESS_APPROVED` in every row. That value is retained so consumer enums do not break; it is superseded by this approval record and the manifest's `approval_status: APPROVED`. Future dictionary versions may migrate the column.
 
 ## Decision and business purpose
 For the standalone application, **do not use the existing NPL Category Resolver**. Create a one-time, verified mapping of Giga supplier categories / product-kind qualifiers to actual current Mercari `カテゴリID`, and persist the approved deterministic dictionary here as canonical company business knowledge. Follow with incremental exception review, not ongoing per-item human approval. Never confuse official `catalog_id` with Mercari `カテゴリID`.

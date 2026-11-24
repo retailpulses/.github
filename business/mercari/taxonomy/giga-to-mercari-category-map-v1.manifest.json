@@ -1,0 +1,50 @@
+{
+  "dictionary_id": "giga-to-mercari-category",
+  "mapping_version": "v1",
+  "approval_status": "APPROVED",
+  "approved_at_jst": "2026-11-24",
+  "approved_by": "Jim Yang (Sponsor)",
+  "approval_scope": "category_decision_only",
+  "authority_repo": "retailpulses/.github",
+  "authority_path": "business/mercari/taxonomy",
+  "owner": "Mercari Store Operations",
+  "consumer_model": "pinned_read_only",
+  "consumer_rules": [
+    "Consumers read a pinned copy (or vendored mirror with provenance) of this manifest and the referenced CSV.",
+    "Consumers MUST verify the CSV SHA-256 against this manifest and fail closed on mismatch.",
+    "Consumers MUST record the mapping_version they resolved with.",
+    "Consumers MUST NOT edit, extend, fork or re-derive the mapping locally; new rules are proposed in retailpulses/.github/business/mercari/taxonomy and approved there.",
+    "A category decision is not a publish decision: listing upload, Seller writes and runtime activation require separate authorization."
+  ],
+  "file": "giga-to-mercari-category-map-v1.csv",
+  "sha256": "f99c050a4531eec99df37fb1dbc055a4f08e8a0d7c117128674d1584fd4bce89",
+  "row_count": 308,
+  "distinct_giga_category_codes": 111,
+  "source_system": "GIGA",
+  "row_status_field": {
+    "column": "candidate_status",
+    "observed_value": "PROPOSED_NOT_BUSINESS_APPROVED",
+    "note": "Retained so consumer enums do not break. Superseded by approval_status in this manifest and the approval record in category-mapping-policy.md."
+  },
+  "category_master": {
+    "snapshot_id": "20261113-30f1c9dc",
+    "sha256": "30f1c9dc3ee2f2133fe568e28213a392b54e7a5254f72bc2f552f6321895e4ac",
+    "row_count": 7625,
+    "path": "business/mercari/masters/categories/20261113-30f1c9dc/category_master.csv",
+    "verification": "OFFICIAL_LIVE_BYTE_VERIFIED"
+  },
+  "resolution_contract": {
+    "order": [
+      "exact approved rule for the Giga category code",
+      "more specific approved rule qualified by product_kind_key / selector hint",
+      "approved scoped fallback for the same supplier family",
+      "UNRESOLVED / REVIEW_REQUIRED"
+    ],
+    "ambiguity_rule": "When one Giga code maps to more than one Mercari leaf and no qualified rule resolves deterministically, the result stays unresolved; never guess or default silently.",
+    "id_handling": "Mercari category IDs are case-sensitive 20-22 character strings; never cast, normalize or uppercase them."
+  },
+  "known_gaps": {
+    "giga_codes_without_rule": ["10838", "10839"],
+    "note": "Tool boxes / tool cabinets have no approved relation yet; they remain UNRESOLVED."
+  }
+}
