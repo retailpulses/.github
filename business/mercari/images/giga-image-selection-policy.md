@@ -6,7 +6,7 @@
 
 > **Main-image composition is governed elsewhere:** this policy covers source URL selection, size filtering and selection evidence only. Hero composition, text budget, background, safe zones and family representation follow the [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](../../listing/main-image-standard.md) (BUS-IMG-001–012).
 >
-> **Upload size:** Mercari's 8 MB is a platform ceiling. The main-image upload derivative MUST follow BUS-IMG-002 (≤200 KB target, ≤250 KB hard cap). The 8 MB threshold in this policy is a source-selection filter, not the main-image target.
+> **Upload size:** Mercari's 8 MB is a platform ceiling. The main-image upload derivative MUST follow BUS-IMG-002 (≤150 KB target, ≤200 KB hard cap; R-Cabinet has 307.4 MB free as of 2026-11-24). The 8 MB threshold in this policy is a source-selection filter, not the main-image target.
 
 ## Business rule
 
