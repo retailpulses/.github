@@ -3,6 +3,8 @@
 状态：**Draft / Sponsor Review** · Owner：Business / Listing · 日期：2026-11-22
 证据状态：Rakuten 主图规则 **VERIFIED**（官方 RMS Service Square コラム，2025-12-26 更新）；尺寸/容量/违规点数细节 **PARTIAL**（第三方整理，需 RMS 登录后复核）；R2 → Mercari 链路 **VERIFIED**（2026-11-22 实测）。
 
+> **Canonical cross-platform rule:** the main-image contract is the [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](../listing/main-image-standard.md) (BUS-IMG-001–012). This document is the Rakuten-style rendering and R2 delivery guide; where the two differ, the standard wins and this document MUST be updated. Current alignment: 1500×1500, text ≤20% (target 9.5%), no border, solid #FFFFFF background, no promotional text in the main image.
+
 ## Scope
 
 Mercari Shops 的商品主图采用 **Rakuten 风格**（楽天市場の第1商品画像に近い構図・情報量）。本文档定义：
@@ -37,7 +39,8 @@ Mercari Shops 的商品主图采用 **Rakuten 风格**（楽天市場の第1商�
 |---|---|---|
 | 推荐尺寸 | 正方形 **700×700 以上**；实务 700–1000px | **1500×1500** |
 | 最大尺寸 | 3840×3840 | 1500 ✓ |
-| 文件容量 | ≤ 2MB | JPG ≈ 198KB / PNG ≈ 606KB ✓ |
+| 存储预算 | R-Cabinet **1.5GB 总容量 / 307.4MB 可用**（2026-11-24 RMS）；只放 Rakuten 主图 + SKU 图 | 533 商品 × 2 张 × 150KB ≈ 160MB（52%）；8 槽图放 R2，不入 R-Cabinet |
+| 文件容量 | R-Cabinet 单文件上限 2MB；内部目标 **≤150KB**、硬上限 **200KB** | JPG ≈90–180KB @ q75–80；PNG 仅归档 |
 | 格式 | JPG / GIF（PNG 会被转换） | JPG 上传，PNG 归档 |
 | 数量 | 1 商品 ≤ 20 张 | 主图 1 张 |
 
@@ -157,7 +160,7 @@ manifest 每行至少记录：`item_code`、`variant`、`r2_key`、`public_url`�
 
 1. 选底图（白底 3/4、无供应商文字）。
 2. 配置产品级参数（类型、卖点、尺寸）。
-3. 渲染 + 校验：`text_ratio ≤ 0.20`、无促销词、1500×1500、JPG ≤ 2MB。
+3. 渲染 + 校验：`text_ratio ≤ 0.20`、无促销词、1500×1500、JPG ≤200KB（目标 ≤150KB）。
 4. 上传 R2（key 含内容哈希），写 manifest。
 5. Mercari 侧更新 `imageUrls`，或 CSV 引用 manifest 里的 public URL。
 6. 回读验证：URL 200、sha 一致；Mercari 确认首图为新图、其他字段未变。

@@ -10,6 +10,7 @@
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
 | BUS-LOG-001 | [Giga 企业地址批量配送](suppliers/giga/bulk-commercial-delivery.md) | 供应商物流；Approved / Evidence PARTIAL |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Product Group |
+| BUS-IMG-001–012 | [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](listing/main-image-standard.md) | 主图一份母版、两平台规则取 AND；Listing、Creative、CSV/API 导出器 |
 | BUS-MER-001–008 | [Mercari Shops Listing CSV & Batch Publication](mercari/listing-csv-and-batch-publication.md) | Listing CSV / Shop4 NPL batch exporter；Draft |
 | BUS-MER-NL-001–012 | [Mercari Shops Newsletter](mercari/newsletter.md) | Newsletter 规则；官方业务规则 VERIFIED，集成 PARTIAL |
 
