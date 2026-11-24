@@ -3,6 +3,8 @@
 状态：**Draft / Sponsor Review** · Owner：Business / Listing · 日期：2026-11-22
 证据状态：Rakuten 主图规则 **VERIFIED**（官方 RMS Service Square コラム，2025-12-26 更新）；尺寸/容量/违规点数细节 **PARTIAL**（第三方整理，需 RMS 登录后复核）；R2 → Mercari 链路 **VERIFIED**（2026-11-22 实测）。
 
+> **Canonical cross-platform rule:** the main-image contract is the [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](../listing/main-image-standard.md) (BUS-IMG-001–012). This document is the Rakuten-style rendering and R2 delivery guide; where the two differ, the standard wins and this document MUST be updated. Current alignment: 1500×1500, text ≤20% (target 9.5%), no border, solid #FFFFFF background, no promotional text in the main image.
+
 ## Scope
 
 Mercari Shops 的商品主图采用 **Rakuten 风格**（楽天市場の第1商品画像に近い構図・情報量）。本文档定义：

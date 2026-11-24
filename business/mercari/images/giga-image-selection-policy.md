@@ -4,6 +4,8 @@
 **Status:** Sponsor-directed operating policy proposal, 2026-11-13. Image source reuse and filtering first; no Canonical Images writes, no new public URL/CDN as MVP.  
 **Implementation details:** [Image Preparation & Selection](https://github.com/retailpulses/store-ops/blob/design/giga-mercari-standalone-20261113/docs/products/giga-mercari-listing-web/image-preparation-and-selection.md).
 
+> **Main-image composition is governed elsewhere:** this policy covers source URL selection, size filtering and selection evidence only. Hero composition, text budget, background, safe zones and family representation follow the [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](../../listing/main-image-standard.md) (BUS-IMG-001–012).
+
 ## Business rule
 
 Giga original image URL and order are **supplier source evidence**; the standalone app owns a **derived per-listing image selection**, not a duplicate Canonical Images master. This mirrors the Giga category business rule: source facts are kept unchanged, while approved selection/exclusion/order decisions are versioned and exportable for later Canonical owner review.
