@@ -304,3 +304,8 @@ For `SKUi_種類`, the default value is the corresponding GigaB2B `Main Color` (
 - Katakana is the default naming convention, not permission to invent a color. Preserve verified official/special color names, material/finish or transparent descriptors where a mechanical transliteration would change the meaning; document the source when an exception is needed.
 - Keep names factual and free of marketing terms. Validate the complete field against its active platform limit and the applicable pilot readability target.
 - Keep raw supplier/export observations unchanged. Update only the explicitly targeted display fields; a color-rule update does not authorize a blanket rewrite of live listings or existing SKU data.
+
+
+## API listing consumer implementation tracking
+
+- [CatalogSync #338](https://github.com/retailpulses/CatalogSync/issues/338): align automated Mercari listing rendering with BUS-MER-004, 009–010, 013–016 and applicable shared defaults. CSV-specific mechanics remain CSV-only. This link tracks implementation, not a new business rule or publication authorization.
