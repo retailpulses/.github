@@ -304,3 +304,26 @@ For `SKUi_種類`, the default value is the corresponding GigaB2B `Main Color` (
 - Katakana is the default naming convention, not permission to invent a color. Preserve verified official/special color names, material/finish or transparent descriptors where a mechanical transliteration would change the meaning; document the source when an exception is needed.
 - Keep names factual and free of marketing terms. Validate the complete field against its active platform limit and the applicable pilot readability target.
 - Keep raw supplier/export observations unchanged. Update only the explicitly targeted display fields; a color-rule update does not authorize a blanket rewrite of live listings or existing SKU data.
+
+
+## 商品类目属性（こだわり条件）— BUS-MER-017
+
+**Status:** Proposed company operating rule / platform facts verified 2026-11-27 JST. Applies to all company-operated Mercari Shops; pilot priority Shop4. Owner: Mercari Store Operations.
+
+### Platform facts and evidence
+
+- Seller Web exposes optional category-dependent attributes per displayed SKU/type. Shop4 luggage example: カラー、キャリーケースサイズ（S〜3泊 / M 3〜7泊 / L 7泊〜）、特徴、付属品、汚れ・破れなど. These are distinct from category ID, SKU name and free-text description.
+- Public GraphQL API FAQ states size cannot be read or written through API. As of 2026-10-29, variant categoryAttributes supports batteryCapacity only in eligible categories; omission/null of categoryAttributes preserves it, explicit batteryCapacity:null clears it. No documented general read/write for luggage color, size, features or accessories.
+- updateProduct/updateProducts with unchanged category preserves manually set attributes; actual category reassignment clears them. Changelog 2026-04-15 fixed unintended clearing on unchanged category (including addProductVariants); 2026-10-29 fixed null/empty categoryId clearing. Do not rely on historical behavior or send unnecessary category fields.
+- No verified CSV attribute write contract; do not invent columns. Revalidate actual CREATE/UPDATE templates before asserting support. Catalog linkage via janCode/catalogId is distinct and only for verified matching catalog products.
+- Sources: [Official Shops API reference and changelog](https://api.mercari-shops.com/docs/index.html); [Shop4 Seller example](https://mercari-shops.com/seller/shops/2JMLHBxjiFHDr55jMwA7fs/products/2JMjF6tbqMN5XTfnGbEwVt/edit/attributes); [Mercari official condition guidance linked from seller page](https://help.jp.mercari.com/guide/articles/62/#6) (consumer guide, not a Shops API contract); [official CREATE CSV guide](https://support.mercari-shops.com/hc/ja/articles/8859698858649); [official UPDATE CSV guide](https://support.mercari-shops.com/hc/ja/articles/60017371839513).
+
+### Proposed operating controls
+
+1. Resolve correct leaf category before attribute enrichment (BUS-MER-012). Use actual supplier specification, verified images and reviewed corrections; map each variant independently to current seller options. Never invent feature, accessory, capacity or condition. Unknown or inapplicable optional values remain blank; do not block otherwise valid listing publication solely for optional attributes.
+2. Prioritize Shop4 high-selling/high-traffic listings and new listings, then expand to remaining shops. Fill verifiable color/size first; use actual manufacturer duration guidance for luggage, not assumed physical dimensions. Condition must reflect actual item condition, including defects or missing parts. Keep SKU labels and description consistent with attributes without substituting text for structured values.
+3. For attributes not supported by documented API/CSV, use authorized Seller Web workflow; no undocumented endpoint dependency. Record shop, product ID, variant identity, category ID, desired/current value, source evidence, status and verification time. Reopen seller page after save; verify public display/filter behavior where available. No guarantee of search ranking uplift; measure traffic/conversion before scaling.
+4. For category change, snapshot existing attributes per variant, approve category mapping, then re-evaluate against the new category and restore applicable verified values. Treat attribute reconciliation as a follow-up, not proof that category update failed. For CSV category changes, conservatively apply the same control until behavior is tested. Ordinary price/stock/copy patches must not intentionally clear or change attributes; omit unrelated category fields where supported.
+5. CatalogSync implementation remains separate: review current schema and regression tests before any code change; check price-only, stock-only, same-category and category-change scenarios in authorized test environment. Do not mutate production or deploy under this documentation task.
+
+**Open questions:** Official CSV support not confirmed from raw template; authenticated API schema/live mutation behavior not tested; other category option sets and measurable buyer-side filter effect not yet audited. Operations owns seller-side enrichment; engineering owns future documented API integration. No new database or automation required by this rule.
