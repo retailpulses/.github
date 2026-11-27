@@ -48,10 +48,10 @@ This document defines the supported runtime families for Retailpulses services, 
 
 | Aspect | Details |
 |--------|---------|
-| **When to use** | Data processing, CSV generation, batch operations, Baserow sync, reporting, marketplace exports |
+| **When to use** | Data processing, CSV generation, batch operations, Postgres sync, reporting, marketplace exports |
 | **When NOT to use** | HTTP APIs (use Worker or VPS Node), real-time services, user-facing web apps |
 | **Deployment model** | Script sync to execution environment. Run via cron, systemd timer, n8n, or manual CLI. |
-| **State/storage** | Baserow (primary), local filesystem for temp files, output CSVs to R2 or local disk. |
+| **State/storage** | Postgres/Supabase (primary), local filesystem for temp files, output CSVs to R2 or local disk. |
 | **Migration risk** | Very low — Python scripts are the most portable runtime. |
 | **Validation/smoke test** | `python -m compileall .` for syntax. `python script.py --dry-run` for logic. |
 | **Current usage** | Techstack tools, inquiry-automation, mercariops, rakutenops, amazonops |
@@ -110,12 +110,20 @@ When choosing a runtime for a new service:
 
 ---
 
+## 3.1 Retired runtime dependencies
+
+**Baserow is retired.** No new workload may use Baserow as a database, sync target or
+state store; any remaining reference in this repository is historical. Product, cost,
+pricing, inventory and listing facts live in the production Supabase Postgres
+(`public.product_variants`, `public.product_commercials`). GigaB2B remains upstream for
+supplier price/inventory via API 2.0.
+
 ## 4. Runtime Anti-Patterns
 
 | Anti-Pattern | Why It's Bad | Better Approach |
 |--------------|--------------|-----------------|
 | Worker doing 30s+ CPU work | Workers have CPU time limits | VPS Node or Python |
-| Worker using KV as primary DB | KV is eventually consistent, not a DB | D1 with adapter, or Baserow |
+| Worker using KV as primary DB | KV is eventually consistent, not a DB | D1 with adapter, or Postgres |
 | Python script exposed as HTTP API | Python HTTP servers need management | VPS Node or Worker relay to script |
 | GitHub Actions as cron for every 5min | Rate limits, cost | VPS cron or Worker Cron |
 | VPS Node for static content | Wastes VPS resources | Static frontend (Pages/CDN) |
@@ -130,14 +138,13 @@ When choosing a runtime for a new service:
 | Giga Catalog Sync | VPS Node + Worker relay | Techstack workers + VPS | ✅ Clean pattern — logic on VPS, relay on Worker |
 | RP Order Mgmt | VPS Node + Worker relay | Techstack workers + VPS | ✅ Clean pattern |
 | Attendance Book | Cloudflare Worker | workers repo | ⚠️ Full Worker app — document justification |
-| Baserow WeCom Notifier | Cloudflare Worker | workers repo | ⚠️ Full Worker app — document justification |
 | Color Variation | Cloudflare Worker | workers repo | ⚠️ Full Worker app — document justification |
 | Coupon Manager | Cloudflare Worker | workers repo | ⚠️ Full Worker app — document justification |
 | Workers Dashboard | Cloudflare Worker | workers repo | ⚠️ Full Worker app — document justification |
 | Mail Integration | Cloudflare Worker | workers repo | ⚠️ Full Worker app — document justification |
 | CatalogSync v2 | Cloudflare Worker + Cron | CatalogSync repo | ⚠️ Full Worker app + Cron — document justification |
 | Boutique Listing | Cloudflare Worker + D1 | boutique-listing | ⚠️ Full Worker app + D1 — document D1 migration path |
-| Inquiry Automation | Python + Baserow | inquiry-automation | ✅ Clean portable pattern |
+| Inquiry Automation | Python + Postgres | inquiry-automation | ✅ Clean portable pattern |
 | Mercari tools | Python scripts | Techstack + mercariops | ✅ Clean portable pattern |
 | Rakuten tools | Python scripts | Techstack + rakutenops | ✅ Clean portable pattern |
 | Amazon tools | Python scripts | Techstack + amazonops | ✅ Clean portable pattern |
