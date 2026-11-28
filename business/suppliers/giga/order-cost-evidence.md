@@ -9,6 +9,7 @@
 1. **按 shipment ID 可以取到该笔订单的真实成本拆分**：商品成交成本（`feeType=1`）、履约费（`feeType=2`，含运费+包装）、仓储费（`feeType=4`）以及另外 11 类费用。这是目前唯一"订单时点"的成本证据。
 2. production Postgres 的 `giga_cogs_shipment_lines` **只有订单总额**（`order_total_jpy` / `grand_total_jpy` / `storage_and_protection_fee_jpy`），**没有拆分、没有成交单价**；`product_commercials.source_unit_price` 是**当前目录价**，不是成交价。
 3. 因此：**单笔毛利可以用 API 算准；RMA 筛选可以从"合计近似"升级为"分量精确比对"**——但后者属规则变更，须 Sponsor 批准后才能替换现行的 `current_price_proxy`。
+4. **两个下游系统尚未接入**：store-ops/monthlypnl 的履约成本仍是人工确认产物，commerce-ops/Order Mgmt 的 Giga 客户端只调 `track-no` 与 `dropShip-sync`，都没有 `order/detail/v1`。详见 §6。
 
 ## 2. API 事实（已验证）
 
@@ -51,6 +52,7 @@
 - **状态**：`orderStatus=1` 为 Unpaid，此时成本可能未定稿。
 - **未出账**：`feeDetails` 为空且 `totalAmount=null` 属未计费（本批 2 笔），**不得记为零成本**。
 - **无逐行单价**：`orderDetails[]` 仅含 `sku` / `sellerStore` / `qty` / `skuStatusInfo` / `isCombo` / `comboInfo` / `rmaId`，**没有 unitPrice**；`feeType=1` 是整单合计。
+- **限流**：官方文档标注 `order/detail/v1` 为 **5 requests / 10 seconds**、单次最多 200 单；批量取数需自行限速与缓存。
 
 ### 2.3 与内部数据的一致性（实测 3 例）
 
@@ -139,14 +141,54 @@ fulfillment_gap      = feeType2 − current_shippingFee
 - 不得用合计差额直接对外索赔：需分量证据 + 人工复核。
 - 不得据本文自动创建 RMA、改单、写库或联系供应商。
 
-## 6. 待 Sponsor 决定
+## 6. 下游消费者与集成点（现状事实）
+
+本节只记录**已读到的代码事实**，不代表已实施任何改动。两个系统的现状都还停留在"合计 + 人工/启发式"，尚未接入 `order/detail/v1`。
+
+### 6.1 store-ops / monthlypnl（核算侧）
+
+现状（`monthlypnl/`）：
+
+| 事实 | 位置 |
+|---|---|
+| 成本匹配表按销售行记录 `unit_purchase_cost_yen`、`unit_fulfillment_cost_yen`，带 `status`（`PROPOSED` / `MATCHED` / `CONFIRMED`）与 `evidence_json` | [monthlypnl/service.py](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py)（`pnl_cost_matches` 写入路径） |
+| 履约成本目前**不是** API 派生：代码注释明确 "ambiguous PO candidates and **fulfillment remain unresolved**"，`CONFIRMED` 要求采购成本与履约成本都已填 | [monthlypnl/service.py](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py)（约 1196、1272 行） |
+| 供应商 RMA 结算事实由供应商报表导入（一行一条源记录，保留重复 RMA ID），并做 `order_` 前缀归一化与 PO ID 科学计数法归一化 | [monthlypnl/rma.py](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/rma.py) |
+| 采购/履约成本的来源是 P&L 导入 + 人工确认，**没有**逐单费用拆分 | 同上 |
+
+**可对接点**：`feeType=1` 可直接作为 `unit_purchase_cost_yen` 的证据，`feeType=2` 可作为 `unit_fulfillment_cost_yen` 的证据（均需 `/ qty` 且限单行订单），从而把这两列从"人工确认"升级为"API 取证 + 人工复核"。注意 [monthlypnl/rma.py](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/rma.py) 会把 `order_` 前缀去掉，与 Giga shipment ID 的实际形态一致，join 时须沿用同一归一化规则。
+
+### 6.2 commerce-ops / Order Mgmt（订单运营侧）
+
+现状（`apps/orders/`）：
+
+| 事实 | 位置 |
+|---|---|
+| 已实现签名的 Giga 2.0 客户端，且**只调用两个端点**：`buyer/order/track-no/v1`（`getTrackingInfo`）与 `buyer/order/dropShip-sync/v1`（`createOrder`） | [apps/orders/src/lib/giga-client.mjs](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/src/lib/giga-client.mjs) |
+| 客户端硬性拒绝非 `openapi.gigab2b.com` / sandbox 的主机，符合"只用 2.0"约束 | 同上 |
+| 毛利拆解组件在 `effective_cogs == source_unit_price`（Giga Unit Price）时告警 "⚠ Supplier price needs confirmation" | [MarginBreakdown.tsx](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/portal/src/components/detail/MarginBreakdown.tsx) |
+| 运营可筛选 `price_confirmation_needed`（"Price confirmation needed"） | [FilterBar.tsx](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/portal/src/components/layout/FilterBar.tsx) |
+| 订单行类型已有 `cogs_unit_price_equal: boolean` | [orders.ts](https://github.com/retailpulses/commerce-ops/blob/main/apps/orders/portal/src/types/orders.ts) |
+
+**关键差异**：Order Mgmt 的这条告警是**启发式**——它比较的是"我们算出的 Effective COGS 是否等于**当前** Giga Unit Price"，而不是"这笔订单**当时实际付了多少钱**"。而 `order/detail/v1` 的 `feeType=1` 正是当时的成交价，`feeType=2` 是当时的实际履约费。
+
+**未接入**：`giga-client.mjs` 目前没有任何 `order/detail/v1` 调用，因此订单运营界面拿不到逐单费用拆分；采购前的成本判断仍依赖目录价启发式。
+
+### 6.3 可能的集成方向（PROPOSED，未实施，不授权）
+
+1. **Order Mgmt**：在"下单前确认"和"毛利拆解"环节，按 shipment ID 拉取 `order/detail/v1`，用实际 `feeType 1/2` 替换启发式告警；保留人工确认步骤。
+2. **monthlypnl**：把 `feeType 1/2` 作为 `pnl_cost_matches` 的 `evidence_json` 来源，缺失时仍走人工 PROPOSED 流程。
+3. **RMA 技能**：按 §4.4 的分量比对替换 `current_price_proxy`（需 Sponsor 批准）。
+4. 实施注意：`order/detail/v1` 官方限流 **5 requests / 10 seconds**、单次 200 单；Price API 为 10/10s。批量化与缓存策略必须设计，否则会拖慢运营界面。
+
+## 7. 待 Sponsor 决定
 
 1. 是否批准 4.4 的"分量比对"模式替换 `current_price_proxy`（若不批准，维持现状，本文仅作证据记录）。
 2. RMA 比对基准（`price` / `discountedPrice` / `exclusivePrice`）与返点、阶梯价的处理顺序。
 3. 多行订单成本分摊方法（按数量平均 / 按当前价比例 / 不拆）。
 4. 是否将订单级实际成本回溯写入核算表，及其更新频率。
 
-## 7. 验收与证据
+## 8. 验收与证据
 
 - API 事实：6 次 Price 调用（217 条 / 210 SKU）、3 次 Detail 调用（135 条）、订单详情 161 单，均只读；requestId 见 2.3。
 - 官方文档：GigaB2B 帮助中心 Open API 2.0（`doc_id=32` Shipment Details Query，`doc_id=7` Product Price Query）。
