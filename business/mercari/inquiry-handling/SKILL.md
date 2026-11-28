@@ -61,6 +61,16 @@ Resolve applicable canonical GitHub rule references on every invocation before m
 
 Example: A customer asks why different sofa colors have different prices and whether the product is domestically manufactured. Verify origin and any material specifications that matter. If the exact price rationale is not established, answer the verified origin and explain that prices are set individually by color/variant and may differ with sales conditions. Do not claim a specific cost or stock cause, or promise to investigate pricing further. Use natural Japanese such as 「カラーごとに販売価格を設定しており、価格が異なる場合がございます。」 No confirmation follow-up is needed solely to explain discretionary pricing.
 
+### 5.2 Conversion-oriented sales follow-up (Sponsor direction, 2026-11-28)
+
+- Give every proactive sales follow-up a concrete commercial objective and an actionable next step. Default to clarification: ask about intended purchase timing or a specific remaining purchase blocker (e.g. price, dimensions, delivery, desired variant), based on the actual conversation. Do not ask again for facts already supplied. Prefer one focused question over a generic invitation to talk.
+- Layer verified conversion triggers onto clarification whenever available: low stock for the exact desired variant, an active promotion or authorized offer, or a useful change in availability. Prioritize these triggers when genuine; verify current stock, applicable pricing, offer conditions and expiry before making a claim. Do not manufacture scarcity, discounts, deadlines or commitments. Supplier stock and a listing's displayed quantity are not automatically interchangeable.
+- Reduce purchasing friction with a verified customer-visible product link or relevant alternative where helpful. Use an explicit purchase CTA when the customer can act now; otherwise ask a concrete question whose answer can guide the next sales action.
+- Omit generic invitations such as 「まだご購入をご検討中でしたら、ぜひお気軽にご相談くださいませ」 and generic check-ins with no actionable question or offer. Do not create conversation for its own sake. If no useful CTA or clarification remains, omit the filler and reconsider whether outreach has value. Keep the message concise and do not manufacture an internal confirmation follow-up.
+- Record the selected strategy, evidence supporting any conversion trigger, and intended customer action in the response plan. Preserve the conversion eligibility check, conversation-based exclusions and human approval required above.
+
+Example: a customer previously asked for a white bunk bed and a discount. If no current promotion or low-stock claim is verified, ask whether they have an intended purchase date or whether price remains the barrier, rather than inviting general consultation. If a genuine promotion or low-stock condition is verified, add it and a valid purchase link where appropriate.
+
 ## 6. Draft and review
 
 Write natural, polite Japanese; answer directly, one sentence per line, no unnecessary apology or admission of unverified fault. Do not expose internal SKU, internal order identifiers, cost/margin or implementation details. Use customer-visible product identifiers/links only if valid and permitted. Never make an unsupported promise or introduce cancellation fees. Do not repeat generic template content when individualized evidence is available.
@@ -102,6 +112,7 @@ Return compact per-case results: shop/inquiry ID; customer need; knowledge/evide
 - Verify a new inbound keeps/reopens the proper response obligation; verify follow-up date/state and event persistence.
 - Verify missing/expired knowledge fails safely and creates a reviewable candidate rather than a fabricated rule.
 - Verify discretionary pricing questions receive a useful, bounded response without creating an unnecessary confirmation obligation; verify material safety/specification questions and existing promises are not suppressed by this principle.
+- Verify sales follow-up contains a concrete purchase CTA or focused clarification; layer verified promotion/low-stock triggers when available and reject generic invitations or fabricated urgency.
 
 A ChatGPT skill distribution may act only as a thin loader of this canonical file. Fetch it at every invocation using authenticated GitHub access, verify its current approval/ref, and record its source revision. No copied workflow or business formula may be authoritative in the loader. If unavailable, fail closed; do not silently use an older copy. Review before production activation; explicitly authorized draft-mode pilots are limited to evidence gathering and preparation for review. No autonomous sends, new schema, deployments, credentials or production changes are authorized by this draft.
 
