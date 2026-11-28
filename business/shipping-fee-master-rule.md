@@ -230,28 +230,60 @@ Official-document-derived endpoint reference: [REF-GIGA-OPENAPI-2](../references
 
 `comboInfo` 是实物组成明细，不是箱数权威：`4I291166AAA`（4 脚セット）为 2 条明细、`sum(qty)=8`；`HA305879AAA` 为 3 条明细；`2512P332286A` 仅 1 条明细但 `qty=2`。因此 `sum(qty)` 是实物件数，`len(comboInfo)` 接近组件/箱组数，两者都未获供应商书面定义。internal `product_variants.package_quantity` 与 `comboInfo` 冲突：抽样 17 个 `package_quantity=1` 的 SKU，`comboInfo` 组数为 1–3 组、`sum(qty)` 为 2–8；按件数计 **0/17 相符**，按组数计仅 3/17 相符；同时全库该字段 4831/6557 为 NULL。结论：包数必须从 `comboInfo` 实读并按 L5 独立核查，不得用 DB 字段或对 F_u 乘算。
 
-#### 7.2.3 区域费实测（订单级，2026-11-28）
+#### 7.2.3 区域费全档位枚举（订单级实测，2026-11-28）
 
-`buyer/order/detail/v1` 的 `feeDetails[feeType=2]` 是 Giga **实际收取**的履约费（含运费+包装费）。同一 SKU 按目的地对比：
+`buyer/order/detail/v1` 的 `feeDetails[feeType=2]`（Fulfillment Fee，含运费+包装费）为 Giga **实际收取**金额。对 39 个 F_u 档位、139 笔已知目的地订单（每档取北海道/冲绳全部可得订单 + 普通地区 2 笔）逐单读取，结果如下（括号内为相对 F_u 的差额；"订单数"= 北海道/冲绳/其他）：
 
-| 目的地 | SKU（订单 shipmentId） | F_u（标准费） | 实收 feeType=2 | 与 F_u 关系 |
-|---|---|---:|---:|---|
-| 北海道 | N510P469767Z（2JTGxpjypCMXEKUJQ4QS9Q） | 1001 | **1881** | +880，等于 Sponsor E_a |
-| 冲绳 | N510P254504N（2JSXnQXZQKBnZN2i9bGcw7） | 1001 | **4246** | 等于 Sponsor E_a |
-| 东京 | N511P429780B（2JTDoaoKihVAmN8ockzQEp） | 1001 | **1001** | 无附加 |
-| 东京 | W770P366224（2JTEdRKJk472iqnvXKR6ny） | 1001 | **1001** | 无附加 |
-| 北海道 | N504P284384Z（2JRzf8yQJisBnfzN3f4Ay2） | 1705 | 1705 | 无附加 |
-| 北海道 | N506P339216D（2JQkhxSFW5y4hQSR8WVR3N） | 2057 | 2057 | 无附加 |
-| 北海道 | N511P387242B（2JQtZ48fkihFZSZcdWTMGc） | 2530 | 2530 | 无附加 |
-| 北海道 | N509P277758B（2JREyhfgcL9qG9aoCiaZf3） | 2987 | 2987 | 无附加 |
-| 北海道 | N511S358748B（2JQZ6WFBCsrX3BdWr9nkGi） | 3410 | 3410 | 无附加 |
-| 北海道 | N509P176640K（2JQM7DDZxaT5gQ37TRW8G5） | 3966 | 3966 | 无附加 |
-| 北海道 | N508P301428A（order_2JGTj8TDc6m7fZH4HX4b6d） | 6953 | 6953 | 无附加 |
-| 北海道 | N511S407763G（order_2JNuhC26NB3JCt7tqF5Gev） | 7679 | 7679 | 无附加 |
-| 北海道 | N509SA353981A（order_2JNm2cS5JAoKPQGsG3joYx） | 3058 | 3938 | +880 |
-| 北海道 | SETN506P295412BB（order_2JJg3om5yxqxro2xUjcCg4） | 4004 | 7524 | 组合商品，非简单加总 |
+| Tier (F_u) | 普通地区 | 北海道 | 冲绳 | 订单数 H/O/其他 |
+|---:|---:|---:|---:|---:|
+| 1001 | 1001 (+0) | 1881 (+880) | 4246 (+3245) | 38/2/2 |
+| 1705 | 1705 (+0) | 1705 (+0) | — | 11/0/2 |
+| 2002 | 2002 (+0) | — | — | 0/0/1 |
+| 2057 | 2057 (+0) | 2057 (+0) | — | 7/0/2 |
+| 2530 | 2530 (+0) | 2530 (+0) | — | 13/0/2 |
+| 2706 | 2706 (+0) | — | — | 0/0/1 |
+| 2987 | 2987 (+0) | 2987 (+0) | 17387 (+14400) | 5/1/2 |
+| 3003 | 3003 (+0) | — | — | 0/0/1 |
+| 3058 | 3058 (+0) | 3938 (+880) | — | 1/0/1 |
+| 3410 | 3410 (+0) | 3410 (+0) | — | 1/0/1 |
+| 3531 | 3531 (+0) | — | — | 0/0/1 |
+| 3762 | 3762 (+0) | — | — | 0/0/1 |
+| 3966 | 3966 (+0) | 3966 (+0) | — | 6/0/2 |
+| 3988 | 3988 (+0) | — | — | 0/0/1 |
+| 4004 | 4004 (+0) | 7524 (+3520) | — | 1/0/2 |
+| 4235 | 4235 (+0) | — | — | 0/0/1 |
+| 4587 | 4587 (+0) | — | — | 0/0/1 |
+| 4692 | 4692 (+0) | — | — | 0/0/1 |
+| 4967 | 4967 (+0) | — | — | 0/0/1 |
+| 4983 | 4983 (+0) | — | — | 0/0/2 |
+| 5044 | 5044 (+0) | — | — | 0/0/1 |
+| 5060 | 5060 (+0) | — | — | 0/0/1 |
+| 5115 | 5115 (+0) | — | — | 0/0/1 |
+| 5517 | 5517 (+0) | — | — | 0/0/2 |
+| 5671 | 5671 (+0) | — | — | 0/0/1 |
+| 5968 | 5968 (+0) | — | — | 0/0/1 |
+| 5974 | 5974 (+0) | — | — | 0/0/1 |
+| 6023 | 6023 (+0) | — | — | 0/0/1 |
+| 6496 | 6496 (+0) | — | — | 0/0/1 |
+| 6688 | 6688 (+0) | — | — | 0/0/1 |
+| 6953 | 6953 (+0) | 6953 (+0) | — | 1/0/1 |
+| 6985 | 6985 (+0) | — | — | 0/0/1 |
+| 7679 | 7679 (+0) | 7679 (+0) | — | 1/0/1 |
+| 7932 | 7932 (+0) | — | — | 0/0/1 |
+| 8008 | 8008 (+0) | — | — | 0/0/1 |
+| 8504 | 8504 (+0) | — | — | 0/0/1 |
+| 8949 | 8949 (+0) | — | — | 0/0/1 |
+| 10919 | 10919 (+0) | — | — | 0/0/1 |
+| 11898 | 11898 (+0) | — | — | 0/0/1 |
 
-**关键业务含义（不改公式，仅记录观测）**：①北海道附加费**并非全档位存在**——1001 与 3058 档出现 +880，其余 8 个档位实收等于标准费；②"E_a = F_u"的分支在多数档位成立，与 L3 的 `NO_ADDITIONAL_FEE` 分支相容；③同一 SKU 的 F_u 可能已变动（DB 值与 API 有差异时，以订单实际收取与当期 API 为准）；④组合商品（多包裹）实收显著高于单件标准费，须按 L5 单独核查，不得乘算。
+**关键事实**
+
+1. **F_u=1001 档的区域费完全稳定**：北海道 38/38 单 = **1881（+880）**，冲绳 2/2 单 = **4246（+3245）**，普通地区 = 1001（+0）。与 Sponsor RATE-001 表逐项吻合，构成独立验证。
+2. **北海道附加费并非全档位存在**：1705、2057、2530、2987、3410、3966、6953、7679 共 45 笔订单实收 = F_u（+0）。即这些档位在 L3 应落入 `E_a = F_u → NO_ADDITIONAL_FEE`。
+3. **出现附加费的档位也不遵循单一比例**：1001 与 3058 均为 **+880**（固定额，不是比例）；4004 组合商品 +3520；2987 档冲绳单件 **+14400（17387）**，说明大件/超尺寸另有计价。因此 **不得用 +880、也不得用百分比推广到未观测档位**。
+4. **金额按订单行汇总**：多行订单 `order_2JKzdvVFpS3BmC5cTRj8rp`（1705 档 PP307877GAA + 1001 档 WF292338BAA，同发北海道）实收 1705 + 1881 = **3586**，与该口径一致；该行在表中不计入档位统计。
+5. **未出账订单不等于 0**：2 笔北海道订单 `feeDetails` 为空且 `totalAmount=null`（order_2JLJffMM3kWRxDVKXvHn4C、order_2JNH5DbmhKfNshuD2p36qz），属未计费快照，不能读作"区域费为 0"。
+6. **对规则的影响（不改公式）**：F_u=1001 可直接用 1881/4246；其他档位必须以"同 SKU + 同目的地"的订单实收或当期 Giga UI 为准，禁止由 F_u 或 +880 推算。多包裹/组合商品在 L5 单独核查。
 
 Raw keys are evidenced by [Giga stack README](../engineering/stacks/gigab2b/README.md), [plugin index](../engineering/stacks/gigab2b/plugin/index.js) and [CatalogSync domain assessment](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/architecture/GIGA_PRODUCT_DOMAIN_MAPPING_ASSESSMENT.md). The plugin normalizes shippingFee/remoteShippingFee, but internationalFulfillmentFees is reduced to array length in its summary. Use giga_price with includeRaw=true where available, or equivalent approved read-only API, to inspect regional records. CatalogSync price sync does not establish packing/area fee mapping. The original Product Price Query.pdf was not recovered from available sources in this review; do not label these candidate mappings official-spec verified. [Giga Data Dictionary MAP-006](../references/giga/data-dictionary-mapping.md) remains the cross-product mapping authority; verified paths and sanitized evidence are recorded in [REF-GIGA-DATA](../references/giga/data-dictionary-mapping.md#shipping-fee-evidence-2026-11-28).
 
