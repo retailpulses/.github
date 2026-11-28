@@ -9,6 +9,17 @@
 | BUS-PRC-002 | Effective TCOGS (C_eff) | 以 Effective Cost Price 为采购成本基础、按现行 Canonical Contract 计入适用履约费用的有效总成本；**不得**直接等同于 Standard TCOGS |
 | BUS-PRC-003 | Direct Margin | 基于实际结算收入、平台佣金及 Effective TCOGS 的 Direct Contribution / Revenue；现有合同为主要经营定价口径 |
 | BUS-PRC-004 | Standard TCOGS 8% Profit Floor | 在扣除适用佣金与未包含的额外成本后，单件利润 **>= 0.08 × C_std**；不是 U×1.08、也不是销售收入 8% Margin |
+| BUS-PRC-005 | Effective Cost Price (C_ecp) | 该 Variant **当前可得报价中的最低值**，输入为 manual / exclusive / promotional / standard 四类非零价格；定义见下节。零值**不构成**有效价格，一律视为缺失 |
+
+## Effective Cost Price 定义（Owner 决策 2026-11-28）
+本节为 **Owner 已确认的口径**（2026-11-28）；与其余 Draft 条款冲突时以本节为准，本文件其余部分状态不变。
+
+1. **取最低，不取优先序。** `C_ecp = MIN(manual, exclusive, promotional, standard)`，仅在该值非零时参与。
+   先前实现的 `COALESCE(manual, baseline, discounted, source)` 是优先序覆盖，会使高优先序字段挡住更低的可得价，不符合本定义。
+2. **波动是预期行为。** 促销与专属价变动时 `C_ecp` 随之变动，属于正确表现；稳定性由 Canonical Price History 另行记录，不以冻结 `C_ecp` 换取。因此凡消费 `C_ecp` 的下游（floor price、平台定价）必须能接受取值随时间变化。
+3. **零永远不是价格。** 任何价格字段的合法取值是**正数或 NULL**。`0` 不得用来表示"无报价"或"无促销"，一律使用 `NULL`。数据库层需以 `CHECK (col IS NULL OR col > 0)` 强制，公式层保留 `NULLIF(x, 0)` 作纵深防御。
+4. **一个 Item Code 多个 Seller 报价时**，取可采购报价中的**最低落岸成本**（`price` + `shippingFee`），并记录获胜的 `sellerCode` 与落岸成本。前提是该报价 `skuAvailable` 不为 false。平台库存接口仅返回 SKU 级聚合，无法按 Seller 拆分库存，故不得声称已逐 Seller 验证库存。
+5. **口径未知时不得推断。** 供应商以自然语言通知的价格，在确认其对应四类输入中的哪一类之前，不得写入 `C_ecp`（对应 Canonical Rules `CR-PRICE-002`）。
 
 ## 数学契约（待核实结算与取整细节）
 设 X=商品有效售价，S=买家支付且计入该笔商家结算的运费收入，r=对 X+S 适用的佣金率，E=未计入 C_std 的额外卖家成本（不得重复扣除 Unit Fulfillment Fee）。
