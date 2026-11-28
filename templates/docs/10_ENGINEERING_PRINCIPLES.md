@@ -37,7 +37,7 @@ In particular:
 - Repository workflow should be proportional to risk. Lab, prototype, migration, and operator-tool repositories without production authority may use direct pushes and optional PRs when that materially improves iteration speed.
 - Production repositories may use stricter review and merge conventions, but the minimum safe operating model must continue to work if paid GitHub governance features disappear.
 - When adopting a paid-plan GitHub control, document the portable fallback or equivalent control before treating it as required governance.
-- Keep an explicit merge-block fallback in the repository workflow: inspect the exact blocker, avoid repeated merge-method retries or policy bypasses, and use a risk-appropriate authorized integration path. A PR is the preferred review surface, not a dependency on paid-plan merge enforcement; production review, deployment, and mutation gates still apply.
+- Keep an explicit merge-block fallback in the repository workflow: inspect the exact blocker, do not bypass required business checks, and use a risk-appropriate authorized integration path. A preconfigured, narrowly scoped PR bypass may be used by its authorized actor after applicable CI, review, and business acceptance requirements pass; document its use. A PR is the preferred review surface, not a dependency on paid-plan merge enforcement; production review, deployment, and mutation gates still apply.
 
 The target is **portable governance first, subscription features second**.
 

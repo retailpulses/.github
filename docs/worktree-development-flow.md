@@ -151,11 +151,12 @@ Pull requests remain the preferred review and CI surface where the repository ca
 When a PR cannot merge:
 
 1. Read the exact GitHub merge-block reason and required checks. Do not repeatedly retry alternate merge methods when the blocker is a policy or permission gate.
-2. Do not use an admin bypass, weaken repository rules, or treat green CI as proof that GitHub permits the merge.
-3. Use the repository's documented fallback, selected by risk:
+2. Do not bypass required business checks or use an unreviewed force update. If the applicable ruleset already defines a narrowly scoped bypass (for example, an organization administrator bypass limited to PRs), an authorized actor may use it after all applicable CI, review, and business acceptance requirements pass. Record the blocker, the configured bypass used, and its evidence in the Issue or PR.
+3. Do not create a new bypass or weaken rules as an ad hoc merge fix. If no authorized integration path exists, ask the ruleset owner to correct the policy so legitimate business changes can merge while the intended PR, CI, review, deletion, and history protections remain effective.
+4. Otherwise, use the repository's documented fallback, selected by risk:
    - **Low-risk docs, tools, and non-production code:** after the applicable local validation, an authorized maintainer may integrate the reviewed commit directly to `main` if the repository allows it. Preserve the Issue/commit trail and verify `main` afterward.
    - **Production-sensitive code or changes with data/customer impact:** retain the required human review and validation. If the plan cannot enforce the review server-side, an authorized maintainer performs the integration only after recording that review and CI evidence; deployment and production writes remain separately gated by the repository's release procedure.
-4. If no authorized fallback exists, stop and record the exact blocker and the owner needed to resolve it. Do not leave a task in an unbounded merge-retry loop.
+5. If the policy owner cannot correct the blocker immediately, record the exact reason and owner, then resume through the approved path. Do not leave a task in an unbounded merge-retry loop.
 
 Repository-specific fallbacks and risk classification belong in `repository-workflow-matrix.md` or the repository's own workflow guidance. Direct integration is an integration mechanism; it does not authorize deployment or production mutation.
 
