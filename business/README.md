@@ -17,6 +17,7 @@
 ## Operational SOPs (draft)
 
 | Mercari Shops | [Buyer receipt & invoice request SOP](mercari/buyer-receipt-invoice-sop.md) | DRAFT; official buyer-side records first; no shop-issued documents as routine policy; statutory requests escalated |
+| Cross-platform (Giga / Mercari / Rakuten / internal DB) | [SKU Change — Master SOP (facts only)](sku-change-sop.md) | DRAFT; facts-only baseline, procedure intentionally not yet defined; evidence PARTIAL |
 
 ## Canonical business knowledge
 | Domain | Knowledge topic | Status |
