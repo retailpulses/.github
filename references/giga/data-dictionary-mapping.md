@@ -165,7 +165,7 @@ Implication: the API is the current authority for F_u; a DB-only read may quote 
 | Hokkaido | order_2JNm2cS5JAoKPQGsG3joYx / N509SA353981A | 3058 | 3938 (+880) |
 | Hokkaido | order_2JJg3om5yxqxro2xUjcCg4 / SETN506P295412BB | 4004 | 7524 (combo) |
 
-The 1001-tier rows independently confirm Sponsor RATE-001 (Hokkaido 1881 / Okinawa 4246). Across a full enumeration of **39 fee tiers / 141 orders**, the Hokkaido surcharge is **+880 at 1001 and 3058 only**; 1705, 2057, 2530, 2987, 3410, 3966, 6953, 7679 show **+0** (45 orders); 4004 combo +3520; 2987-tier Okinawa single item +14400 (oversized). Fee amounts aggregate per order line (1705 + 1881 = 3586 observed). Full table: [BUS-LOG-002 §7.2.3](../../business/shipping-fee-master-rule.md#723-区域费全档位枚举订单级实测2026-11-28).
+The 1001-tier rows independently confirm Sponsor RATE-001 (Hokkaido 1881 / Okinawa 4246). Across a full enumeration of **39 fee tiers / 141 orders**, the Hokkaido surcharge is **+880 at 1001 and 3058 only**; 1705, 2057, 2530, 2987, 3410, 3966, 6953, 7679 show **+0** (45 orders); 4004 combo +3520; 2987-tier Okinawa single item +14400 (oversized). Fee amounts aggregate per order line (1705 + 1881 = 3586 observed). Full table: [BUS-LOG-002 §7.2.3](../../business/shipping-fee-master-rule.md) (section 7.2.3–7.2.4).
 
 ### Alternatives and remaining manual verification
 
