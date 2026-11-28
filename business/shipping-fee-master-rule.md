@@ -1,6 +1,6 @@
 # Shipping Fee Master Rule — BUS-LOG-002
 
-状态：Sponsor-confirmed business decisions / Runtime verification pending · 2026-11-28
+状态：Sponsor-confirmed business decisions / Giga API runtime verified 2026-11-28（区域费未由 API 暴露，UI 验证待办）· 2026-11-28
 Owner（建议）：Business Operations / Procurement
 范围：Mercari Shops 的 GigaB2B 商品运费询价，Shop4 优先。此文档不授权自动收费、改价或发送消息。
 依据：Sponsor 2026-11-28 指示及提供的 Giga 区域费用表；[Pricing Contract](pricing-contract.md)、[Giga Data Dictionary](../references/giga/data-dictionary-mapping.md)。
@@ -25,7 +25,7 @@ Owner（建议）：Business Operations / Procurement
 | E_a | Estimated Fulfillment Fee（P_a + R_a）；本规则中业务简称 Remote Area Fee，包含包装费，是比较及追加运费公式的唯一供应商成本输入 |
 | S_a | 当前 Listing 向客户收取的目的地区域运费 |
 
-确认同一 SKU/Variant、同一销售单位、币种、时点和费用粒度。保留原始 R_a 与 P_a 供追溯；规则统一使用 E_a，不使用单独 R_a，也不重复加包装费。当前 Giga 字段映射尚待运行验证。Listing 实时配置优先于旧快照。
+确认同一 SKU/Variant、同一销售单位、币种、时点和费用粒度。保留原始 R_a 与 P_a 供追溯；规则统一使用 E_a，不使用单独 R_a，也不重复加包装费。Giga 字段映射已运行验证（见 §7.2）：API 只提供 F_u，不提供 R_a/P_a，E_a 仍需固定类别或 UI 实取。Listing 实时配置优先于旧快照。
 
 #### ¥1,001 固定类别（BUS-LOG-002-RATE-001）
 
@@ -123,7 +123,7 @@ Sponsor 提供的典型数据，约占该类别商品的50%以上（比例为 Sp
 
 ## 7. Business-to-API field mapping (BUS-LOG-002-MAP)
 
-Mapping evidence as of 2026-11-28: Mercari = official schema verified; Giga = API endpoint and top-level raw keys observed in code/reference, regional fee semantics and nested structure pending supplier-spec/live verification. Do not treat logical names below as new DB columns.
+Mapping evidence as of 2026-11-28: Mercari = official schema verified; Giga = endpoint、标准履约费字段、币种、组合结构已用只读生产查询验证（6 次 Price 调用 / 217 条记录 / 210 个 SKU / 52 个 F_u 档位；3 次 Detail 调用 / 135 条记录），**但区域费用（R_a）与包装费（P_a）不被 Open API 2.0 暴露**，语义仍待 Giga UI / 供应商确认。Do not treat logical names below as new DB columns.
 
 ### 7.1 Mercari Shops — official GraphQL schema
 
@@ -179,33 +179,67 @@ Implementation evidence: [Pricing Contract](pricing-contract.md) and [StoreOps m
 
 Official-document-derived endpoint reference: [REF-GIGA-OPENAPI-2](../references/giga/open-api-2.0.md) and relocated [CatalogSync Quick Reference](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/Gigab2b%20API%20guide/GIGA_OPEN_API_2_0_QUICK_REFERENCE.md). Product Price API: POST https://openapi.gigab2b.com/b2b-overseas-api/v1/buyer/product/price/v1, body skus[] (max 200), signed 2.0 request, common envelope success/code/data/requestId. Do not use retired 1.0. Use exact SKU and inspect raw record rather than summarized price projection.
 
-| Business field | Observed API key / source | Verification and use |
-|---|---|---|
-| Giga SKU | data item.sku | code observed; exact match to verified internal item_code |
-| Unit Fulfillment Fee F_u | item.shippingFee is a candidate, adapter shipping_fee; internal product_commercials.fulfillment_fee is existing commercial field | raw key and internal field exist; equivalence to Giga UI Unit Fulfillment Fee including packing NOT verified, do not auto-map yet |
-| Remote Area Shipping Fee R_a (transport component only) | item.remoteShippingFee is observed; item.internationalFulfillmentFees may contain regional records | shape, destination keys, units, meaning and packing coverage NOT verified; do not assign this raw key to R_a without proof |
-| Packing Fee P_a | exact JSON field UNKNOWN | use explicit Giga UI label or supplier-confirmed raw mapping |
-| Estimated Fulfillment Fee E_a (packing inclusive; canonical regional cost used in rules) | exact JSON field UNKNOWN; potential sources remoteShippingFee / internationalFulfillmentFees require evidence | do not sum or select a field blindly; use explicit packing-inclusive regional quote or verified R_a+P_a from same area and SKU |
-| Shipping range | item.shippingFeeRange | observed; range is not a destination quote |
-| Currency | item currency context (plugin reports currency) | validate JPY and per-sale-unit grain |
-| Region / prefecture | Giga regional fee record / UI Area | exact API enum/key UNKNOWN; do not reuse Mercari enum as Giga field |
-| Combo / package count | Product Detail API POST /b2b-overseas-api/v1/buyer/product/detailInfo/v1, SKU lookup | package count path UNKNOWN; verify sales unit, components and packaging from source, not arbitrary multipliers |
+**运行验证结论（2026-11-28，只读，生产 buyer 凭证）**：Open API 2.0 **只返回标准单件履约费**，**不返回北海道/冲绳的区域费，也不返回包装费**。因此 E_a 无法从 API 计算，仍需 Sponsor 固定类别费率或 Giga UI 报价。
 
-Raw keys are evidenced by [Giga stack README](../engineering/stacks/gigab2b/README.md), [plugin index](../engineering/stacks/gigab2b/plugin/index.js) and [CatalogSync domain assessment](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/architecture/GIGA_PRODUCT_DOMAIN_MAPPING_ASSESSMENT.md). The plugin normalizes shippingFee/remoteShippingFee, but internationalFulfillmentFees is reduced to array length in its summary. Use giga_price with includeRaw=true where available, or equivalent approved read-only API, to inspect regional records. CatalogSync price sync does not establish packing/area fee mapping. The original Product Price Query.pdf was not recovered from available sources in this review; do not label these candidate mappings official-spec verified. [Giga Data Dictionary MAP-006](../references/giga/data-dictionary-mapping.md) remains the cross-product mapping authority; resolve and update it when evidence exists.
+已核验的精确路径与语义：
 
-Fallback: use current exact-SKU Giga UI Estimated Fulfillment Fee, or the Sponsor-confirmed F_u=1001 mapping in RATE-001 (Hokkaido 1881 / Okinawa 4246, subject to known SKU exceptions). Other tiers require actual regional quote, not extrapolation. If F_u itself cannot be verified, do not activate fixed mapping.
+| Business field | Exact JSON path（Open API 2.0） | Type | 观测示例 | 币种/单位 | 转换 | Null / missing | Status |
+|---|---|---|---|---|---|---|---|
+| Giga SKU | `product/price/v1` → `data[].sku`；`product/detailInfo/v1` → `data[].sku` | string | `WF292693BAA` | — | 精确等值匹配 internal item_code，不按名称 | 未返回即该 SKU 无记录 | VERIFIED |
+| 卖家上下文 | `price/v1` → `data[].sellerInfo.sellerCode` / `.sellerStore` | string | `N509` / `KF` | — | 同一 SKU 可能返回多条不同 seller 记录 | `sellerInfo` 可缺失 | VERIFIED |
+| Unit Fulfillment Fee F_u | `price/v1` → `data[].shippingFee` | integer | `1001` | JPY / 销售单位 | 无需换算 | `null`（`skuAvailable=false` 或供应商未给费） | VERIFIED（见 7.2.1） |
+| Shipping fee range | `price/v1` → `data[].shippingFeeRange.minAmount` / `.maxAmount` | integer | `1001` / `1001` | JPY | 有 shippingFee 的 118 条记录全部 min=max=shippingFee | 不可用时两字段为 `null` | OBSERVED：不是目的地报价 |
+| Remote Area Shipping Fee R_a | `price/v1` → `data[].remoteShippingFee` | null | `null` | — | — | 217/217 全为 `null` | **NOT EXPOSED** |
+| 区域/国际履约费数组 | `price/v1` → `data[].internationalFulfillmentFees` | array | `[]` | — | — | 217/217 全为空数组 | **NOT EXPOSED**（内部结构从未观测到，不得假设） |
+| Packing Fee P_a | 无对应字段 | — | — | — | — | — | **NOT EXPOSED** |
+| Estimated Fulfillment Fee E_a | 无对应字段（API 不返回 R_a 或 P_a） | — | — | — | — | — | **NOT EXPOSED** |
+| Area identifier | `price/v1` 无；仅 `detailInfo/v1` → `data[].remoteAreaPostalCodes` | array | `[]` | — | — | 135/135 条为空 | **UNKNOWN**（字段存在但抽样从未有值，语义未证实） |
+| Currency | `price/v1` → `data[].currency` | string | `JPY` | ISO 4217 | 必须等于 `JPY`，否则转人工 | 缺失视为未知 | VERIFIED（217/217 为 JPY） |
+| Purchase availability | `price/v1` → `data[].skuAvailable` | boolean | `true` / `false` | — | **不等于**"该目的地可配送" | — | VERIFIED（语义受限） |
+| Delivery eligibility（目的地） | 无对应字段 | — | — | — | — | — | **NOT EXPOSED** |
+| Combo / package 结构 | `detailInfo/v1` → `data[].comboFlag`（boolean）+ `data[].comboInfo[]`（每项 `sku`,`qty`,`weightKg`,`lengthCm`,`widthCm`,`heightCm`） | bool + array | `SETN506P469771B`：`comboFlag=true`，3 条明细，qty 各 1 | 件 | `len(comboInfo)`=组成（箱）组数；`sum(qty)`=实物件数 | `comboFlag=false` 时 `comboInfo=[]` | PARTIALLY VERIFIED（见 7.2.2） |
+
+**未暴露字段的处理规则**：`remoteShippingFee`、`internationalFulfillmentFees`、`remoteAreaPostalCodes` 的字段名不得被当作 R_a / E_a / 区域键的证据；它们在本抽样中恒定为空，属于"存在但无数据"，不属于"值为 0"。E_a 仍只能用 RATE-001 固定类别或 Giga UI 实取报价，其他档位不得由 F_u 推算。
+
+#### 7.2.1 抽样与跨 SKU 验证
+
+抽样覆盖 Mercari Shop4 在售商品，含 F_u=1001 档、其他真实档位与多包裹组合。**北海道/冲绳金额列在 API 侧恒为"未暴露"**，故不与参考值作数值比对（参考值仅适用于 F_u=1001 类别，且由 Sponsor 提供、未经供应商 API 验证）。
+
+| SKU | F_u = `shippingFee`（API） | Hokkaido Total (API) | Okinawa Total (API) | Package Qty（`comboInfo`） | 状态 |
+|---|---:|---|---|---|---|
+| WF294157CAA | 1001 | NOT EXPOSED | NOT EXPOSED | 未拆分（`comboFlag=false`） | F_u 已核验；区域费需 UI |
+| WF294156DAA | 1001 | NOT EXPOSED | NOT EXPOSED | 未拆分（`comboFlag=false`） | 同上 |
+| WF292693BAA | 1001 | NOT EXPOSED | NOT EXPOSED | 未拆分（`comboFlag=false`） | 同上 |
+| BA430891A207236N | 2002 | NOT EXPOSED | NOT EXPOSED | 2 组 / 2 件 | 组合商品，双 SKU 明细 |
+| W3571P469704 | 1705 | NOT EXPOSED | NOT EXPOSED | 未拆分（`comboFlag=false`） | 非 1001 档 |
+| N506P332030D | 2530 | NOT EXPOSED | NOT EXPOSED | 未拆分（`comboFlag=false`） | 非 1001 档 |
+| SETN506P469771B | 8504 | NOT EXPOSED | NOT EXPOSED | 3 组 / 3 件 | 多包裹（标题"3箱梱包"一致） |
+| N508SET473626C | 3988 | NOT EXPOSED | NOT EXPOSED | 2 组 / 2 件 | 多包裹 |
+| WF309568BAA | `null` | NOT EXPOSED | NOT EXPOSED | 未拆分（记录不可用） | `skuAvailable=false`，F_u 不可得 |
+
+**与 internal DB 的交叉验证**：115 个可比 SKU 中 110 个（95.7%）`shippingFee` 与 `product_commercials.fulfillment_fee` 相等；5 个不等，且这 5 个 API `price` 与 DB `source_unit_price` 完全一致（说明差异只在履约费，不是价格改版）：`MS317851AAA` DB 2057 / API 1705；`N504S522471A` 3762 / 3058；`N511C307176B` 6237 / 5764；`N511C307176W` 6237 / 5764；`SETN506P497041A` 7040 / 7513。结论：**API `shippingFee` 是当前权威值，DB 字段可能滞后或写入口径不同，报价必须读 API 或 UI，不得只信 DB。** 另观测到 `MS283514AAA` 一次返回两条记录（seller `N509`/`KF` 与 `N504`/`IE`，F_u 同为 4983），故 SKU 在 Price 响应中**不唯一**，必须带 seller 维度。
+
+#### 7.2.2 包数语义与已知冲突
+
+`comboInfo` 是实物组成明细，不是箱数权威：`4I291166AAA`（4 脚セット）为 2 条明细、`sum(qty)=8`；`HA305879AAA` 为 3 条明细；`2512P332286A` 仅 1 条明细但 `qty=2`。因此 `sum(qty)` 是实物件数，`len(comboInfo)` 接近组件/箱组数，两者都未获供应商书面定义。internal `product_variants.package_quantity` 与 `comboInfo` 冲突：抽样 17 个 `package_quantity=1` 的 SKU，`comboInfo` 组数为 1–3 组、`sum(qty)` 为 2–8；按件数计 **0/17 相符**，按组数计仅 3/17 相符；同时全库该字段 4831/6557 为 NULL。结论：包数必须从 `comboInfo` 实读并按 L5 独立核查，不得用 DB 字段或对 F_u 乘算。
+
+Raw keys are evidenced by [Giga stack README](../engineering/stacks/gigab2b/README.md), [plugin index](../engineering/stacks/gigab2b/plugin/index.js) and [CatalogSync domain assessment](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/architecture/GIGA_PRODUCT_DOMAIN_MAPPING_ASSESSMENT.md). The plugin normalizes shippingFee/remoteShippingFee, but internationalFulfillmentFees is reduced to array length in its summary. Use giga_price with includeRaw=true where available, or equivalent approved read-only API, to inspect regional records. CatalogSync price sync does not establish packing/area fee mapping. The original Product Price Query.pdf was not recovered from available sources in this review; do not label these candidate mappings official-spec verified. [Giga Data Dictionary MAP-006](../references/giga/data-dictionary-mapping.md) remains the cross-product mapping authority; verified paths and sanitized evidence are recorded in [REF-GIGA-DATA](../references/giga/data-dictionary-mapping.md#shipping-fee-evidence-2026-11-28).
+
+Fallback: use current exact-SKU Giga UI Estimated Fulfillment Fee, or the Sponsor-confirmed F_u=1001 mapping in RATE-001 (Hokkaido 1881 / Okinawa 4246, subject to known SKU exceptions). Other tiers require actual regional quote, not extrapolation. If F_u itself cannot be verified, do not activate fixed mapping. **Because the Price API exposes no regional fee, the UI path is the standing alternative, not a temporary workaround**；API 侧只能作为"F_u 与 SKU/币种/组合结构"的校验来源。
 
 ### 7.3 Mapping acceptance and handoff
 
 1. Read a live Shop4 Listing with each payer/template type; verify returned identity, destination selection, displayId vs id, UI/API fee agreement, zero vs N/A vs missing.
-2. For Giga run read-only price query for a verified 1001 SKU and at least one other real fee tier, capturing sanitized raw response/requestId and same-time UI standard/packing/remote/estimated fee rows. Establish exact JSON paths, destination identifiers, currency and packing-inclusive semantics; prove whether shippingFee equals UI F_u and whether remoteShippingFee or internationalFulfillmentFees supplies E_a. Include combo example, if available.
-3. Record raw-to-normalized transformation and provenance in REF-GIGA-DATA; link actual producer/consumer code and tests. Only then enable machine calculation for non-fixed tiers.
-4. Join by verified shop + listing/variant identity + Giga SKU, never by template title or shipping fee amount. Apply L1–L5 after input resolution. Preserve source paths, timestamps, request IDs, applicable destination and operator decision in Inquiry closeout.
-5. No production write/deployment authorized here. Mercury-side schema mapping is verified against official docs, not live canary. Giga exact regional mapping remains a blocker.
+2. ~~For Giga run read-only price query … establish exact JSON paths …~~ **DONE 2026-11-28**：已对 210 个 SKU / 52 个 F_u 档位执行只读 Price 查询并记录 requestId、时间戳、原始字段与组合结构。结果：`data[].shippingFee` = F_u，`data[].currency` = JPY，`detailInfo` 的 `comboFlag`/`comboInfo` 给出组合结构；`remoteShippingFee` 恒 `null`、`internationalFulfillmentFees` 恒 `[]`、`remoteAreaPostalCodes` 恒 `[]`，**API 不供 R_a / P_a / E_a**。证据见 [REF-GIGA-DATA 证据附录](../references/giga/data-dictionary-mapping.md#shipping-fee-evidence-2026-11-28)。
+3. **Remaining manual step（未完成，不得跳过）**：对同一 SKU 在同一时点读取 Giga B2B 买家端产品页/履约费订单，记录 UI 上的 Standard / Packing / Hokkaido / Okinawa 金额行，确认 UI 的 Unit Fulfillment Fee 与 `shippingFee` 是否一致、E_a 是否等于 R_a+P_a。该项完成前，非固定档位的区域费仍为人工输入。
+4. Record raw-to-normalized transformation and provenance in REF-GIGA-DATA; link actual producer/consumer code and tests. Only then enable machine calculation for non-fixed tiers.
+5. Join by verified shop + listing/variant identity + Giga SKU, never by template title or shipping fee amount. Apply L1–L5 after input resolution. Preserve source paths, timestamps, request IDs, applicable destination and operator decision in Inquiry closeout.
+6. No production write/deployment authorized here. Mercury-side schema mapping is verified against official docs, not live canary. **Giga regional fee (R_a/P_a/E_a) is still not API-available — this remains a blocker for automated non-fixed-tier quoting.**
 
 ## 8. Governance / remaining decisions
 
 - [Business Governance](GOVERNANCE.md)；消费方 Inquiry Skill、Commerce Ops、CatalogSync、Store Ops 引用此规则；Supabase Knowledge #36 待对齐，不另设竞争规则。
 - 业务结构按 MECE 分层；尚未确认的边界显式转人工，不假装已有最终定价规则。
 - 待 Sponsor 核实：北海道 workflow 与 Formula Version 冲突时的最终优先级；多件订单取整粒度。送料込み不适用公式已确认，冲绳送料別 ¥200 阈值已确认。固定类别北海道 Estimated Fulfillment Fee 已由 Sponsor 确认为1881，旧1880为笔误，不再作为有效费率。最新费用表为 Sponsor 提供，未做独立供应商验证。
-- 本次不涉及生产收费、数据库变更、运行验证或部署。
+- **Giga API 能力限制（2026-11-28 验证）**：Open API 2.0 不返回北海道/冲绳区域费与包装费，E_a 无法由 API 得出；固定类别以外的档位需 Giga UI 实取并人工录入。是否向 Giga 申请区域费率接口或改用 UI 读取，待 Sponsor 决定。
+- 本次不涉及生产收费、数据库变更、运行验证或部署；API 操作均为只读。

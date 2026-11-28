@@ -1,6 +1,6 @@
 # REF-GIGA-DATA — Shared Business Dictionary & Field Mapping
 
-Status: **PARTIALLY VERIFIED (schema/code existence only)** · Reviewed: 2026-10-27 · Owner: Engineering Registry (definitions); executable owners retain mappings · [Issue #53](https://github.com/retailpulses/.github/issues/53)
+Status: **PARTIALLY VERIFIED — shipping-fee fields now runtime-verified (2026-11-28); regional/packing fees confirmed NOT exposed by Open API 2.0** · Reviewed: 2026-11-28 · Owner: Engineering Registry (definitions); executable owners retain mappings · [Issue #53](https://github.com/retailpulses/.github/issues/53)
 
 **Authority:** GigaB2B 是采购平台/渠道，不是 Seller；ASUKA、HEYA、TBO 是 Seller；Mercari Shop1–4 是 Shop。供应商 API seller 字段必须从源样本核对其身份类型，不能按字面推断为 Retailpulses Seller。本文是语义与映射索引，不是数据库迁移或 Runtime 映射引擎。
 
@@ -30,14 +30,113 @@ Status: **PARTIALLY VERIFIED (schema/code existence only)** · Reviewed: 2026-10
 | MAP-003 / 010 Discount | `product/price/v1`, `item.discountedPrice`, `item.exclusivePrice` in adapter | `discounted_price` and `exclusive_price` separate; promotion timestamps captured | Supabase `public.product_commercials.discounted_unit_price` | PARTIAL; writer, effective time, NULL/reset semantics UNKNOWN |
 | MAP-004 / 007 Actual purchase | Direct API path **UNKNOWN**; source purchase file/event | [Monthly P&L importer](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py) `PURCHASE` rows, allocation by order + item code where present | SQLite `pnl_purchase_events.unit_purchase_cost_yen`, `pnl_cost_matches.unit_purchase_cost_yen` | CODE/SCHEMA only; **not Giga Price API-derived** |
 | MAP-005 / 008 Confirmed cost | No live API mapping; operator action | Monthly P&L confirmation logic | SQLite P&L confirmed cost records, [service.py](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py) | PARTIAL, exact persistence field/record linkage needs Owner confirmation |
-| MAP-006 / 009 Fulfillment | Potential API fee fields require official contract verification; actual P&L import feed | Monthly P&L charges and operator confirmation | SQLite `pnl_cost_matches.unit_fulfillment_cost_yen`; Supabase `public.product_commercials.fulfillment_fee` | UNKNOWN semantic equivalence; distinct sources and grain |
+| MAP-006 / 009 Fulfillment | `product/price/v1` → `data[].shippingFee` (integer, JPY per sales unit) is the **Unit Fulfillment Fee**; **no** regional/packing field is populated | plugin `normalizePriceItem` → `shipping_fee`; CatalogSync writer → `product_commercials.fulfillment_fee` | Supabase `public.product_commercials.fulfillment_fee`; SQLite `pnl_cost_matches.unit_fulfillment_cost_yen` | **PARTIAL**: raw path + currency + JPY grain verified on 210 SKUs / 217 records (110/115 agree with DB; 5 diverge, see evidence appendix). Regional Hokkaido/Okinawa fee and Packing Fee are **NOT exposed**; do not derive from F_u |
 | MAP-007 / 002 Seller | API sellerInfo is **supplier-side inventory/pricing context**, not assumed operational Seller | Owner mapping TBD | Supabase `public.giga_cogs_shipment_lines.seller_code` | Schema exists; ASUKA/HEYA/TBO mapping requires real row and writer |
 | MAP-008 / 011 Supplier RMA | Upstream endpoint UNKNOWN | Monthly P&L import `SUPPLIER_RMA` | Local SQLite supplier RMA records (Owner schema check pending) | Giga API support UNKNOWN; do not assert |
 | MAP-009 / 012 RMA candidate | price fact provenance TBD, actual purchase events separate | [Monthly P&L RMA rule](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py): actual allocated cost == accepted Giga price | SQLite `pnl_purchase_price_rma_candidates.standard_unit_price_yen`, `actual_purchase_unit_cost_yen`, `price_fact_id`, `price_accepted_at` | **PARTIAL**; source `giga.price` producer & lineage not fully reconciled |
+| MAP-013 Unit Fulfillment Fee (F_u) | `product/price/v1` → `data[].shippingFee` | plugin `shipping_fee`; CatalogSync writer → `fulfillment_fee` | `public.product_commercials.fulfillment_fee` (JPY, per sales unit) | **VERIFIED (API)** 2026-11-28: 210 SKUs / 52 real fee tiers, 217/217 records JPY, `shippingFeeRange.min=max=shippingFee` in all 118 records that carry a fee. Equivalence to the **UI label** "Unit Fulfillment Fee" is inferred from identical tier values in DB and Sponsor table, not yet confirmed on screen |
+| MAP-014 Currency | `product/price/v1` → `data[].currency` | plugin `currency` | — | **VERIFIED**: `JPY` in 217/217 records; validate before any arithmetic, never assume JPY |
+| MAP-015 Remote Area Shipping Fee (R_a) / Estimated Fulfillment Fee (E_a) | **NO API PATH**: `price/v1.data[].remoteShippingFee` is `null` in 217/217; `price/v1.data[].internationalFulfillmentFees` is `[]` in 217/217; `detailInfo/v1.data[].remoteAreaPostalCodes` is `[]` in 135/135 | none | not persisted anywhere in production schema | **NOT EXPOSED**: field names must not be read as R_a/E_a evidence. E_a must come from Giga UI or Supplier RATE-001 fixed category |
+| MAP-016 Packing Fee (P_a) | **NO API PATH** in price or detail responses | none | not persisted | **NOT EXPOSED**: no packing amount, rate or percentage appears in either endpoint; `protectionServiceRates` is a return-protection rate, not packing |
+| MAP-017 Area identifier / Delivery eligibility | **NO API PATH**: no region enum, prefecture code or destination parameter accepted (`price/v1` silently ignores extra request fields); `data[].skuAvailable` is purchase availability only, not destination serviceability | none | — | **NOT EXPOSED**: destination support remains an operator/UI judgement |
+| MAP-018 Combo / package structure | `product/detailInfo/v1` → `data[].comboFlag` (boolean) + `data[].comboInfo[]` with `sku`, `qty`, `weightKg`, `lengthCm`, `widthCm`, `heightCm` | plugin `normalizeDetailItem` **drops both fields** | `public.product_variants.package_quantity` exists but disagrees | **PARTIAL**: `len(comboInfo)`≈component/box groups, `sum(qty)`=physical pieces; 17/17 sampled `package_quantity=1` rows contradict `comboInfo` (0/17 match by `sum(qty)`, only 3/17 by group count) and 4831/6557 rows are NULL — do not use DB as package authority |
+| MAP-019 Seller context on price | `product/price/v1` → `data[].sellerInfo.sellerCode` / `.sellerStore` | plugin `seller` object | `public.giga_cogs_shipment_lines.seller_code` | **VERIFIED**: one SKU can return multiple records (observed `MS283514AAA` twice: `N509`/KF and `N504`/IE, same 4983). SKU alone is not a unique key in the price response |
 
 Supplementary observed DB fields (schema existence per [#53](https://github.com/retailpulses/.github/issues/53)): `public.product_commercials.effective_cost_price`, `baseline_price`, `previous_unit_price`; `public.baserow_886994_compat_vw."Unit Price"`, `"Discounted Unit Price"`, `"Effective Cost Price"`. **Names are not proof of business equivalence.**
 
+## Shipping fee evidence 2026-11-28
+
+Read-only verification against production (`https://openapi.gigab2b.com`), signed Open API 2.0. No write endpoint was called; no credential or signature header is reproduced here.
+
+| Item | Value |
+|---|---|
+| Endpoints | `POST /b2b-overseas-api/v1/buyer/product/price/v1`, `POST /b2b-overseas-api/v1/buyer/product/detailInfo/v1` |
+| Calls / records | 6 price calls → 217 records → 210 distinct SKUs / 52 distinct fee tiers; 3 detail calls → 135 records → 131 SKUs |
+| Observation window | 2026-11-28 16:29–16:33 JST (UTC+9) |
+| Sample selection | Mercari Shop4 catalogue plus tier-spread sample from `product_commercials.fulfillment_fee` (1001, 1705, 2002, 2057, 2530, 3988, 8504 …), including multi-package combos |
+| Sanitization | Response envelopes kept; request headers, `client-id`, `sign`, `nonce` removed |
+
+### Sanitized raw fragment — price (F_u = 1001 tier)
+
+`requestId 391186b6994043b8`, observed 2026-11-28T16:29:36+09:00, request `{"skus":["WF292693BAA"]}`:
+
+```json
+{
+  "success": true, "code": "200", "requestId": "391186b6994043b8", "msg": "success",
+  "data": [{
+    "sku": "WF292693BAA",
+    "currency": "JPY",
+    "price": 5000,
+    "shippingFee": 1001,
+    "remoteShippingFee": null,
+    "shippingFeeRange": { "minAmount": 1001, "maxAmount": 1001 },
+    "internationalFulfillmentFees": [],
+    "sellerInfo": { "sellerStore": "HEYA", "sellerType": "GENERAL", "sellerCode": "N512" },
+    "skuAvailable": true
+  }]
+}
+```
+
+### Sanitized raw fragment — detail (combo / package structure)
+
+`requestId 990d99b5300501e8`, observed 2026-11-28T16:32:22+09:00, SKU `SETN506P469771B`:
+
+```json
+{
+  "sku": "SETN506P469771B",
+  "comboFlag": true,
+  "remoteAreaPostalCodes": [],
+  "protectionServiceRates": [
+    { "protectionService": "Basic•Return Protection Service", "rate": "2.00%" },
+    { "protectionService": "Advanced•Return Protection Service", "rate": "3.50%" },
+    { "protectionService": "Drop Shipping•Logistics Protection Service", "rate": "3.20%" }
+  ],
+  "comboInfo": [
+    { "sku": "N506P469773B", "qty": 1, "weightKg": 16.55, "lengthCm": 76, "widthCm": 62, "heightCm": 51 },
+    { "sku": "N506P469772B", "qty": 1, "weightKg": 29.55, "lengthCm": 76, "widthCm": 73, "heightCm": 64 },
+    { "sku": "N506P469771B", "qty": 1, "weightKg": 28.35, "lengthCm": 76, "widthCm": 73, "heightCm": 65 }
+  ]
+}
+```
+
+### Aggregate field behaviour (217 price records / 135 detail records)
+
+| Field | Non-null or non-empty | Meaning established |
+|---|---:|---|
+| `data[].shippingFee` | 118/217 non-null (`null` where `skuAvailable=false`) | Standard per-unit fulfillment fee in JPY |
+| `data[].shippingFeeRange.minAmount`/`maxAmount` | equals `shippingFee` in 118/118 cases | Range is not a destination quote |
+| `data[].remoteShippingFee` | **0/217** | Not supplied by this endpoint |
+| `data[].internationalFulfillmentFees` | **0/217** | Structure never observed; must stay UNKNOWN |
+| `data[].currency` | 217/217 `JPY` | Currency validation source |
+| `data[].sellerInfo.sellerCode` | present on all records | Seller context; SKU not unique (duplicate `MS283514AAA`) |
+| `detailInfo.data[].remoteAreaPostalCodes` | **0/135** | Field exists, never populated in sample; semantics unproven |
+| `detailInfo.data[].comboFlag` | 106/123 `true` in scan batch | Decomposition flag; `true` with 1 element = single-package bundle |
+| `detailInfo.data[].comboInfo` | same 106 SKUs | Component list: `len` = groups, `sum(qty)` = pieces |
+
+### API F_u vs internal DB `fulfillment_fee` (115 comparable SKUs)
+
+110/115 equal. Divergences (API `price` equals DB `source_unit_price` in all five, so the gap is fee-specific, not a price revision):
+
+| SKU | DB `fulfillment_fee` | API `shippingFee` |
+|---|---:|---:|
+| MS317851AAA | 2057 | 1705 |
+| N504S522471A | 3762 | 3058 |
+| N511C307176B | 6237 | 5764 |
+| N511C307176W | 6237 | 5764 |
+| SETN506P497041A | 7040 | 7513 |
+
+Implication: the API is the current authority for F_u; a DB-only read may quote a stale fee.
+
+### Alternatives and remaining manual verification
+
+1. **Giga B2B buyer UI (standing alternative)** — product page and the "Related Fulfillment Fee Order" opened from a Purchase Order expose the fee rows used by Sponsor's table (packing, remote area, estimated). Requires an authenticated browser session; not exercised in this run, so the UI label ↔ `shippingFee` equivalence is still unproven.
+2. **Supplier request** — ask Giga whether a regional/destination fee endpoint exists (the public Open API doc index is JS-rendered and its doc list could not be retrieved; no freight endpoint appears in any consumer code).
+3. **Do not** treat `remoteShippingFee`, `internationalFulfillmentFees` or `remoteAreaPostalCodes` as R_a/E_a/area keys until a non-empty sample is captured.
+4. Order-level reconstruction from `giga_cogs_shipment_lines` totals is **not** a valid substitute: item prices change over time, so `order_total − price` cannot isolate the regional fee.
+
 ## Mapping record contract and acceptance
+
+
 
 Future machine-readable records, only when useful, use:
 `term_id | definition | source_system | api_endpoint/version | source_json_path | transform | target_system | schema.table.column | grain/join_key | currency/unit | null_policy | effective_time | owner | evidence | status | consumers`.
