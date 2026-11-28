@@ -1,6 +1,6 @@
 # REF-GIGA-DATA — Shared Business Dictionary & Field Mapping
 
-Status: **PARTIALLY VERIFIED — shipping-fee fields now runtime-verified (2026-11-28); regional/packing fees confirmed NOT exposed by Open API 2.0** · Reviewed: 2026-11-28 · Owner: Engineering Registry (definitions); executable owners retain mappings · [Issue #53](https://github.com/retailpulses/.github/issues/53)
+Status: **PARTIALLY VERIFIED — price + order-level fee fields runtime-verified (2026-11-28); regional fee semantics confirmed by official spec, per-SKU remote quote unavailable** · Reviewed: 2026-11-28 · Owner: Engineering Registry (definitions); executable owners retain mappings · [Issue #53](https://github.com/retailpulses/.github/issues/53)
 
 **Authority:** GigaB2B 是采购平台/渠道，不是 Seller；ASUKA、HEYA、TBO 是 Seller；Mercari Shop1–4 是 Shop。供应商 API seller 字段必须从源样本核对其身份类型，不能按字面推断为 Retailpulses Seller。本文是语义与映射索引，不是数据库迁移或 Runtime 映射引擎。
 
@@ -36,11 +36,12 @@ Status: **PARTIALLY VERIFIED — shipping-fee fields now runtime-verified (2026-
 | MAP-009 / 012 RMA candidate | price fact provenance TBD, actual purchase events separate | [Monthly P&L RMA rule](https://github.com/retailpulses/store-ops/blob/main/monthlypnl/service.py): actual allocated cost == accepted Giga price | SQLite `pnl_purchase_price_rma_candidates.standard_unit_price_yen`, `actual_purchase_unit_cost_yen`, `price_fact_id`, `price_accepted_at` | **PARTIAL**; source `giga.price` producer & lineage not fully reconciled |
 | MAP-013 Unit Fulfillment Fee (F_u) | `product/price/v1` → `data[].shippingFee` | plugin `shipping_fee`; CatalogSync writer → `fulfillment_fee` | `public.product_commercials.fulfillment_fee` (JPY, per sales unit) | **VERIFIED (API)** 2026-11-28: 210 SKUs / 52 real fee tiers, 217/217 records JPY, `shippingFeeRange.min=max=shippingFee` in all 118 records that carry a fee. Equivalence to the **UI label** "Unit Fulfillment Fee" is inferred from identical tier values in DB and Sponsor table, not yet confirmed on screen |
 | MAP-014 Currency | `product/price/v1` → `data[].currency` | plugin `currency` | — | **VERIFIED**: `JPY` in 217/217 records; validate before any arithmetic, never assume JPY |
-| MAP-015 Remote Area Shipping Fee (R_a) / Estimated Fulfillment Fee (E_a) | **NO API PATH**: `price/v1.data[].remoteShippingFee` is `null` in 217/217; `price/v1.data[].internationalFulfillmentFees` is `[]` in 217/217; `detailInfo/v1.data[].remoteAreaPostalCodes` is `[]` in 135/135 | none | not persisted anywhere in production schema | **NOT EXPOSED**: field names must not be read as R_a/E_a evidence. E_a must come from Giga UI or Supplier RATE-001 fixed category |
-| MAP-016 Packing Fee (P_a) | **NO API PATH** in price or detail responses | none | not persisted | **NOT EXPOSED**: no packing amount, rate or percentage appears in either endpoint; `protectionServiceRates` is a return-protection rate, not packing |
+| MAP-015 Remote Area Shipping Fee (R_a) / Estimated Fulfillment Fee (E_a) | **Per-SKU:** `price/v1` → `data[].remoteShippingFee` — official spec: "Fulfillment fee for the shipment sent to **remote areas** … includes **Shipping and Packing Fee**", i.e. it **is** E_a, not R_a. **Per-order actual:** `buyer/order/detail/v1` → `data[].feeDetails[]` where `feeType=2` | none today (no consumer code) | not persisted in production schema | **SPEC-VERIFIED but UNPOPULATED**: `null` in 217/217 price records, so no per-SKU remote quote is obtainable. Order-level `feeType=2` does return actuals (Hokkaido 1881, Okinawa 4246, Tokyo 1001 for the 1001 tier). `detailInfo/v1.remoteAreaPostalCodes` stays `[]` (135/135) — not an area key |
+| MAP-016 Packing Fee (P_a) | **Not a separate field on the buyer price API** — packing is already inside `shippingFee` and `remoteShippingFee` per official spec. Seller-side `onsite-seller/order/detail/v1` → `data[].shippingFee` + `data[].packingFee` + `currencyCode` splits them | none today | not persisted | **buyer: NOT EXPOSED as a line item / seller: documented but buyer credentials cannot call it**. Never add P_a on top of `shippingFee`/`remoteShippingFee`, and never treat `protectionServiceRates` as packing |
 | MAP-017 Area identifier / Delivery eligibility | **NO API PATH**: no region enum, prefecture code or destination parameter accepted (`price/v1` silently ignores extra request fields); `data[].skuAvailable` is purchase availability only, not destination serviceability | none | — | **NOT EXPOSED**: destination support remains an operator/UI judgement |
 | MAP-018 Combo / package structure | `product/detailInfo/v1` → `data[].comboFlag` (boolean) + `data[].comboInfo[]` with `sku`, `qty`, `weightKg`, `lengthCm`, `widthCm`, `heightCm` | plugin `normalizeDetailItem` **drops both fields** | `public.product_variants.package_quantity` exists but disagrees | **PARTIAL**: `len(comboInfo)`≈component/box groups, `sum(qty)`=physical pieces; 17/17 sampled `package_quantity=1` rows contradict `comboInfo` (0/17 match by `sum(qty)`, only 3/17 by group count) and 4831/6557 rows are NULL — do not use DB as package authority |
 | MAP-019 Seller context on price | `product/price/v1` → `data[].sellerInfo.sellerCode` / `.sellerStore` | plugin `seller` object | `public.giga_cogs_shipment_lines.seller_code` | **VERIFIED**: one SKU can return multiple records (observed `MS283514AAA` twice: `N509`/KF and `N504`/IE, same 4983). SKU alone is not a unique key in the price response |
+| MAP-020 Order-level fee breakdown (destination-aware) | `buyer/order/detail/v1` → `data[].feeDetails[]` with `feeType` (`1` Item Cost, `2` Fulfillment Fee incl. shipping+packing, `3` Customs, `4` Storage, `5` DSR, `6` Protection, `7` Return Label), `feeName`, `feeAmount`; also `totalAmount`, `netTotalAmount`, request body `{"orderNo":[shipmentId],"includeRecipientInfo":bool}` | none today | `public.giga_cogs_shipment_lines.order_total_jpy` covers order total only, not the fee split | **VERIFIED (2026-11-28)**: 1001 tier → Hokkaido 1881 / Okinawa 4246 / Tokyo 1001; other tiers mostly equal to standard fee (no Hokkaido surcharge). Use for evidence of E_a by destination, not as a per-SKU quote service |
 
 Supplementary observed DB fields (schema existence per [#53](https://github.com/retailpulses/.github/issues/53)): `public.product_commercials.effective_cost_price`, `baseline_price`, `previous_unit_price`; `public.baserow_886994_compat_vw."Unit Price"`, `"Discounted Unit Price"`, `"Effective Cost Price"`. **Names are not proof of business equivalence.**
 
@@ -55,6 +56,7 @@ Read-only verification against production (`https://openapi.gigab2b.com`), signe
 | Observation window | 2026-11-28 16:29–16:33 JST (UTC+9) |
 | Sample selection | Mercari Shop4 catalogue plus tier-spread sample from `product_commercials.fulfillment_fee` (1001, 1705, 2002, 2057, 2530, 3988, 8504 …), including multi-package combos |
 | Sanitization | Response envelopes kept; request headers, `client-id`, `sign`, `nonce` removed |
+| Official spec source | Public help-center Open API 2.0 docs: `information/help_center/details&id=1829` → `information/open_api/index&doc_id=3`; field definitions read from doc_id 7 (Price), 12 (Shipping Info / tracking), 32 (Shipment Details), 14 (seller Shipment Details) |
 
 ### Sanitized raw fragment — price (F_u = 1001 tier)
 
@@ -99,13 +101,30 @@ Read-only verification against production (`https://openapi.gigab2b.com`), signe
 }
 ```
 
+### Sanitized raw fragment — order detail fee breakdown (Hokkaido, 1001 tier)
+
+`requestId 7a8df582307af589`, observed 2026-11-28, request `{"orderNo":["2JTGxpjypCMXEKUJQ4QS9Q"],"includeRecipientInfo":false}`:
+
+```json
+{
+  "orderNo": "2JTGxpjypCMXEKUJQ4QS9Q",
+  "totalAmount": 5211,
+  "feeDetails": [
+    { "feeType": 1, "feeName": "Item Cost",       "feeAmount": 3330 },
+    { "feeType": 2, "feeName": "Fulfillment Fee", "feeAmount": 1881 }
+  ]
+}
+```
+
+Same shape for Okinawa (`feeType 2 = 4246`, requestId `be893f83d7f4acba`) and Tokyo (`feeType 2 = 1001`).
+
 ### Aggregate field behaviour (217 price records / 135 detail records)
 
 | Field | Non-null or non-empty | Meaning established |
 |---|---:|---|
 | `data[].shippingFee` | 118/217 non-null (`null` where `skuAvailable=false`) | Standard per-unit fulfillment fee in JPY |
 | `data[].shippingFeeRange.minAmount`/`maxAmount` | equals `shippingFee` in 118/118 cases | Range is not a destination quote |
-| `data[].remoteShippingFee` | **0/217** | Not supplied by this endpoint |
+| `data[].remoteShippingFee` | **0/217** | Documented as the **remote-area** fulfillment fee incl. shipping+packing (= E_a); never populated in this sample, so no per-SKU remote quote |
 | `data[].internationalFulfillmentFees` | **0/217** | Structure never observed; must stay UNKNOWN |
 | `data[].currency` | 217/217 `JPY` | Currency validation source |
 | `data[].sellerInfo.sellerCode` | present on all records | Seller context; SKU not unique (duplicate `MS283514AAA`) |
@@ -127,12 +146,33 @@ Read-only verification against production (`https://openapi.gigab2b.com`), signe
 
 Implication: the API is the current authority for F_u; a DB-only read may quote a stale fee.
 
+### Order-level destination fees (verified)
+
+`POST /b2b-overseas-api/v1/buyer/order/detail/v1`, body `{"orderNo":["<shipmentId>"],"includeRecipientInfo":false}`; requestIds `7a8df582307af589`, `be893f83d7f4acba`, `97a506c3db2c1270`. `feeDetails[feeType=2].feeAmount` is the fulfillment fee actually charged (spec: "Fulfillment Fee (including shipping and packing fees)").
+
+| Destination | Shipment / SKU | Standard F_u | Charged feeType=2 |
+|---|---|---:|---:|
+| Hokkaido | 2JTGxpjypCMXEKUJQ4QS9Q / N510P469767Z | 1001 | **1881** |
+| Hokkaido | 2JSmy26vEz2RhqMveozZgR / WF296965EAA | 1001 | **1881** |
+| Okinawa | 2JSXnQXZQKBnZN2i9bGcw7 / N510P254504N | 1001 | **4246** |
+| Tokyo | 2JTDoaoKihVAmN8ockzQEp / N511P429780B | 1001 | **1001** |
+| Hokkaido | 2JRzf8yQJisBnfzN3f4Ay2 / N504P284384Z | 1705 | 1705 |
+| Hokkaido | 2JQkhxSFW5y4hQSR8WVR3N / N506P339216D | 2057 | 2057 |
+| Hokkaido | 2JQtZ48fkihFZSZcdWTMGc / N511P387242B | 2530 | 2530 |
+| Hokkaido | 2JREyhfgcL9qG9aoCiaZf3 / N509P277758B | 2987 | 2987 |
+| Hokkaido | 2JQZ6WFBCsrX3BdWr9nkGi / N511S358748B | 3410 | 3410 |
+| Hokkaido | 2JQM7DDZxaT5gQ37TRW8G5 / N509P176640K | 3966 | 3966 |
+| Hokkaido | order_2JNm2cS5JAoKPQGsG3joYx / N509SA353981A | 3058 | 3938 (+880) |
+| Hokkaido | order_2JJg3om5yxqxro2xUjcCg4 / SETN506P295412BB | 4004 | 7524 (combo) |
+
+The 1001-tier rows independently confirm Sponsor RATE-001 (Hokkaido 1881 / Okinawa 4246). The 1705–3966 rows show **no Hokkaido surcharge at those tiers** — the surcharge is not universal.
+
 ### Alternatives and remaining manual verification
 
-1. **Giga B2B buyer UI (standing alternative)** — product page and the "Related Fulfillment Fee Order" opened from a Purchase Order expose the fee rows used by Sponsor's table (packing, remote area, estimated). Requires an authenticated browser session; not exercised in this run, so the UI label ↔ `shippingFee` equivalence is still unproven.
-2. **Supplier request** — ask Giga whether a regional/destination fee endpoint exists (the public Open API doc index is JS-rendered and its doc list could not be retrieved; no freight endpoint appears in any consumer code).
-3. **Do not** treat `remoteShippingFee`, `internationalFulfillmentFees` or `remoteAreaPostalCodes` as R_a/E_a/area keys until a non-empty sample is captured.
-4. Order-level reconstruction from `giga_cogs_shipment_lines` totals is **not** a valid substitute: item prices change over time, so `order_total − price` cannot isolate the regional fee.
+1. **Order-level evidence (working API path)** — `buyer/order/detail/v1.feeDetails` returns the destination-aware charged fee. Use it to validate E_a for a tier; it is retrospective, not a per-SKU forward quote.
+2. **Giga B2B buyer UI** — product page / "Related Fulfillment Fee Order" give the same rows interactively; useful when no order exists for the SKU. Not exercised here.
+3. **Supplier request** — ask Giga for a per-SKU destination quote endpoint, since `remoteShippingFee` exists in the spec but is never populated for the JP marketplace.
+4. **Do not** treat `internationalFulfillmentFees` (`countryCode`-keyed) or `remoteAreaPostalCodes` as Japanese prefecture keys, and do not derive E_a from `order_total − price`.
 
 ## Mapping record contract and acceptance
 
