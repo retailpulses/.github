@@ -285,6 +285,37 @@ Official-document-derived endpoint reference: [REF-GIGA-OPENAPI-2](../references
 5. **未出账订单不等于 0**：2 笔北海道订单 `feeDetails` 为空且 `totalAmount=null`（order_2JLJffMM3kWRxDVKXvHn4C、order_2JNH5DbmhKfNshuD2p36qz），属未计费快照，不能读作"区域费为 0"。
 6. **对规则的影响（不改公式）**：F_u=1001 可直接用 1881/4246；其他档位必须以"同 SKU + 同目的地"的订单实收或当期 Giga UI 为准，禁止由 F_u 或 +880 推算。多包裹/组合商品在 L5 单独核查。
 
+#### 7.2.4 数据来源、覆盖口径与缺口（事实）
+
+本轮引用的数据分两类来源，**不可混用**：
+
+| 事实对象 | 来源 | 说明 |
+|---|---|---|
+| shipment 是否存在、目的地、item_code、标准费档位 | production Postgres：`giga_cogs_shipment_lines`（`shipment_id_raw`、`item_code`、`shipped_item_qty`）join `sales_orders`（`shipping_state`）join `product_variants` / `product_commercials`（`item_code`、`fulfillment_fee`） | DB **不含区域运费金额**，只有 `order_total_jpy` / `grand_total_jpy` / `storage_and_protection_fee_jpy` |
+| 实际收取的履约费 | GigaB2B `POST /b2b-overseas-api/v1/buyer/order/detail/v1` → `data[].feeDetails[feeType=2].feeAmount` | 以 `orderNo` = Giga shipment ID 查询，只读 |
+
+**订单池实测规模（2026-11-28 快照）**
+
+| 口径 | 数量 |
+|---|---:|
+| `giga_cogs_shipment_lines` 行数 / 去重 shipment | 3,516 / 3,245 |
+| qty=1 的 shipment | 3,213 |
+| qty=1 且目的地北海道 | **89** |
+| qty=1 且目的地冲绳 | **5** |
+| qty=1 且其他地区 | 2,862 |
+| 无收货地址（`sales_orders` 未匹配或 state 为空） | 268（已排除） |
+
+**枚举覆盖**：141 笔订单 = 北海道 88 + 冲绳 5 + 其他地区每档 2 笔（约 48）。北海道/冲绳两区在数据中本就只占约 2.9%（94/3,245），因此**样本少是订单分布所致，不是抽样舍弃**；两区的 qty=1 订单已基本全取。
+
+**已知缺口（保持 UNKNOWN，不得外推）**：
+
+1. 39 个 F_u 档位中，**仅 11 个档位有北海道观测**（1001、1705、2057、2530、2987、3058、3410、3966、4004、6953、7679），其余 **28 个档位北海道未观测**；**仅 2 个档位有冲绳观测**（1001、2987）。未观测档位不得套用 +880、+3245 或任何比例。
+2. 目的地归属依赖 `sales_orders.shipping_state`；若该字段缺失或错误，费用归档即错误，268 个无地址 shipment 已剔除但无法保证余下记录地址无误。
+3. 档位标签取自 `product_commercials.fulfillment_fee`（当前值），与订单发生时的标准费可能不同（7.2.1 已见 5/115 差异）；表中"Tier"是分组键，实收金额才是订单时点事实。
+4. `feeDetails` 按订单行聚合，仅单行单件订单可等价于单件费用；多行订单（如 1705+1881=3586）不计入档位统计。
+5. 未出账订单（`feeDetails` 为空、`totalAmount=null`）不能被读作 0。
+6. Price API 的 `remoteShippingFee` 对日本站 210 个 SKU 恒为 `null`，**无法按 SKU 事前取得区域报价**；订单级数据是事后证据。
+
 Raw keys are evidenced by [Giga stack README](../engineering/stacks/gigab2b/README.md), [plugin index](../engineering/stacks/gigab2b/plugin/index.js) and [CatalogSync domain assessment](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/architecture/GIGA_PRODUCT_DOMAIN_MAPPING_ASSESSMENT.md). The plugin normalizes shippingFee/remoteShippingFee, but internationalFulfillmentFees is reduced to array length in its summary. Use giga_price with includeRaw=true where available, or equivalent approved read-only API, to inspect regional records. CatalogSync price sync does not establish packing/area fee mapping. The original Product Price Query.pdf was not recovered from available sources in this review; do not label these candidate mappings official-spec verified. [Giga Data Dictionary MAP-006](../references/giga/data-dictionary-mapping.md) remains the cross-product mapping authority; verified paths and sanitized evidence are recorded in [REF-GIGA-DATA](../references/giga/data-dictionary-mapping.md#shipping-fee-evidence-2026-11-28).
 
 Fallback: use current exact-SKU Giga UI Estimated Fulfillment Fee, or the Sponsor-confirmed F_u=1001 mapping in RATE-001 (Hokkaido 1881 / Okinawa 4246, subject to known SKU exceptions). Other tiers require actual regional quote, not extrapolation. If F_u itself cannot be verified, do not activate fixed mapping. **Because the Price API exposes no regional fee, the UI path is the standing alternative, not a temporary workaround**；API 侧只能作为"F_u 与 SKU/币种/组合结构"的校验来源。

@@ -148,7 +148,7 @@ Implication: the API is the current authority for F_u; a DB-only read may quote 
 
 ### Order-level destination fees (verified)
 
-`POST /b2b-overseas-api/v1/buyer/order/detail/v1`, body `{"orderNo":["<shipmentId>"],"includeRecipientInfo":false}`; requestIds `7a8df582307af589`, `be893f83d7f4acba`, `97a506c3db2c1270`. `feeDetails[feeType=2].feeAmount` is the fulfillment fee actually charged (spec: "Fulfillment Fee (including shipping and packing fees)").
+`POST /b2b-overseas-api/v1/buyer/order/detail/v1`, body `{"orderNo":["<shipmentId>"],"includeRecipientInfo":false}`; requestIds `7a8df582307af589`, `be893f83d7f4acba`, `97a506c3db2c1270`, `6201d7750f7732b8`, `b6ca18e654bbf4d1`. **Source split:** shipment identity, destination and fee tier come from production Postgres (`giga_cogs_shipment_lines` + `sales_orders.shipping_state` + `product_commercials.fulfillment_fee`); the amounts come only from this Giga endpoint — the DB holds no regional fee column. 141 orders covered (Hokkaido 88, Okinawa 5, other ~48); only 11 of 39 tiers have a Hokkaido observation and 2 have an Okinawa observation. `feeDetails[feeType=2].feeAmount` is the fulfillment fee actually charged (spec: "Fulfillment Fee (including shipping and packing fees)").
 
 | Destination | Shipment / SKU | Standard F_u | Charged feeType=2 |
 |---|---|---:|---:|
@@ -165,7 +165,7 @@ Implication: the API is the current authority for F_u; a DB-only read may quote 
 | Hokkaido | order_2JNm2cS5JAoKPQGsG3joYx / N509SA353981A | 3058 | 3938 (+880) |
 | Hokkaido | order_2JJg3om5yxqxro2xUjcCg4 / SETN506P295412BB | 4004 | 7524 (combo) |
 
-The 1001-tier rows independently confirm Sponsor RATE-001 (Hokkaido 1881 / Okinawa 4246). Across a full enumeration of **39 fee tiers / 139 orders**, the Hokkaido surcharge is **+880 at 1001 and 3058 only**; 1705, 2057, 2530, 2987, 3410, 3966, 6953, 7679 show **+0** (45 orders); 4004 combo +3520; 2987-tier Okinawa single item +14400 (oversized). Fee amounts aggregate per order line (1705 + 1881 = 3586 observed). Full table: [BUS-LOG-002 §7.2.3](../../business/shipping-fee-master-rule.md#723-区域费全档位枚举订单级实测2026-11-28).
+The 1001-tier rows independently confirm Sponsor RATE-001 (Hokkaido 1881 / Okinawa 4246). Across a full enumeration of **39 fee tiers / 141 orders**, the Hokkaido surcharge is **+880 at 1001 and 3058 only**; 1705, 2057, 2530, 2987, 3410, 3966, 6953, 7679 show **+0** (45 orders); 4004 combo +3520; 2987-tier Okinawa single item +14400 (oversized). Fee amounts aggregate per order line (1705 + 1881 = 3586 observed). Full table: [BUS-LOG-002 §7.2.3](../../business/shipping-fee-master-rule.md#723-区域费全档位枚举订单级实测2026-11-28).
 
 ### Alternatives and remaining manual verification
 
