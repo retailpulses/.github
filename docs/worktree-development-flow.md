@@ -144,6 +144,21 @@ Post-deploy smoke test
 Release closeout
 ```
 
+### 4.1 GitHub Free-Compatible Integration Fallback
+
+Pull requests remain the preferred review and CI surface where the repository can merge them. The repository's integration path must also remain operable on GitHub Free; a paid-plan merge feature must not become a permanent delivery blocker.
+
+When a PR cannot merge:
+
+1. Read the exact GitHub merge-block reason and required checks. Do not repeatedly retry alternate merge methods when the blocker is a policy or permission gate.
+2. Do not use an admin bypass, weaken repository rules, or treat green CI as proof that GitHub permits the merge.
+3. Use the repository's documented fallback, selected by risk:
+   - **Low-risk docs, tools, and non-production code:** after the applicable local validation, an authorized maintainer may integrate the reviewed commit directly to `main` if the repository allows it. Preserve the Issue/commit trail and verify `main` afterward.
+   - **Production-sensitive code or changes with data/customer impact:** retain the required human review and validation. If the plan cannot enforce the review server-side, an authorized maintainer performs the integration only after recording that review and CI evidence; deployment and production writes remain separately gated by the repository's release procedure.
+4. If no authorized fallback exists, stop and record the exact blocker and the owner needed to resolve it. Do not leave a task in an unbounded merge-retry loop.
+
+Repository-specific fallbacks and risk classification belong in `repository-workflow-matrix.md` or the repository's own workflow guidance. Direct integration is an integration mechanism; it does not authorize deployment or production mutation.
+
 ---
 
 ## 5. Worktree Lifecycle
