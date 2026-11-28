@@ -8,6 +8,7 @@
 |---|---|---|
 | BUS-PROD-001–004 | [Product & Marketplace Model](marketplace-model.md) | SPU / Family / Variant / Listing；Product Center、NPL |
 | BUS-PRC-001–004 | [Pricing Contract](pricing-contract.md) | TCOGS、佣金、Margin、Floor；Product Center、Promotion、Orders |
+| BUS-PRC-005 | [Giga 订单级成本取证](suppliers/giga/order-cost-evidence.md) | 订单实际成本拆分（商品/履约/仓储）；毛利与 RMA 用法；API 事实 VERIFIED、用法 PROPOSED |
 | BUS-LOG-001 | [Giga 企业地址批量配送](suppliers/giga/bulk-commercial-delivery.md) | 供应商物流；Approved / Evidence PARTIAL |
 | BUS-MKT-001–005 | [Product & Marketplace Model](marketplace-model.md) | Shop / Listing / Category / Product Group |
 | BUS-IMG-001–012 | [Cross-Platform Main Image Standard — Mercari Shops + Rakuten](listing/main-image-standard.md) | 主图一份母版、两平台规则取 AND；Listing、Creative、CSV/API 导出器 |
