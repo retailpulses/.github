@@ -2,8 +2,8 @@
 # ============================
 # Canonical machine-readable domain ownership for Retailpulses shared Supabase.
 #
-# Version: 5
-# Last updated: 2026-08-24
+# Version: 6
+# Last updated: 2026-11-28
 # Governance ref: v1.5.0
 #
 # Governed by: retailpulses/.github
@@ -121,10 +121,10 @@ domains:
   # ── Product Catalog & Platform Listings ───────────────────
   product_catalog:
     domain_type: schema
-    owner: retailpulses/RPagentOS
+    owner: retailpulses/.github
     access_class: worker_only
     generated_types: exempt
-    cross_domain: false
+    cross_domain: true
     shared: false
     consumers:
       - retailpulses/CatalogSync
@@ -186,14 +186,17 @@ domains:
       storage_buckets: []
     notes: >
       Core product and platform listing data model.
-      Schema and migration ownership remain with RPagentOS.
+      Schema owner of record is retailpulses/.github (custodial). Canonical migrations
+      for this domain are authored by retailpulses/CatalogSync, the production writer,
+      under the cross_domain declaration above.
       Consumer access paths declared in DATABASE_ACCESS_POLICY.yaml.
       CatalogSync's disabled product-mirror workload is documented in the workload registry.
+      Custodial ownership while retailpulses/RPagentOS is retired; see retailpulses/.github#163.
 
   # ── Agent OS ──────────────────────────────────────────────
   agent_os:
     domain_type: schema
-    owner: retailpulses/RPagentOS
+    owner: retailpulses/.github
     access_class: worker_only
     generated_types: exempt
     cross_domain: false
@@ -211,11 +214,12 @@ domains:
       storage_buckets: []
     notes: >
       Agent execution and decision tracking. Tightly coupled to RPagentOS workflows.
+      Custodial ownership while retailpulses/RPagentOS is retired; see retailpulses/.github#163.
 
   # ── Task Management ───────────────────────────────────────
   task_management:
     domain_type: schema
-    owner: retailpulses/RPagentOS
+    owner: retailpulses/.github
     access_class: worker_only
     generated_types: exempt
     cross_domain: false
@@ -236,11 +240,12 @@ domains:
       storage_buckets: []
     notes: >
       Operational task management. Shared across repos for ticket-to-task linking.
+      Custodial ownership while retailpulses/RPagentOS is retired; see retailpulses/.github#163.
 
   # ── Project Management ────────────────────────────────────
   project_management:
     domain_type: schema
-    owner: retailpulses/RPagentOS
+    owner: retailpulses/.github
     access_class: worker_only
     generated_types: exempt
     cross_domain: false
@@ -259,11 +264,12 @@ domains:
       RPagentOS (canonical owner) and ticket-handling (near-identical copy, whitespace
       diff only). ticket-handling copy should be converted to a _remote.sql placeholder
       in a follow-up reconciliation. Do not create new project migrations in ticket-handling.
+      Custodial ownership while retailpulses/RPagentOS is retired; see retailpulses/.github#163.
 
   # ── Listing Intelligence ──────────────────────────────────
   listing_intelligence:
     domain_type: schema
-    owner: retailpulses/RPagentOS
+    owner: retailpulses/.github
     access_class: worker_only
     generated_types: exempt
     cross_domain: false
@@ -280,11 +286,12 @@ domains:
     notes: >
       Listing intelligence workbench MVP. The browser client writes work_items with
       the anon key (no-RLS MVP pattern — documented technical debt).
+      Custodial ownership while retailpulses/RPagentOS is retired; see retailpulses/.github#163.
 
   # ── Listing Quality Engineering ───────────────────────────
   listing_quality:
     domain_type: schema
-    owner: retailpulses/RPagentOS
+    owner: retailpulses/.github
     access_class: worker_only
     generated_types: exempt
     cross_domain: false
@@ -307,6 +314,7 @@ domains:
       exists in both RPagentOS (canonical owner) and ticket-handling (near-identical copy,
       whitespace diff only). ticket-handling copy should be converted to a
       _remote.sql placeholder in a follow-up reconciliation.
+      Custodial ownership while retailpulses/RPagentOS is retired; see retailpulses/.github#163.
 
   # ── Order Management ──────────────────────────────────────
   order_management:
