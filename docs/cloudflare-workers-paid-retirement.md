@@ -1,13 +1,13 @@
 # Cloudflare Workers Paid — Retirement Decision
 
-**Status:** Accepted — Phase 1 complete (2026-11-22). Phase 2 design under review
-([commerce-ops#499](https://github.com/retailpulses/commerce-ops/pull/499)).
+**Status:** Workers Paid cancellation effective **2026-11-25**; closeout remains in progress. Current stage
+readback is recorded below (2026-11-28).
 
 **Sprint design (canonical):** [commerce-ops `docs/phases/cloudflare-retirement-mercari-single-ingestion`](https://github.com/retailpulses/commerce-ops/blob/main/docs/phases/cloudflare-retirement-mercari-single-ingestion/README.md)
 — bounded Phase covering repository consolidation, the order scheduling cutover, `commerce-ops#498`, the
 single-source Mercari ingestion refactor, and the plan downgrade.
-**Version:** 1.0.0
-**Last updated:** 2026-11-22
+**Version:** 1.1.0
+**Last updated:** 2026-11-28
 **Owner:** Jim Yang
 **Related:** [`cloudflare-dependency-policy.md`](./cloudflare-dependency-policy.md), [`runtime-strategy.md`](./runtime-strategy.md)
 
@@ -25,6 +25,25 @@ The subscription is the only recurring Cloudflare spend on this account:
 | **Workers Paid** | **$5.00/mo + usage** ($5.50/mo incl. 10% JST) | 2026-11-25 |
 | R2 Paid | $0.00 base, usage-based | 2026-11-25 |
 | Teams Free Base (Zero Trust) | $0.00 | 2026-11-25 |
+
+## 1a. Closeout readback — 2026-11-28
+
+- **Plan:** Workers Paid cancellation effective 2026-11-25. The 2026-11-28 readback recorded in
+  [inbox#59](https://github.com/retailpulses/inbox/issues/59) reports no recurring Workers Paid invoice on
+  2026-11-25 and runtime alert wording for Free-tier limits. Workers Paid must not be re-subscribed.
+- **Live cron set:** the Cloudflare schedules API returns exactly two expressions, both on
+  `ticketing-mercari-ingestion`: `15 0 * * *` and `*/5 * * * *`. Sponsor accepts this as the permanent set;
+  it is within the Free allowance of five.
+- **Reduction history:** 27 → 9 → 7 → 2, all through deliberate schedule changes.
+- **Phase stages:** S1 done; S2 done and verified in production (commerce-ops#498 was closed on 2026-11-28
+  against the Phase §18 production evidence); S3 done; S4a done; S4b-1 route deployed, cron not migrated
+  (dedicated trigger token unavailable and token creation is not authorized); S4b-2 decided to keep the two
+  accepted crons; S5 done on 2026-11-25; S6 ADR-003 proposed, not implemented; S7 pending S6 and final
+  acceptance reconciliation.
+- **Remaining closeout gates:** PR
+  [commerce-ops#542](https://github.com/retailpulses/commerce-ops/pull/542) has green CI but is not merged;
+  branch policy blocks merging without its required gate. Free-tier CPU-limit alerts on 2026-11-26 and
+  2026-11-27 remain unattributed to a specific Worker. Seven-day monitoring has not completed.
 
 Zone plan for `homesbliss.net` is **Free**. Invoice history Feb–Oct 2026 is 9 × $5.50, all Paid. The single
 one-off invoice (2026-06-01, $13.05) is the first-year `homesbliss.net` registration at Cloudflare
