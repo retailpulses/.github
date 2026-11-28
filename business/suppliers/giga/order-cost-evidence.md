@@ -194,3 +194,62 @@ fulfillment_gap      = feeType2 − current_shippingFee
 - 官方文档：GigaB2B 帮助中心 Open API 2.0（`doc_id=32` Shipment Details Query，`doc_id=7` Product Price Query）。
 - DB 交叉验证：3 单 `totalAmount` = `order_total_jpy`。
 - 原始响应与脚本保存在研究目录（未入库），文档只保留净化片段。
+
+## 9. 用订单详情 API 取准成本的正确操作（DRAFT 待审）
+
+目的：说明需要"某笔订单的真实成本"时应如何取数、如何判定、如何与 Charges 报表核对。**字段名、表名、枚举值一律沿用原始表述，不做翻译。** 本节不涉及任何具体月份或店铺的比对结论。
+
+### 9.1 调用方式
+
+- Endpoint：`POST /b2b-overseas-api/v1/buyer/order/detail/v1`
+- Body：`{"orderNo": ["<orderNo>"], "includeRecipientInfo": false}`
+- `orderNo` 为订单/履约号，对应 Giga Charges 报表中的 `Related Order ID`
+- 单次最多 200 个；官方限流 **5 requests / 10 seconds**
+- 响应信封：`success` / `code` / `data` / `requestId` / `msg` / `subMsg` / `recommend`
+
+### 9.2 取哪些字段（原始名称）
+
+| 目标 | JSON path | 官方语义 |
+|---|---|---|
+| 商品成本 | `data[].feeDetails[]`，`feeType=1` | Item Cost = Transacted price * Quantity |
+| 履约费（含运费与包装费） | `data[].feeDetails[]`，`feeType=2` | Fulfillment Fee (including shipping and packing fees) |
+| 仓储费 | `data[].feeDetails[]`，`feeType=4` | Storage Fee |
+| 其他费用 | `feeType` 3、5–15 | 完整枚举见 §2.1 |
+| 币种 | `data[].currencyCode` | 不假定 JPY |
+| 订单状态 | `data[].orderStatus` | 枚举见 9.3 |
+| 订单总额 | `data[].totalAmount` | 含税口径按市场而定 |
+| 折后总额 | `data[].netTotalAmount` | `totalAmount` − coupon − store credit |
+
+每条 `feeDetails[]` 记录含 `feeType`、`feeName`、`feeAmount`。
+
+### 9.3 计入与排除规则
+
+- **排除** `orderStatus` = `1`（Unpaid）、`16`（Canceled）、`512`（Canceled (time out)）。
+- `feeDetails` 为空且 `totalAmount` 为 `null` 时**不等于 0**，须先看 `orderStatus`。
+- `feeAmount` 对 JP / US / DE / UK 市场为**不含税**，CAN 为含税。
+- `feeType=2` 已含运费与包装费，**不得**再加 `Shipping Fee Per Unit (JPY)`、`Packing Fee Per Unit (JPY)`、或 `public.product_commercials.fulfillment_fee`。
+- `feeType=4` 与 `public.giga_cogs_shipment_lines.storage_and_protection_fee_jpy` 口径不同（后者为 storage + protection），不可互替。
+
+### 9.4 订单范围从哪来（Giga Charges 报表）
+
+`Fulfillment Fee` sheet 的可用列：
+
+`Fee ID`、`Related Order ID`、`Fee Type`、`Status`、`Creation Time`、`Purchase Order Detail ID(Product)`、`Item Code`、`Seller`、`QTY`、`Product Order ID/Detailed QTY`、`Shipping Fee Per Unit (JPY)`、`Packing Fee Per Unit (JPY)`、`Total(JPY)`、`Paid Amount(JPY)`、`Payment Time`、`Cancelled QTY`、`Refund Amount(JPY)`
+
+规则：
+
+1. **join key 是 `Related Order ID`**，直接作为 `orderNo` 调用 API。
+2. `Purchase Order Detail ID(Product)` 是采购明细行标识，**不是** `purchase_order_id`；两者不是同一标识，不能互查。
+3. 一个 `Purchase Order Detail ID(Product)` 可对应**多个** `Related Order ID`（分批发货、跨渠道），因此不能按明细只取一条。
+4. `Related Order ID` 形态有三种：`2J…`、`order_2J…`、以及 3-7-7 形式的渠道订单号（如 `250-…`、`503-…`）；第三类属其他渠道，不计入本店铺。
+
+### 9.5 与 Charges 报表核对时的净额口径
+
+- 履约净额 = `Total(JPY)` − `Refund Amount(JPY)`；或等价地排除 `Status = "Refunded"` 与 `Cancelled QTY > 0` 的行。
+- 仓储应付 = `Storage Fee Payable(JPY)`，与 `feeType=4` 一致；**不要**用 `Total Storage Fee(JPY)`（应计毛额）。`Paid Amount(JPY)` 与 `Payable` 应一致，可用于二次校验。
+- 校验顺序：先确认 Charges 净额与 API 相等；若不等，先排查 `Status`、`Cancelled QTY`、`Refund Amount(JPY)` 与渠道号段，**再**考虑分摊问题。
+
+### 9.6 与月报成本比较时的限制
+
+- 月报的商品成本按"销售匹配单位"计，API `feeType=1` 按订单计，两者单位集不同，**不可直接相减**；比较时必须同时报单位数。
+- 任何差异须归入三类之一：口径差 / 时点差 / 真实漏计；不能归类时记 UNKNOWN，不得直接当作调整金额。
