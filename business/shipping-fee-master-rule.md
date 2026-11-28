@@ -121,7 +121,89 @@ Sponsor 提供的典型数据，约占该类别商品的50%以上（比例为 Sp
 
 数学边界（纯单元测试）：G=199→0；G=200→300；G=0或负值→0。不得把不同供应商费率类别与假设 Listing 档位任意组合并据此宣称 workflow/formula 在生产中一致或冲突。真实验证须匹配同一 SKU、当前 Giga E_a、当前 Listing 实际区域 S_a 及模板类型。北海道 workflow 与公式的实际一致性尚未验证。
 
-## 7. Governance / remaining decisions
+## 7. Business-to-API field mapping (BUS-LOG-002-MAP)
+
+Mapping evidence as of 2026-11-28: Mercari = official schema verified; Giga = API endpoint and top-level raw keys observed in code/reference, regional fee semantics and nested structure pending supplier-spec/live verification. Do not treat logical names below as new DB columns.
+
+### 7.1 Mercari Shops — official GraphQL schema
+
+Source: [Mercari Shops API reference](https://api.mercari-shops.com/docs/index.html), types Product, ShippingPayer, ShippingConfiguration, ShippingConfigurationType, ShippingConfigurationDetail, ShippingConfigurationDetailDestination, CreateProductInput, UpdateProductInput; queries product, productShippingConfiguration, productShippingConfigurations.
+
+| Business concept | Seller Web / CSV | API field | Rule mapping |
+|---|---|---|---|
+| Listing identity | 商品ID | Product.id | shop-scoped retrieval using the correct shop credential |
+| Listing variant | SKU / 商品管理コード | Product.variants[].id / skuCode | link exact Giga SKU via verified product identity, not by title |
+| Shipping payer | 送料負担 | Product.shippingPayer | SELLER = 送料込み, BUYER = 送料別 |
+| Shipping ID / template display ID | 送料ID | Product.shippingConfiguration.displayId | human/CSV ID, NOT GraphQL object ID |
+| Shipping Configuration ID | API object identifier | Product.shippingConfiguration.id | global ID; CreateProductInput.shippingConfigurationId / UpdateProductInput.shippingConfigurationId refer to this ID |
+| Template title | 送料設定名 | Product.shippingConfiguration.title | display only; not an identity or fee |
+| Template type | 送料設定方法 | Product.shippingConfiguration.type | NATIONWIDE_EQUAL / REGION / PREFECTURE |
+| Destination | 地域・都道府県 | Product.shippingConfiguration.details[].destination | enum; select one matching entry |
+| Destination fee | 送料（円） | Product.shippingConfiguration.details[].fee | integer JPY, S_a for applicable single-unit buyer-paid listing |
+| Template timestamp | 更新日時 | Product.shippingConfiguration.updatedAt | evidence freshness, alongside retrieval timestamp |
+| Listing timestamp | 更新日時 | Product.updatedAt | evidence freshness |
+
+| Business shipping setting | shippingPayer | type | Hokkaido destination | Okinawa destination |
+|---|---|---|---|---|
+| 送料込み | SELLER | not applicable | S_a=N/A | S_a=N/A |
+| 全国一律 | BUYER | NATIONWIDE_EQUAL | NATIONWIDE_EQUAL | NATIONWIDE_EQUAL |
+| 地域毎に設定 | BUYER | REGION | REGION_HOKKAIDO | REGION_OKINAWA |
+| 都道府県毎に設定 | BUYER | PREFECTURE | PREFECTURE_HOKKAIDO | PREFECTURE_OKINAWA |
+
+Resolve BUYER: match the destination enum in details and use its fee; require exactly one valid applicable entry. Missing template, duplicate/missing destination, invalid amount or UNSPECIFIED => UNKNOWN / operator review, never choose min/max or assume zero. SELLER: fee embedded in total selling price is not available; do not use 0 or infer from a legacy configuration. For CSV-only reads enumerate shop's productShippingConfigurations with pagination and match displayId exactly; use productShippingConfiguration(id: String!) only with the true GraphQL ID. Do not assume that the shipping ID label encodes the amount. Multi-quantity/cart shipping calculation/discount requires separate validation of actual applicable buyer fee (not simply detail.fee multiplied by quantity); order buyerShippingFee is transaction evidence, not a replacement for current listing configuration.
+
+Read-only query shape (official schema):
+
+```graphql
+query ShippingRuleListing($id: String!) {
+  product(id: $id) {
+    id
+    updatedAt
+    shippingPayer
+    shippingConfiguration {
+      id
+      displayId
+      title
+      type
+      updatedAt
+      details { destination fee }
+    }
+    variants { id skuCode }
+  }
+}
+```
+
+Implementation evidence: [Pricing Contract](pricing-contract.md) and [StoreOps migration 003](https://github.com/retailpulses/store-ops/blob/main/apps/mercari/timesale/local_offer/migrations/003_offer_identity_authority.sql) distinguish CSV shipping_rate_id from API shipping_configuration_id. Existing [Commerce Ops Inquiry relay](https://github.com/retailpulses/commerce-ops/blob/main/apps/inquiry/apps/dashboard/functions/_lib/mercari-relay.ts) requests only shippingPayer and details.fee, derives buyerShippingCharge=0 for SELLER or a single common BUYER fee; that value is a margin-context projection, NOT BUS-LOG-002 S_a. It omits type/destination/displayId/id and cannot resolve regional surcharge today. Consumer implementation must read full template and preserve N/A vs UNKNOWN vs actual zero; no runtime change in this PR.
+
+### 7.2 GigaB2B — Open API 2.0 only
+
+Official-document-derived endpoint reference: [REF-GIGA-OPENAPI-2](../references/giga/open-api-2.0.md) and relocated [CatalogSync Quick Reference](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/Gigab2b%20API%20guide/GIGA_OPEN_API_2_0_QUICK_REFERENCE.md). Product Price API: POST https://openapi.gigab2b.com/b2b-overseas-api/v1/buyer/product/price/v1, body skus[] (max 200), signed 2.0 request, common envelope success/code/data/requestId. Do not use retired 1.0. Use exact SKU and inspect raw record rather than summarized price projection.
+
+| Business field | Observed API key / source | Verification and use |
+|---|---|---|
+| Giga SKU | data item.sku | code observed; exact match to verified internal item_code |
+| Unit Fulfillment Fee F_u | item.shippingFee is a candidate, adapter shipping_fee; internal product_commercials.fulfillment_fee is existing commercial field | raw key and internal field exist; equivalence to Giga UI Unit Fulfillment Fee including packing NOT verified, do not auto-map yet |
+| Remote Area Shipping Fee R_a (transport component only) | item.remoteShippingFee is observed; item.internationalFulfillmentFees may contain regional records | shape, destination keys, units, meaning and packing coverage NOT verified; do not assign this raw key to R_a without proof |
+| Packing Fee P_a | exact JSON field UNKNOWN | use explicit Giga UI label or supplier-confirmed raw mapping |
+| Estimated Fulfillment Fee E_a (packing inclusive; canonical regional cost used in rules) | exact JSON field UNKNOWN; potential sources remoteShippingFee / internationalFulfillmentFees require evidence | do not sum or select a field blindly; use explicit packing-inclusive regional quote or verified R_a+P_a from same area and SKU |
+| Shipping range | item.shippingFeeRange | observed; range is not a destination quote |
+| Currency | item currency context (plugin reports currency) | validate JPY and per-sale-unit grain |
+| Region / prefecture | Giga regional fee record / UI Area | exact API enum/key UNKNOWN; do not reuse Mercari enum as Giga field |
+| Combo / package count | Product Detail API POST /b2b-overseas-api/v1/buyer/product/detailInfo/v1, SKU lookup | package count path UNKNOWN; verify sales unit, components and packaging from source, not arbitrary multipliers |
+
+Raw keys are evidenced by [Giga stack README](../engineering/stacks/gigab2b/README.md), [plugin index](../engineering/stacks/gigab2b/plugin/index.js) and [CatalogSync domain assessment](https://github.com/retailpulses/CatalogSync/blob/main/docs/legacy/architecture/GIGA_PRODUCT_DOMAIN_MAPPING_ASSESSMENT.md). The plugin normalizes shippingFee/remoteShippingFee, but internationalFulfillmentFees is reduced to array length in its summary. Use giga_price with includeRaw=true where available, or equivalent approved read-only API, to inspect regional records. CatalogSync price sync does not establish packing/area fee mapping. The original Product Price Query.pdf was not recovered from available sources in this review; do not label these candidate mappings official-spec verified. [Giga Data Dictionary MAP-006](../references/giga/data-dictionary-mapping.md) remains the cross-product mapping authority; resolve and update it when evidence exists.
+
+Fallback: use current exact-SKU Giga UI Estimated Fulfillment Fee, or the Sponsor-confirmed F_u=1001 mapping in RATE-001 (Hokkaido 1881 / Okinawa 4246, subject to known SKU exceptions). Other tiers require actual regional quote, not extrapolation. If F_u itself cannot be verified, do not activate fixed mapping.
+
+### 7.3 Mapping acceptance and handoff
+
+1. Read a live Shop4 Listing with each payer/template type; verify returned identity, destination selection, displayId vs id, UI/API fee agreement, zero vs N/A vs missing.
+2. For Giga run read-only price query for a verified 1001 SKU and at least one other real fee tier, capturing sanitized raw response/requestId and same-time UI standard/packing/remote/estimated fee rows. Establish exact JSON paths, destination identifiers, currency and packing-inclusive semantics; prove whether shippingFee equals UI F_u and whether remoteShippingFee or internationalFulfillmentFees supplies E_a. Include combo example, if available.
+3. Record raw-to-normalized transformation and provenance in REF-GIGA-DATA; link actual producer/consumer code and tests. Only then enable machine calculation for non-fixed tiers.
+4. Join by verified shop + listing/variant identity + Giga SKU, never by template title or shipping fee amount. Apply L1–L5 after input resolution. Preserve source paths, timestamps, request IDs, applicable destination and operator decision in Inquiry closeout.
+5. No production write/deployment authorized here. Mercury-side schema mapping is verified against official docs, not live canary. Giga exact regional mapping remains a blocker.
+
+## 8. Governance / remaining decisions
 
 - [Business Governance](GOVERNANCE.md)；消费方 Inquiry Skill、Commerce Ops、CatalogSync、Store Ops 引用此规则；Supabase Knowledge #36 待对齐，不另设竞争规则。
 - 业务结构按 MECE 分层；尚未确认的边界显式转人工，不假装已有最终定价规则。
