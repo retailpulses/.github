@@ -18,6 +18,8 @@
 
 | Mercari Shops | [Buyer receipt & invoice request SOP](mercari/buyer-receipt-invoice-sop.md) | DRAFT; official buyer-side records first; no shop-issued documents as routine policy; statutory requests escalated |
 
+| Mercari Shops | [Inquiry Handling Skill](mercari/inquiry-handling/SKILL.md) | DRAFT / Sponsor Review; Supabase Knowledge and mandatory case-log closeout; human-approved sending |
+
 ## Canonical business knowledge
 | Domain | Knowledge topic | Status |
 |---|---|---|
